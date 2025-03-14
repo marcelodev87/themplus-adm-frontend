@@ -4,7 +4,8 @@ import { Notify } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
-import type { RenderAuth } from 'src/ts/types/Auth';
+import type { RenderAuth, StatusReset } from 'src/ts/types/Auth';
+import { checkDataReset, checkPassword } from 'src/validate/checkData';
 
 defineOptions({
   name: 'ResetPassword',
@@ -15,43 +16,16 @@ const emit = defineEmits<{
 }>();
 
 const { loadingAuth } = storeToRefs(useAuthStore());
-const { doReset, doVerify, setNewPassword } = useAuthStore();
 
-const emailRegex = ref<RegExp>(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 const dataReset = reactive({
   email: '' as string,
   code: '' as string,
   password: '' as string,
   passwordConfirm: '' as string,
 });
-const modeView = ref<'setEmail' | 'setCode' | 'setPassword'>('setEmail');
+const modeView = ref<StatusReset>('setEmail');
 const isPwd = ref<boolean>(true);
 const isPwd2 = ref<boolean>(true);
-
-const checkDataReset = () => {
-  if (dataReset.email.trim() === '') {
-    return { status: false, message: 'Campo de e-mail não pode ser vazio' };
-  }
-  if (!emailRegex.value.test(dataReset.email)) {
-    return { status: false, message: 'O e-mail não é válido' };
-  }
-  return { status: true };
-};
-const checkPassword = () => {
-  if (dataReset.password.trim() === '') {
-    return { status: false, message: 'Deve ser informado uma senha' };
-  }
-  if (dataReset.password.trim().length < 8) {
-    return {
-      status: false,
-      message: 'A senha deve conter pelo menos 8 caracteres',
-    };
-  }
-  if (dataReset.password.trim() !== dataReset.passwordConfirm.trim()) {
-    return { status: false, message: 'As senhas devem ser iguais' };
-  }
-  return { status: true };
-};
 
 const clear = (): void => {
   Object.assign(dataReset, {
@@ -65,29 +39,29 @@ const changeRender = (render: RenderAuth): void => {
   emit('update:changeRender', render);
 };
 const sendEmailReset = async () => {
-  const verifyData = checkDataReset();
+  const verifyData = checkDataReset(dataReset.email);
   if (!verifyData.status) {
     Notify.create({
       message: verifyData.message || 'Ocorreu um erro ao resetar senha',
       type: 'negative',
     });
   } else {
-    const response = await doReset(dataReset.email);
+    const response = await useAuthStore().doReset(dataReset.email);
     if (response?.status === 200) {
       modeView.value = 'setCode';
     }
   }
 };
 const verifyCode = async () => {
-  const response = await doVerify(dataReset.code, dataReset.email);
+  const response = await useAuthStore().doVerify(dataReset.code, dataReset.email);
   if (response?.status === 200) {
     modeView.value = 'setPassword';
   }
 };
 const newPassword = async () => {
-  const check = checkPassword();
+  const check = checkPassword(dataReset);
   if (check.status) {
-    const response = await setNewPassword(dataReset.password, dataReset.email);
+    const response = await useAuthStore().setNewPassword(dataReset.password, dataReset.email);
     if (response?.status === 200) {
       emit('update:changeRender', 'login');
       clear();

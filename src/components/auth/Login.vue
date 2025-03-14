@@ -5,11 +5,11 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
 import type { RenderAuth } from 'src/ts/types/Auth';
+import { checkDataLogin } from 'src/validate/checkData';
 
 defineOptions({
   name: 'Login',
 });
-
 const emit = defineEmits<{
   'update:changeRender': [RenderAuth];
 }>();
@@ -31,20 +31,9 @@ const clear = (): void => {
 const changeRender = (render: RenderAuth): void => {
   emit('update:changeRender', render);
 };
-const checkData = (): { status: boolean; message?: string } => {
-  if (dataLogin.email.trim() === '') {
-    return { status: false, message: 'Deve ser informado o e-mail' };
-  }
-  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(dataLogin.email.trim())) {
-    return { status: false, message: 'Informe um e-mail válido' };
-  }
-  if (dataLogin.password.trim() === '') {
-    return { status: false, message: 'Deve ser informado uma senha' };
-  }
-  return { status: true };
-};
+
 const login = async () => {
-  const check = checkData();
+  const check = checkDataLogin(dataLogin);
   if (check.status) {
     await useAuthStore().doLogin(dataLogin.email, dataLogin.password);
   } else {
