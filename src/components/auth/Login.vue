@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { Notify } from 'quasar';
-import { DataLogin } from 'src/ts/interfaces/data/User';
-import { RenderAuth } from 'src/ts/types/FormMode';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
+import type { RenderAuth } from 'src/ts/types/Auth';
 
 defineOptions({
   name: 'Login',
@@ -16,12 +15,11 @@ const emit = defineEmits<{
 }>();
 
 const { loadingAuth } = storeToRefs(useAuthStore());
-const { doLogin } = useAuthStore();
 
 const isPwd = ref<boolean>(true);
-const dataLogin = reactive<DataLogin>({
-  email: '',
-  password: '',
+const dataLogin = reactive({
+  email: '' as string,
+  password: '' as string,
 });
 
 const clear = (): void => {
@@ -37,11 +35,7 @@ const checkData = (): { status: boolean; message?: string } => {
   if (dataLogin.email.trim() === '') {
     return { status: false, message: 'Deve ser informado o e-mail' };
   }
-  if (
-    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-      dataLogin.email.trim()
-    )
-  ) {
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(dataLogin.email.trim())) {
     return { status: false, message: 'Informe um e-mail válido' };
   }
   if (dataLogin.password.trim() === '') {
@@ -52,10 +46,10 @@ const checkData = (): { status: boolean; message?: string } => {
 const login = async () => {
   const check = checkData();
   if (check.status) {
-    await doLogin(dataLogin.email, dataLogin.password);
+    await useAuthStore().doLogin(dataLogin.email, dataLogin.password);
   } else {
     Notify.create({
-      message: check.message,
+      message: check.message || 'Ocorreu um erro no login',
       type: 'negative',
     });
   }
@@ -69,7 +63,7 @@ onMounted(() => {
 <template>
   <q-form class="form-auth rounded-borders bg-grey-3">
     <div class="row justify-center items-center q-pa-md">
-      <q-img src="/images/logo.png" spinner-color="white" width="350px" />
+      <q-img src="/images/logo/logo.png" spinner-color="white" width="350px" height="90px" />
     </div>
     <div class="q-px-md">
       <TitleAuth title="Faça seu login" />
@@ -121,15 +115,6 @@ onMounted(() => {
         flat
         @click="changeRender('reset')"
         no-caps
-      />
-      <q-btn
-        @click="changeRender('register')"
-        color="black"
-        label="Cadastrar"
-        size="md"
-        unelevated
-        no-caps
-        flat
       />
       <q-btn
         @click="login"

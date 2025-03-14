@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
 import { Notify } from 'quasar';
-import { RenderAuth } from 'src/ts/types/FormMode';
 import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
+import type { RenderAuth } from 'src/ts/types/Auth';
 
 defineOptions({
   name: 'ResetPassword',
@@ -17,9 +17,7 @@ const emit = defineEmits<{
 const { loadingAuth } = storeToRefs(useAuthStore());
 const { doReset, doVerify, setNewPassword } = useAuthStore();
 
-const emailRegex = ref<RegExp>(
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-);
+const emailRegex = ref<RegExp>(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 const dataReset = reactive({
   email: '' as string,
   code: '' as string,
@@ -70,7 +68,7 @@ const sendEmailReset = async () => {
   const verifyData = checkDataReset();
   if (!verifyData.status) {
     Notify.create({
-      message: verifyData.message,
+      message: verifyData.message || 'Ocorreu um erro ao resetar senha',
       type: 'negative',
     });
   } else {
@@ -96,7 +94,7 @@ const newPassword = async () => {
     }
   } else {
     Notify.create({
-      message: check.message,
+      message: check.message || 'Ocorreu um erro ao salvar nova senha',
       type: 'negative',
     });
   }
@@ -109,7 +107,7 @@ watch(
       clear();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onMounted(() => {
@@ -120,7 +118,7 @@ onMounted(() => {
 <template>
   <q-form class="form-auth rounded-borders bg-grey-3">
     <div class="row justify-center items-center q-pa-md">
-      <q-img src="/images/logo.png" spinner-color="white" width="250px" />
+      <q-img src="/images/logo/logo.png" spinner-color="white" width="350px" height="90px" />
     </div>
     <div class="q-px-md">
       <TitleAuth title="Recupere sua senha" />
@@ -133,6 +131,7 @@ onMounted(() => {
         label-color="black"
         filled
         label="Digite seu e-mail"
+        autocomplete="new-email"
         dense
         input-class="text-black"
       >
@@ -204,22 +203,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="q-pb-sm q-px-md row justify-end items-center q-gutter-x-sm">
-      <q-btn
-        @click="changeRender('register')"
-        color="black"
-        label="Cadastrar"
-        size="md"
-        no-caps
-        flat
-      />
-      <q-btn
-        @click="changeRender('login')"
-        color="black"
-        label="Entrar"
-        size="md"
-        no-caps
-        flat
-      />
+      <q-btn @click="changeRender('login')" color="black" label="Entrar" size="md" no-caps flat />
       <q-btn
         v-show="modeView === 'setEmail'"
         @click="sendEmailReset"
