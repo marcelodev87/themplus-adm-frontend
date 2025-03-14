@@ -26,14 +26,24 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/Enterprise.vue'),
       },
       {
-        path: 'coupon',
+        path: 'usuarios',
+        name: 'admin-users',
+        component: () => import('src/pages/User.vue'),
+      },
+      {
+        path: 'cupons',
         name: 'admin-coupon',
         component: () => import('src/pages/Coupon.vue'),
       },
       {
-        path: 'panel',
-        name: 'admin-panel',
-        component: () => import('src/pages/Panel.vue'),
+        path: 'atividades',
+        name: 'admin-record',
+        component: () => import('src/pages/Activity.vue'),
+      },
+      {
+        path: 'assinaturas',
+        name: 'admin-subscription',
+        component: () => import('src/pages/Subscriptions.vue'),
       },
     ],
   },

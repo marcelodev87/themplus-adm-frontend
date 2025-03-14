@@ -5,7 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-import { useAuthStore } from 'src/stores/auth-store';
+// import { useAuthStore } from 'src/stores/auth-store';
 
 import routes from './routes';
 
@@ -23,17 +23,18 @@ export default route(() => {
   });
 
   Router.beforeEach((to, from, next) => {
-    const authStore = useAuthStore();
+    // const authStore = useAuthStore();
 
-    if (to.matched.some((record) => record.meta.requiresAuth)) {
-      if (!authStore.token) {
-        next({ name: 'auth' });
-      } else {
-        next();
-      }
-    } else {
-      next();
-    }
+    // if (to.matched.some((record) => record.meta.requiresAuth)) {
+    //   if (!authStore.token) {
+    //     next({ name: 'auth' });
+    //   } else {
+    //     next();
+    //   }
+    // } else {
+    //   next();
+    // }
+    next();
   });
 
   return Router;
