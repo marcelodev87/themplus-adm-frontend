@@ -23,7 +23,7 @@ const closeInbox = (): void => {
 </script>
 <template>
   <nav>
-    <q-toolbar class="row items-center justify-between">
+    <q-toolbar class="row items-center justify-between" style="height: 50px">
       <div class="row items-center q-gutter-x-sm">
         <q-btn
           @click="emit('update:changeOpenMenu')"
@@ -32,12 +32,13 @@ const closeInbox = (): void => {
           icon-right="menu"
           rounded
         />
-        <img
+        <q-img
           v-show="!$q.screen.lt.md"
           @click="$router.push({ name: 'admin-dashboard' })"
-          class="cursor-pointer hidden-md"
           src="/images/logo/logo.png"
+          spinner-color="white"
           width="120px"
+          class="hover cursor-pointer hidden-md"
         />
       </div>
       <div class="row justify-end">
