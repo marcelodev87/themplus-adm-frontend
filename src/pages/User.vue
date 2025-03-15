@@ -1,120 +1,120 @@
 <script setup lang="ts">
-import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormUser from 'src/components/forms/FormUser.vue';
-import { useUsersMembersStore } from 'src/stores/users-store';
-import { useAuthStore } from 'src/stores/auth-store';
-import { storeToRefs } from 'pinia';
-import { reactive, ref, onMounted, watch } from 'vue';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { User } from 'src/ts/interfaces/data/User';
-import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+// import TitlePage from 'src/components/shared/TitlePage.vue';
+// import FormUser from 'src/components/forms/FormUser.vue';
+// import { useUsersMembersStore } from 'src/stores/users-store';
+// import { useAuthStore } from 'src/stores/auth-store';
+// import { storeToRefs } from 'pinia';
+// import { reactive, ref, onMounted, watch } from 'vue';
+// import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+// import { User } from 'src/ts/interfaces/data/User';
+// import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
 
-defineOptions({
-  name: 'User',
-});
+// defineOptions({
+//   name: 'User',
+// });
 
-const { getUsersMembers, deleteUserMember, exportUser, updateActiveUser } = useUsersMembersStore();
-const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(useUsersMembersStore());
-const { user } = storeToRefs(useAuthStore());
+// const { getUsersMembers, deleteUserMember, exportUser, updateActiveUser } = useUsersMembersStore();
+// const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(useUsersMembersStore());
+// const { user } = storeToRefs(useAuthStore());
 
-const showFormUser = ref<boolean>(false);
-const loadingExport = ref<boolean>(false);
-const showAlertDataEnterprise = ref<boolean>(false);
-const filterUser = ref<string>('');
-const selectedDataEdit = ref<User | null>(null);
-const columnsUser = reactive<QuasarTable[]>([
-  {
-    name: 'name',
-    label: 'Nome',
-    field: 'name',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'email',
-    label: 'E-mail',
-    field: 'email',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'phone',
-    label: 'Telefone',
-    field: 'phone',
-    align: 'left',
-  },
-  {
-    name: 'position',
-    label: 'Cargo',
-    field: 'position',
-    align: 'left',
-  },
-  {
-    name: 'department',
-    label: 'Departamento',
-    field: 'departments.name',
-    align: 'left',
-  },
-  {
-    name: 'active',
-    label: 'Ativo',
-    field: 'active',
-    align: 'left',
-  },
-  {
-    name: 'action',
-    label: 'Ação',
-    field: 'action',
-    align: 'right',
-  },
-]);
+// const showFormUser = ref<boolean>(false);
+// const loadingExport = ref<boolean>(false);
+// const showAlertDataEnterprise = ref<boolean>(false);
+// const filterUser = ref<string>('');
+// const selectedDataEdit = ref<User | null>(null);
+// const columnsUser = reactive<QuasarTable[]>([
+//   {
+//     name: 'name',
+//     label: 'Nome',
+//     field: 'name',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'email',
+//     label: 'E-mail',
+//     field: 'email',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'phone',
+//     label: 'Telefone',
+//     field: 'phone',
+//     align: 'left',
+//   },
+//   {
+//     name: 'position',
+//     label: 'Cargo',
+//     field: 'position',
+//     align: 'left',
+//   },
+//   {
+//     name: 'department',
+//     label: 'Departamento',
+//     field: 'departments.name',
+//     align: 'left',
+//   },
+//   {
+//     name: 'active',
+//     label: 'Ativo',
+//     field: 'active',
+//     align: 'left',
+//   },
+//   {
+//     name: 'action',
+//     label: 'Ação',
+//     field: 'action',
+//     align: 'right',
+//   },
+// ]);
 
-const clear = (): void => {
-  selectedDataEdit.value = null;
-  filterUser.value = '';
-};
-const openFormUser = (): void => {
-  showFormUser.value = true;
-};
-const closeFormUser = (): void => {
-  showFormUser.value = false;
-  clear();
-};
-const handleEdit = (data: User) => {
-  selectedDataEdit.value = data;
-  openFormUser();
-};
-const exclude = async (id: string): Promise<void> => {
-  await deleteUserMember(id);
-};
-const exportData = async (): Promise<void> => {
-  loadingExport.value = true;
-  await exportUser();
-  loadingExport.value = false;
-};
-const closeAlertDataEnterprise = (): void => {
-  showAlertDataEnterprise.value = false;
-};
-const setActive = async (active: number, userId: string) => {
-  await updateActiveUser(active, userId);
-};
+// const clear = (): void => {
+//   selectedDataEdit.value = null;
+//   filterUser.value = '';
+// };
+// const openFormUser = (): void => {
+//   showFormUser.value = true;
+// };
+// const closeFormUser = (): void => {
+//   showFormUser.value = false;
+//   clear();
+// };
+// const handleEdit = (data: User) => {
+//   selectedDataEdit.value = data;
+//   openFormUser();
+// };
+// const exclude = async (id: string): Promise<void> => {
+//   await deleteUserMember(id);
+// };
+// const exportData = async (): Promise<void> => {
+//   loadingExport.value = true;
+//   await exportUser();
+//   loadingExport.value = false;
+// };
+// const closeAlertDataEnterprise = (): void => {
+//   showAlertDataEnterprise.value = false;
+// };
+// const setActive = async (active: number, userId: string) => {
+//   await updateActiveUser(active, userId);
+// };
 
-watch(
-  filledData,
-  () => {
-    if (!filledData.value) {
-      showAlertDataEnterprise.value = true;
-    }
-  },
-  { immediate: true },
-);
+// watch(
+//   filledData,
+//   () => {
+//     if (!filledData.value) {
+//       showAlertDataEnterprise.value = true;
+//     }
+//   },
+//   { immediate: true },
+// );
 
-onMounted(async () => {
-  await getUsersMembers();
-});
+// onMounted(async () => {
+//   await getUsersMembers();
+// });
 </script>
 <template>
-  <section>
+  <!-- <section>
     <header
       :class="
         !$q.screen.lt.sm
@@ -278,5 +278,6 @@ onMounted(async () => {
         />
       </main>
     </q-scroll-area>
-  </section>
+  </section> -->
+  <div>Usuarios</div>
 </template>

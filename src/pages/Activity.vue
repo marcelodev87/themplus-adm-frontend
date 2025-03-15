@@ -1,370 +1,370 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import TitlePage from 'src/components/shared/TitlePage.vue';
-import FormEntry from 'src/components/forms/FormEntry.vue';
-import FormOut from 'src/components/forms/FormOut.vue';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { useMovementStore } from 'src/stores/movement-store';
-import { storeToRefs } from 'pinia';
-import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { Movement } from 'src/ts/interfaces/data/Movement';
-import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
-import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
-import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
-import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
-import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
-import MovementsAnalyze from 'src/components/general/MovementsAnalyze.vue';
-import { useAuthStore } from 'src/stores/auth-store';
+// import TitlePage from 'src/components/shared/TitlePage.vue';
+// import FormEntry from 'src/components/forms/FormEntry.vue';
+// import FormOut from 'src/components/forms/FormOut.vue';
+// import { computed, onMounted, reactive, ref, watch } from 'vue';
+// import { useMovementStore } from 'src/stores/movement-store';
+// import { storeToRefs } from 'pinia';
+// import { QuasarSelect, QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+// import { Movement } from 'src/ts/interfaces/data/Movement';
+// import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+// import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+// import { formatCurrencyBRL } from 'src/composables/formatCurrencyBRL';
+// import FormInsertMovement from 'src/components/forms/FormInsertMovement.vue';
+// import ConfirmDownloadFile from 'src/components/confirm/ConfirmDownloadFile.vue';
+// import MovementsAnalyze from 'src/components/general/MovementsAnalyze.vue';
+// import { useAuthStore } from 'src/stores/auth-store';
 
-defineOptions({
-  name: 'Activity',
-});
+// defineOptions({
+//   name: 'Activity',
+// });
 
-const {
-  getMovements,
-  getMovementsWithParams,
-  exportMovementExcel,
-  exportMovementPDF,
-  deleteMovement,
-  downloadFile,
-} = useMovementStore();
-const {
-  loadingMovement,
-  listMovement,
-  filledData,
-  listMonthYear,
-  delivered,
-  listCategoryFilters,
-  movementsAnalyze,
-} = storeToRefs(useMovementStore());
-const { user } = storeToRefs(useAuthStore());
+// const {
+//   getMovements,
+//   getMovementsWithParams,
+//   exportMovementExcel,
+//   exportMovementPDF,
+//   deleteMovement,
+//   downloadFile,
+// } = useMovementStore();
+// const {
+//   loadingMovement,
+//   listMovement,
+//   filledData,
+//   listMonthYear,
+//   delivered,
+//   listCategoryFilters,
+//   movementsAnalyze,
+// } = storeToRefs(useMovementStore());
+// const { user } = storeToRefs(useAuthStore());
 
-const showConfirmDownloadFile = ref<boolean>(false);
-const showConfirmAction = ref<boolean>(false);
-const showAlertDataEnterprise = ref<boolean>(false);
-const showFormInsertMovement = ref<boolean>(false);
-const showMovementsAnalyze = ref<boolean>(false);
-const onlyEntry = ref<boolean>(false);
-const onlyOut = ref<boolean>(false);
-const loadingExport = ref<boolean>(false);
-const showFormEntry = ref<boolean>(false);
-const showFormOut = ref<boolean>(false);
-const filterMovement = ref<string>('');
-const selectedDataEdit = ref<Movement | null>(null);
-const selectedExclude = ref<string>('');
-const columnsMovement = reactive<QuasarTable[]>([
-  {
-    name: 'name',
-    label: 'Banco',
-    field: 'account.name',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'account_number',
-    label: 'Conta',
-    field: 'account.account_number',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'agency_number',
-    label: 'Agência',
-    field: 'account.agency_number',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'category',
-    label: 'Categoria',
-    field: 'category.name',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'value',
-    label: 'Valor',
-    field: 'value',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'date_movement',
-    label: 'Data de movimentação',
-    field: 'date_movement',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'description',
-    label: 'Descrição',
-    field: 'description',
-    align: 'left',
-  },
-  {
-    name: 'receipt',
-    label: 'Arquivo',
-    field: 'receipt',
-    align: 'left',
-    style: 'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
-  },
-  {
-    name: 'action',
-    label: 'Ação',
-    field: 'action',
-    align: 'right',
-  },
-]);
-const selectedCategory = ref<QuasarSelect<string | null>>({
-  label: 'Todas categorias',
-  value: null,
-});
+// const showConfirmDownloadFile = ref<boolean>(false);
+// const showConfirmAction = ref<boolean>(false);
+// const showAlertDataEnterprise = ref<boolean>(false);
+// const showFormInsertMovement = ref<boolean>(false);
+// const showMovementsAnalyze = ref<boolean>(false);
+// const onlyEntry = ref<boolean>(false);
+// const onlyOut = ref<boolean>(false);
+// const loadingExport = ref<boolean>(false);
+// const showFormEntry = ref<boolean>(false);
+// const showFormOut = ref<boolean>(false);
+// const filterMovement = ref<string>('');
+// const selectedDataEdit = ref<Movement | null>(null);
+// const selectedExclude = ref<string>('');
+// const columnsMovement = reactive<QuasarTable[]>([
+//   {
+//     name: 'name',
+//     label: 'Banco',
+//     field: 'account.name',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'account_number',
+//     label: 'Conta',
+//     field: 'account.account_number',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'agency_number',
+//     label: 'Agência',
+//     field: 'account.agency_number',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'category',
+//     label: 'Categoria',
+//     field: 'category.name',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'value',
+//     label: 'Valor',
+//     field: 'value',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'date_movement',
+//     label: 'Data de movimentação',
+//     field: 'date_movement',
+//     align: 'left',
+//     sortable: true,
+//   },
+//   {
+//     name: 'description',
+//     label: 'Descrição',
+//     field: 'description',
+//     align: 'left',
+//   },
+//   {
+//     name: 'receipt',
+//     label: 'Arquivo',
+//     field: 'receipt',
+//     align: 'left',
+//     style: 'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+//   },
+//   {
+//     name: 'action',
+//     label: 'Ação',
+//     field: 'action',
+//     align: 'right',
+//   },
+// ]);
+// const selectedCategory = ref<QuasarSelect<string | null>>({
+//   label: 'Todas categorias',
+//   value: null,
+// });
 
-const dateActual = computed(() => {
-  const currentDate = new Date();
+// const dateActual = computed(() => {
+//   const currentDate = new Date();
 
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const year = currentDate.getFullYear();
+//   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+//   const year = currentDate.getFullYear();
 
-  return `${month}/${year}`;
-});
-const optionsCategoriesFilter = computed(() => {
-  const baseCategories = [
-    {
-      label: 'Todas categorias',
-      value: null,
-    },
-  ];
+//   return `${month}/${year}`;
+// });
+// const optionsCategoriesFilter = computed(() => {
+//   const baseCategories = [
+//     {
+//       label: 'Todas categorias',
+//       value: null,
+//     },
+//   ];
 
-  const additionalCategories = (listCategoryFilters.value || []).slice().sort((a, b) => {
-    return a.label.localeCompare(b.label);
-  });
+//   const additionalCategories = (listCategoryFilters.value || []).slice().sort((a, b) => {
+//     return a.label.localeCompare(b.label);
+//   });
 
-  return [...baseCategories, ...additionalCategories];
-});
+//   return [...baseCategories, ...additionalCategories];
+// });
 
-const dataMovement = computed(() => {
-  let valueEntry = 0;
-  let valueOut = 0;
+// const dataMovement = computed(() => {
+//   let valueEntry = 0;
+//   let valueOut = 0;
 
-  listMovement.value.forEach((item) => {
-    if (item.type === 'entrada') {
-      valueEntry += Number(item.value);
-    } else {
-      valueOut += Number(item.value);
-    }
-  });
+//   listMovement.value.forEach((item) => {
+//     if (item.type === 'entrada') {
+//       valueEntry += Number(item.value);
+//     } else {
+//       valueOut += Number(item.value);
+//     }
+//   });
 
-  const total = valueEntry - valueOut;
+//   const total = valueEntry - valueOut;
 
-  return {
-    valueEntry: formatCurrencyBRL(valueEntry),
-    valueOut: formatCurrencyBRL(valueOut),
-    total: formatCurrencyBRL(total),
-  };
-});
+//   return {
+//     valueEntry: formatCurrencyBRL(valueEntry),
+//     valueOut: formatCurrencyBRL(valueOut),
+//     total: formatCurrencyBRL(total),
+//   };
+// });
 
-const filterMonthYear = ref<string>(dateActual.value);
+// const filterMonthYear = ref<string>(dateActual.value);
 
-const clear = (): void => {
-  selectedDataEdit.value = null;
-  selectedExclude.value = '';
-  filterMonthYear.value = dateActual.value;
-};
-const openConfirmAction = (): void => {
-  showConfirmAction.value = true;
-};
-const closeConfirmActionOk = async (): Promise<void> => {
-  showConfirmAction.value = false;
-  await deleteMovement(selectedExclude.value);
-};
-const closeConfirmAction = (): void => {
-  showConfirmAction.value = false;
-  selectedExclude.value = '';
-};
-const openFormEntry = (): void => {
-  showFormEntry.value = true;
-};
-const closeFormEntry = (): void => {
-  showFormEntry.value = false;
-  clear();
-};
-const openFormOut = (): void => {
-  showFormOut.value = true;
-};
-const closeFormOut = (): void => {
-  showFormOut.value = false;
-  clear();
-};
-const openFormInsertMovement = (): void => {
-  showFormInsertMovement.value = true;
-};
-const closeFormInsertMovement = (): void => {
-  showFormInsertMovement.value = false;
-  clear();
-};
-const openMovementsAnalyze = (): void => {
-  showMovementsAnalyze.value = true;
-};
-const closeMovementsAnalyze = (): void => {
-  showMovementsAnalyze.value = false;
-  clear();
-};
-const handleEdit = (movement: Movement) => {
-  selectedDataEdit.value = movement;
-  if (selectedDataEdit.value.type === 'entrada') {
-    openFormEntry();
-  } else {
-    openFormOut();
-  }
-};
-const formatDate = (dateString: string) => {
-  const [year, month, day] = dateString.split('-');
+// const clear = (): void => {
+//   selectedDataEdit.value = null;
+//   selectedExclude.value = '';
+//   filterMonthYear.value = dateActual.value;
+// };
+// const openConfirmAction = (): void => {
+//   showConfirmAction.value = true;
+// };
+// const closeConfirmActionOk = async (): Promise<void> => {
+//   showConfirmAction.value = false;
+//   await deleteMovement(selectedExclude.value);
+// };
+// const closeConfirmAction = (): void => {
+//   showConfirmAction.value = false;
+//   selectedExclude.value = '';
+// };
+// const openFormEntry = (): void => {
+//   showFormEntry.value = true;
+// };
+// const closeFormEntry = (): void => {
+//   showFormEntry.value = false;
+//   clear();
+// };
+// const openFormOut = (): void => {
+//   showFormOut.value = true;
+// };
+// const closeFormOut = (): void => {
+//   showFormOut.value = false;
+//   clear();
+// };
+// const openFormInsertMovement = (): void => {
+//   showFormInsertMovement.value = true;
+// };
+// const closeFormInsertMovement = (): void => {
+//   showFormInsertMovement.value = false;
+//   clear();
+// };
+// const openMovementsAnalyze = (): void => {
+//   showMovementsAnalyze.value = true;
+// };
+// const closeMovementsAnalyze = (): void => {
+//   showMovementsAnalyze.value = false;
+//   clear();
+// };
+// const handleEdit = (movement: Movement) => {
+//   selectedDataEdit.value = movement;
+//   if (selectedDataEdit.value.type === 'entrada') {
+//     openFormEntry();
+//   } else {
+//     openFormOut();
+//   }
+// };
+// const formatDate = (dateString: string) => {
+//   const [year, month, day] = dateString.split('-');
 
-  return `${day}/${month}/${year}`;
-};
-const saveIdExclude = async (id: string) => {
-  selectedExclude.value = id;
-  openConfirmAction();
-};
-const customFilterMovement = (
-  rows: readonly Movement[],
-  terms: string,
-  cols: readonly Movement[],
-  getCellValue: (row: Movement, col: QuasarTable) => unknown,
-): readonly Movement[] => {
-  const searchTerm = terms.toLowerCase();
+//   return `${day}/${month}/${year}`;
+// };
+// const saveIdExclude = async (id: string) => {
+//   selectedExclude.value = id;
+//   openConfirmAction();
+// };
+// const customFilterMovement = (
+//   rows: readonly Movement[],
+//   terms: string,
+//   cols: readonly Movement[],
+//   getCellValue: (row: Movement, col: QuasarTable) => unknown,
+// ): readonly Movement[] => {
+//   const searchTerm = terms.toLowerCase();
 
-  return rows.filter((item) => {
-    return (
-      (item.account?.name && item.account.name.toLowerCase().includes(searchTerm)) ||
-      (item.account?.agency_number &&
-        item.account.agency_number.toLowerCase().includes(searchTerm)) ||
-      (item.account?.account_number &&
-        item.account.account_number.toLowerCase().includes(searchTerm)) ||
-      (item.category?.name && item.category.name.toLowerCase().includes(searchTerm)) ||
-      (item.value && item.value.toString().toLowerCase().includes(searchTerm)) ||
-      (item.description && item.description.toLowerCase().includes(searchTerm)) ||
-      (item.receipt && item.receipt.toLowerCase().includes(searchTerm)) ||
-      (item.date_movement && item.date_movement.toLowerCase().includes(searchTerm))
-    );
-  });
-};
-const exportDataExcel = async (): Promise<void> => {
-  loadingExport.value = true;
-  await exportMovementExcel(
-    onlyEntry.value,
-    onlyOut.value,
-    filterMonthYear.value.replace('/', '-'),
-    selectedCategory.value.value,
-  );
-  loadingExport.value = false;
-};
-const exportDataPdf = async (): Promise<void> => {
-  loadingExport.value = true;
-  await exportMovementPDF(
-    onlyEntry.value,
-    onlyOut.value,
-    filterMonthYear.value.replace('/', '-'),
-    selectedCategory.value.value,
-  );
-  loadingExport.value = false;
-};
-const closeAlertDataEnterprise = (): void => {
-  showAlertDataEnterprise.value = false;
-};
-const download = async (url: string) => {
-  await downloadFile(url);
-};
-const openConfirmDownloadFile = (): void => {
-  showConfirmDownloadFile.value = true;
-};
-const closeConfirmDownloadFile = (): void => {
-  showConfirmDownloadFile.value = false;
-};
-const closeConfirmDownloadFileOk = (file: 'Excel' | 'PDF'): void => {
-  if (file.toLocaleLowerCase() === 'excel') {
-    exportDataExcel();
-  } else {
-    exportDataPdf();
-  }
-  showConfirmDownloadFile.value = false;
-};
-const getClassTotal = (total: string) => {
-  const numericValue = parseFloat(total.replace(/R\$|\.|\s/g, '').replace(',', '.'));
+//   return rows.filter((item) => {
+//     return (
+//       (item.account?.name && item.account.name.toLowerCase().includes(searchTerm)) ||
+//       (item.account?.agency_number &&
+//         item.account.agency_number.toLowerCase().includes(searchTerm)) ||
+//       (item.account?.account_number &&
+//         item.account.account_number.toLowerCase().includes(searchTerm)) ||
+//       (item.category?.name && item.category.name.toLowerCase().includes(searchTerm)) ||
+//       (item.value && item.value.toString().toLowerCase().includes(searchTerm)) ||
+//       (item.description && item.description.toLowerCase().includes(searchTerm)) ||
+//       (item.receipt && item.receipt.toLowerCase().includes(searchTerm)) ||
+//       (item.date_movement && item.date_movement.toLowerCase().includes(searchTerm))
+//     );
+//   });
+// };
+// const exportDataExcel = async (): Promise<void> => {
+//   loadingExport.value = true;
+//   await exportMovementExcel(
+//     onlyEntry.value,
+//     onlyOut.value,
+//     filterMonthYear.value.replace('/', '-'),
+//     selectedCategory.value.value,
+//   );
+//   loadingExport.value = false;
+// };
+// const exportDataPdf = async (): Promise<void> => {
+//   loadingExport.value = true;
+//   await exportMovementPDF(
+//     onlyEntry.value,
+//     onlyOut.value,
+//     filterMonthYear.value.replace('/', '-'),
+//     selectedCategory.value.value,
+//   );
+//   loadingExport.value = false;
+// };
+// const closeAlertDataEnterprise = (): void => {
+//   showAlertDataEnterprise.value = false;
+// };
+// const download = async (url: string) => {
+//   await downloadFile(url);
+// };
+// const openConfirmDownloadFile = (): void => {
+//   showConfirmDownloadFile.value = true;
+// };
+// const closeConfirmDownloadFile = (): void => {
+//   showConfirmDownloadFile.value = false;
+// };
+// const closeConfirmDownloadFileOk = (file: 'Excel' | 'PDF'): void => {
+//   if (file.toLocaleLowerCase() === 'excel') {
+//     exportDataExcel();
+//   } else {
+//     exportDataPdf();
+//   }
+//   showConfirmDownloadFile.value = false;
+// };
+// const getClassTotal = (total: string) => {
+//   const numericValue = parseFloat(total.replace(/R\$|\.|\s/g, '').replace(',', '.'));
 
-  if (numericValue < 0) {
-    return 'bg-red-2';
-  }
-  if (numericValue === 0) {
-    return '';
-  }
-  return 'bg-green-2';
-};
+//   if (numericValue < 0) {
+//     return 'bg-red-2';
+//   }
+//   if (numericValue === 0) {
+//     return '';
+//   }
+//   return 'bg-green-2';
+// };
 
-watch(
-  [onlyEntry, onlyOut, selectedCategory],
-  async ([newEntry, newOut, newCategory], [oldEntry, oldOut, oldCategory]) => {
-    let lastChanged = null;
+// watch(
+//   [onlyEntry, onlyOut, selectedCategory],
+//   async ([newEntry, newOut, newCategory], [oldEntry, oldOut, oldCategory]) => {
+//     let lastChanged = null;
 
-    if (newEntry !== oldEntry) {
-      lastChanged = 'onlyEntry';
-    }
-    if (newOut !== oldOut) {
-      lastChanged = 'onlyOut';
-    }
+//     if (newEntry !== oldEntry) {
+//       lastChanged = 'onlyEntry';
+//     }
+//     if (newOut !== oldOut) {
+//       lastChanged = 'onlyOut';
+//     }
 
-    const selectedCategoryChanged = newCategory !== oldCategory;
+//     const selectedCategoryChanged = newCategory !== oldCategory;
 
-    if (lastChanged === 'onlyEntry') {
-      if (newEntry) {
-        onlyOut.value = false;
-      }
-    }
-    if (lastChanged === 'onlyOut') {
-      if (newOut) {
-        onlyEntry.value = false;
-      }
-    }
+//     if (lastChanged === 'onlyEntry') {
+//       if (newEntry) {
+//         onlyOut.value = false;
+//       }
+//     }
+//     if (lastChanged === 'onlyOut') {
+//       if (newOut) {
+//         onlyEntry.value = false;
+//       }
+//     }
 
-    const shouldCallWithParams = newEntry || newOut || selectedCategoryChanged;
+//     const shouldCallWithParams = newEntry || newOut || selectedCategoryChanged;
 
-    if (newEntry && newOut) {
-      return;
-    }
+//     if (newEntry && newOut) {
+//       return;
+//     }
 
-    if (shouldCallWithParams) {
-      await getMovementsWithParams(
-        newEntry,
-        newOut,
-        filterMonthYear.value.replace('/', '-'),
-        selectedCategory.value.value,
-      );
-    } else {
-      await getMovements(filterMonthYear.value.replace('/', '-'));
-    }
-  },
-);
+//     if (shouldCallWithParams) {
+//       await getMovementsWithParams(
+//         newEntry,
+//         newOut,
+//         filterMonthYear.value.replace('/', '-'),
+//         selectedCategory.value.value,
+//       );
+//     } else {
+//       await getMovements(filterMonthYear.value.replace('/', '-'));
+//     }
+//   },
+// );
 
-watch(
-  filledData,
-  () => {
-    if (!filledData.value) {
-      showAlertDataEnterprise.value = true;
-    }
-  },
-  { immediate: true },
-);
-watch(filterMonthYear, async () => {
-  await getMovements(filterMonthYear.value.replace('/', '-'));
-});
+// watch(
+//   filledData,
+//   () => {
+//     if (!filledData.value) {
+//       showAlertDataEnterprise.value = true;
+//     }
+//   },
+//   { immediate: true },
+// );
+// watch(filterMonthYear, async () => {
+//   await getMovements(filterMonthYear.value.replace('/', '-'));
+// });
 
-onMounted(async () => {
-  await getMovements(dateActual.value.replace('/', '-'));
-});
+// onMounted(async () => {
+//   await getMovements(dateActual.value.replace('/', '-'));
+// });
 </script>
 <template>
-  <section>
+  <!-- <section>
     <header
       :class="
         !$q.screen.lt.sm
@@ -751,7 +751,8 @@ onMounted(async () => {
         />
       </main>
     </q-scroll-area>
-  </section>
+  </section> -->
+  <div>Atividades</div>
 </template>
 
 <style scoped lang="scss">

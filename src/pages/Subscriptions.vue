@@ -1,77 +1,77 @@
 <script setup lang="ts">
-import TitlePage from 'src/components/shared/TitlePage.vue';
-import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
-import { onMounted, reactive, ref, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useFeedStore } from 'src/stores/feed-store';
-import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-import { subscriptions } from 'src/utils/subscriptions';
+// import TitlePage from 'src/components/shared/TitlePage.vue';
+// import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+// import { onMounted, reactive, ref, watch } from 'vue';
+// import { storeToRefs } from 'pinia';
+// import { useFeedStore } from 'src/stores/feed-store';
+// import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
+// import { subscriptions } from 'src/utils/subscriptions';
 
-defineOptions({
-  name: 'Subscriptions',
-});
+// defineOptions({
+//   name: 'Subscriptions',
+// });
 
-const { filledData } = storeToRefs(useFeedStore());
-const { getFeed } = useFeedStore();
+// const { filledData } = storeToRefs(useFeedStore());
+// const { getFeed } = useFeedStore();
 
-const showAlertDataEnterprise = ref<boolean>(false);
-const columnsSubscriptions = reactive<QuasarTable[]>([
-  {
-    name: 'name',
-    label: 'Assinatura',
-    field: 'name',
-    align: 'center',
-  },
-  {
-    name: 'movement',
-    label: 'Movimentações financeiras',
-    field: 'movement',
-    align: 'center',
-  },
-  {
-    name: 'members',
-    label: 'Gerenciamento de membros',
-    field: 'members',
-    align: 'center',
-  },
-  {
-    name: 'financial',
-    label: 'Painel de contabilidade',
-    field: 'financial',
-    align: 'center',
-  },
-  {
-    name: 'assistent',
-    label: 'Assistente de whatsapp',
-    field: 'assistent',
-    align: 'center',
-  },
-]);
+// const showAlertDataEnterprise = ref<boolean>(false);
+// const columnsSubscriptions = reactive<QuasarTable[]>([
+//   {
+//     name: 'name',
+//     label: 'Assinatura',
+//     field: 'name',
+//     align: 'center',
+//   },
+//   {
+//     name: 'movement',
+//     label: 'Movimentações financeiras',
+//     field: 'movement',
+//     align: 'center',
+//   },
+//   {
+//     name: 'members',
+//     label: 'Gerenciamento de membros',
+//     field: 'members',
+//     align: 'center',
+//   },
+//   {
+//     name: 'financial',
+//     label: 'Painel de contabilidade',
+//     field: 'financial',
+//     align: 'center',
+//   },
+//   {
+//     name: 'assistent',
+//     label: 'Assistente de whatsapp',
+//     field: 'assistent',
+//     align: 'center',
+//   },
+// ]);
 
-const fetchFeed = async () => {
-  await getFeed();
-};
-const closeAlertDataEnterprise = async (): Promise<void> => {
-  showAlertDataEnterprise.value = false;
-  await fetchFeed();
-};
+// const fetchFeed = async () => {
+//   await getFeed();
+// };
+// const closeAlertDataEnterprise = async (): Promise<void> => {
+//   showAlertDataEnterprise.value = false;
+//   await fetchFeed();
+// };
 
-watch(
-  filledData,
-  () => {
-    if (!filledData.value) {
-      showAlertDataEnterprise.value = true;
-    }
-  },
-  { immediate: true }
-);
+// watch(
+//   filledData,
+//   () => {
+//     if (!filledData.value) {
+//       showAlertDataEnterprise.value = true;
+//     }
+//   },
+//   { immediate: true }
+// );
 
-onMounted(async () => {
-  await fetchFeed();
-});
+// onMounted(async () => {
+//   await fetchFeed();
+// });
 </script>
 <template>
-  <section>
+  <!-- <section>
     <header class="row justify-between no-wrap bg-grey-1">
       <div>
         <TitlePage title="Painel de assinaturas" />
@@ -147,5 +147,6 @@ onMounted(async () => {
         @update:open="closeAlertDataEnterprise"
       />
     </main>
-  </section>
+  </section> -->
+  <div>Assinaturas</div>
 </template>

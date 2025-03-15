@@ -37,6 +37,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/Activity.vue'),
       },
       {
+        path: 'departamentos',
+        name: 'admin-departments',
+        component: () => import('src/pages/Department.vue'),
+      },
+      {
         path: 'assinaturas',
         name: 'admin-subscription',
         component: () => import('src/pages/Subscriptions.vue'),
