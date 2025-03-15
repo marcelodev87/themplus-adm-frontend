@@ -7,14 +7,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('src/pages/Auth.vue'),
   },
   {
-    path: '/admin',
+    path: '/',
     component: () => import('src/layouts/MainLayout.vue'),
     meta: { requiresAuth: true },
     children: [
-      {
-        path: '',
-        redirect: { name: 'admin-feed' },
-      },
       {
         path: 'dashboard',
         name: 'admin-dashboard',

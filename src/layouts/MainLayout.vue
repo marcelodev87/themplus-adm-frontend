@@ -1,22 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { useAuthStore } from 'src/stores/auth-store';
-import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
+import Navbar from 'src/components/headers/Navbar.vue';
 
 defineOptions({
   name: 'MainLayout',
 });
 
-const { user } = storeToRefs(useAuthStore());
-
 const $q = useQuasar();
 const route = useRoute();
 const leftDrawerOpen = ref<boolean>(false);
 const showFormPerfil = ref<boolean>(false);
-const showFormEnterprise = ref<boolean>(false);
-const showEmailInfo = ref<boolean>(false);
 
 const isActive = (routeName: string) => {
   return (
@@ -26,16 +21,8 @@ const isActive = (routeName: string) => {
 const openFormPerfil = (): void => {
   showFormPerfil.value = true;
 };
-const openEmailInfo = (): void => {
-  showEmailInfo.value = true;
-};
-
-const openFormEnterprise = (): void => {
-  showFormEnterprise.value = true;
-};
-
-const closeFormEnterprise = (): void => {
-  showFormEnterprise.value = false;
+const closeFormPerfil = (): void => {
+  showFormPerfil.value = false;
 };
 const changeShowMenuList = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -51,8 +38,6 @@ const closeDrawer = (): void => {
     <q-header class="bg-grey-2">
       <Navbar
         @update:open-form-perfil="openFormPerfil"
-        @update:open-form-enterprise="openFormEnterprise"
-        @update:open-email-info="openEmailInfo"
         @update:change-open-menu="changeShowMenuList"
       />
     </q-header>
@@ -159,10 +144,7 @@ const closeDrawer = (): void => {
 
     <q-page-container>
       <router-view />
-      <!-- <FormPerfil :open="showFormPerfil" @update:open="closeFormPerfil" />
-      <EmailInfo :open="showEmailInfo" @update:open="closeEmailInfo" />
-      <FormViewEnterprise :open="showFormViewEnterprise" @update:open="closeViewEnterprise" />
-      <FormEnterprise :open="showFormEnterprise" mode="actual" @update:open="closeFormEnterprise" /> -->
+      <FormPerfil :open="showFormPerfil" @update:open="closeFormPerfil" />
     </q-page-container>
   </q-layout>
 </template>

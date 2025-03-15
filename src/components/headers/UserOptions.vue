@@ -9,7 +9,7 @@ defineOptions({
 });
 
 const { setToken, setUser } = useAuthStore();
-const { user, enterprisePosition } = storeToRefs(useAuthStore());
+const { user } = storeToRefs(useAuthStore());
 
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
@@ -25,20 +25,10 @@ const openPerfil = () => {
   (dropdown.value as any).hide();
   emit('update:openFormPerfil');
 };
-const openEnterprise = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dropdown.value as any).hide();
-  emit('update:openFormEnterprise');
-};
-const openViewEnterprise = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dropdown.value as any).hide();
-  emit('update:openFormViewEnterprise');
-};
-const logout = (): void => {
+const logout = async () => {
   setToken(null);
   setUser(null);
-  router.push({ name: 'auth' });
+  await router.push({ name: 'auth' });
 };
 </script>
 
@@ -53,19 +43,11 @@ const logout = (): void => {
     <template v-slot:label>
       <div class="row items-center no-wrap q-pa-none">
         <q-avatar class="q-ml-sm">
-          <q-img size="sm" src="/images/user.png" />
+          <q-img size="sm" src="/images/avatar/user.png" />
         </q-avatar>
       </div>
     </template>
     <q-list>
-      <q-item clickable v-ripple @click="openEnterprise">
-        <q-item-section avatar>
-          <q-avatar>
-            <q-icon name="groups" />
-          </q-avatar>
-        </q-item-section>
-        <q-item-section>Organização</q-item-section>
-      </q-item>
       <q-item clickable v-ripple @click="openPerfil">
         <q-item-section avatar>
           <q-avatar>
@@ -73,19 +55,6 @@ const logout = (): void => {
           </q-avatar>
         </q-item-section>
         <q-item-section>Perfil</q-item-section>
-      </q-item>
-      <q-item
-        v-show="enterprisePosition === 'client'"
-        clickable
-        v-ripple
-        @click="openViewEnterprise"
-      >
-        <q-item-section avatar>
-          <q-avatar>
-            <q-icon name="fa-solid fa-gears" />
-          </q-avatar>
-        </q-item-section>
-        <q-item-section>Mudar visão</q-item-section>
       </q-item>
       <q-item clickable v-ripple @click="logout">
         <q-item-section avatar>
