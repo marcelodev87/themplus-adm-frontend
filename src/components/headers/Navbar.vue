@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import UserOptions from './UserOptions.vue';
 
 defineOptions({
@@ -10,16 +9,6 @@ const emit = defineEmits<{
   'update:openFormPerfil': [void];
   'update:changeOpenMenu': [void];
 }>();
-
-const showFormFedback = ref<boolean>(false);
-const showInbox = ref<boolean>(false);
-
-const closeFormFeedback = (): void => {
-  showFormFedback.value = false;
-};
-const closeInbox = (): void => {
-  showInbox.value = false;
-};
 </script>
 <template>
   <nav>
@@ -45,7 +34,5 @@ const closeInbox = (): void => {
         <UserOptions @update:open-form-perfil="emit('update:openFormPerfil')" />
       </div>
     </q-toolbar>
-    <FormFeedback :open="showFormFedback" @update:open="closeFormFeedback" />
-    <Inbox :open="showInbox" @update:open="closeInbox" />
   </nav>
 </template>

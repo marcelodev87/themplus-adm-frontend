@@ -19,3 +19,19 @@ export interface Enterprise {
   code_financial: number | null;
   coupon: Coupon;
 }
+
+export interface EnterpriseCreate {
+  name: string;
+  email: string;
+  cnpj: string | null;
+  cpf: string | null;
+  cep: string;
+  state: string;
+  city: string;
+  neighborhood: string;
+  address: string;
+  numberAddress: string;
+  complement: string | null;
+  phone: string | null;
+  codeFinancial: number | null;
+}

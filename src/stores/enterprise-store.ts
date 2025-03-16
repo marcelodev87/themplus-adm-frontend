@@ -3,8 +3,12 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import { deleteEnterpriseService } from 'src/services/coupon-service';
-import { getEnterprisesService } from 'src/services/enterprise-service';
-import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
+import {
+  createEnterpriseByAdmService,
+  getEnterprisesService,
+} from 'src/services/enterprise-service';
+import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
+import type { UserCeate } from 'src/ts/interfaces/models/user';
 
 export const useEnterpriseStore = defineStore('enterprise', {
   state: () => ({
@@ -55,6 +59,22 @@ export const useEnterpriseStore = defineStore('enterprise', {
       } catch (error) {
         this.createError(error);
         return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async createEnterpriseByAdm(enterprise: EnterpriseCreate, user: UserCeate) {
+      this.setLoading(true);
+      try {
+        const response = await createEnterpriseByAdmService(enterprise, user);
+        if (response.status === 200) {
+          this.clearListEnterprises();
+          this.setListEnterprises(response.data.enterprises);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
       } finally {
         this.setLoading(false);
       }

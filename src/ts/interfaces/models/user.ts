@@ -8,3 +8,11 @@ export interface User {
   created_by: string | null;
   created_at: string;
 }
+
+export interface UserCeate {
+  name: string;
+  position: string;
+  email: string;
+  password: string;
+  phone: string | null;
+}
