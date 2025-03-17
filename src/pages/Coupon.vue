@@ -4,6 +4,7 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { useCouponStore } from 'src/stores/coupon-store';
 import { storeToRefs } from 'pinia';
+import FormCoupon from 'src/components/forms/FormCoupon.vue';
 
 defineOptions({
   name: 'Coupon',
@@ -53,6 +54,7 @@ const openFormCoupon = (): void => {
 };
 const closeFormCoupon = (): void => {
   showFormCoupon.value = false;
+  clear();
 };
 const fetchCoupons = async () => {
   await useCouponStore().getCoupons();
@@ -144,7 +146,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  @click="handleEdit(prop.row.id)"
+                  @click="handleEdit(props.row.id)"
                   :disable="false"
                   size="sm"
                   flat
@@ -167,7 +169,7 @@ onMounted(async () => {
         </q-table>
       </main>
     </q-scroll-area>
-    <FormCoupon :open="showFormCoupon" @update:open="closeFormCoupon" />
+    <FormCoupon :open="showFormCoupon" :data-id="selectedDataEdit" @update:open="closeFormCoupon" />
     <ConfirmAction
       :open="showConfirmAction"
       label-action="Continuar"
