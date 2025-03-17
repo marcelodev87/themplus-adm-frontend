@@ -1,120 +1,71 @@
 <script setup lang="ts">
-// import TitlePage from 'src/components/shared/TitlePage.vue';
-// import FormUser from 'src/components/forms/FormUser.vue';
-// import { useUsersMembersStore } from 'src/stores/users-store';
-// import { useAuthStore } from 'src/stores/auth-store';
-// import { storeToRefs } from 'pinia';
-// import { reactive, ref, onMounted, watch } from 'vue';
-// import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-// import { User } from 'src/ts/interfaces/data/User';
-// import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
+import { onMounted, reactive, ref } from 'vue';
+import TitlePage from 'src/components/shared/TitlePage.vue';
+import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 
-// defineOptions({
-//   name: 'User',
-// });
+defineOptions({
+  name: 'User',
+});
 
-// const { getUsersMembers, deleteUserMember, exportUser, updateActiveUser } = useUsersMembersStore();
-// const { loadingUsersMembers, listUserMember, filledData } = storeToRefs(useUsersMembersStore());
-// const { user } = storeToRefs(useAuthStore());
+const filterUser = ref<string>('');
+const columnsUser = reactive<QuasarTable[]>([
+  {
+    name: 'name',
+    label: 'Nome',
+    field: 'name',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'email',
+    label: 'E-mail',
+    field: 'email',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'phone',
+    label: 'Telefone',
+    field: 'phone',
+    align: 'left',
+  },
+  {
+    name: 'position',
+    label: 'Cargo',
+    field: 'position',
+    align: 'left',
+  },
+  {
+    name: 'department',
+    label: 'Departamento',
+    field: 'departments.name',
+    align: 'left',
+  },
+  {
+    name: 'active',
+    label: 'Ativo',
+    field: 'active',
+    align: 'left',
+  },
+  {
+    name: 'action',
+    label: 'Ação',
+    field: 'action',
+    align: 'right',
+  },
+]);
 
-// const showFormUser = ref<boolean>(false);
-// const loadingExport = ref<boolean>(false);
-// const showAlertDataEnterprise = ref<boolean>(false);
-// const filterUser = ref<string>('');
-// const selectedDataEdit = ref<User | null>(null);
-// const columnsUser = reactive<QuasarTable[]>([
-//   {
-//     name: 'name',
-//     label: 'Nome',
-//     field: 'name',
-//     align: 'left',
-//     sortable: true,
-//   },
-//   {
-//     name: 'email',
-//     label: 'E-mail',
-//     field: 'email',
-//     align: 'left',
-//     sortable: true,
-//   },
-//   {
-//     name: 'phone',
-//     label: 'Telefone',
-//     field: 'phone',
-//     align: 'left',
-//   },
-//   {
-//     name: 'position',
-//     label: 'Cargo',
-//     field: 'position',
-//     align: 'left',
-//   },
-//   {
-//     name: 'department',
-//     label: 'Departamento',
-//     field: 'departments.name',
-//     align: 'left',
-//   },
-//   {
-//     name: 'active',
-//     label: 'Ativo',
-//     field: 'active',
-//     align: 'left',
-//   },
-//   {
-//     name: 'action',
-//     label: 'Ação',
-//     field: 'action',
-//     align: 'right',
-//   },
-// ]);
+const clear = (): void => {
+  filterUser.value = '';
+};
 
-// const clear = (): void => {
-//   selectedDataEdit.value = null;
-//   filterUser.value = '';
-// };
-// const openFormUser = (): void => {
-//   showFormUser.value = true;
-// };
-// const closeFormUser = (): void => {
-//   showFormUser.value = false;
-//   clear();
-// };
-// const handleEdit = (data: User) => {
-//   selectedDataEdit.value = data;
-//   openFormUser();
-// };
-// const exclude = async (id: string): Promise<void> => {
-//   await deleteUserMember(id);
-// };
-// const exportData = async (): Promise<void> => {
-//   loadingExport.value = true;
-//   await exportUser();
-//   loadingExport.value = false;
-// };
-// const closeAlertDataEnterprise = (): void => {
-//   showAlertDataEnterprise.value = false;
-// };
-// const setActive = async (active: number, userId: string) => {
-//   await updateActiveUser(active, userId);
-// };
-
-// watch(
-//   filledData,
-//   () => {
-//     if (!filledData.value) {
-//       showAlertDataEnterprise.value = true;
-//     }
-//   },
-//   { immediate: true },
-// );
-
-// onMounted(async () => {
-//   await getUsersMembers();
-// });
+onMounted(() => {
+  clear();
+});
 </script>
+
 <template>
-  <!-- <section>
+  <section>
     <header
       :class="
         !$q.screen.lt.sm
@@ -127,61 +78,21 @@
       </div>
       <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end q-gutter-x-sm">
         <q-btn
-          @click="exportData"
-          :loading="loadingExport"
-          flat
-          color="black"
-          icon-right="download"
-          label="Exportar"
-          unelevated
-          no-caps
-        />
-        <q-btn
-          @click="openFormUser"
           icon-right="add"
-          label="Usuários"
+          label="Usuário"
           class="q-mr-sm bg-contabilidade"
           unelevated
           no-caps
         />
       </div>
-      <div v-else class="row justify-end q-mr-sm q-mb-sm">
-        <q-btn-dropdown
-          class="text-white"
-          color="primary"
-          ref="dropdown"
-          label="Ações"
-          unelevated
-          no-caps
-        >
-          <q-list>
-            <q-item @click="openFormUser" clickable v-ripple>
-              <q-item-section avatar>
-                <q-avatar>
-                  <q-icon name="add" />
-                </q-avatar>
-              </q-item-section>
-              <q-item-section>Usuários</q-item-section>
-            </q-item>
-            <q-item clickable v-ripple @click="exportData">
-              <q-item-section avatar>
-                <q-avatar>
-                  <q-icon name="download" />
-                </q-avatar>
-              </q-item-section>
-              <q-item-section>Exportar</q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-      </div>
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="loadingUsersMembers ? [] : listUserMember"
+          :rows="[]"
           :columns="columnsUser"
           :filter="filterUser"
-          :loading="loadingUsersMembers"
+          :loading="false"
           flat
           bordered
           dense
@@ -224,12 +135,6 @@
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
-                  v-show="
-                    user &&
-                    user.id !== props.row.id &&
-                    (user?.enterprise_id === user?.view_enterprise_id ? true : false)
-                  "
-                  @click="setActive(props.row.active === 1 ? 0 : 1, props.row.id)"
                   size="sm"
                   flat
                   round
@@ -240,44 +145,13 @@
                     {{ props.row.active ? 'Inativar' : 'Ativar' }}
                   </q-tooltip>
                 </q-btn>
-                <q-btn
-                  v-show="user && user.id !== props.row.id"
-                  @click="handleEdit(props.row)"
-                  size="sm"
-                  flat
-                  round
-                  color="black"
-                  icon="edit"
-                />
-                <q-btn
-                  v-show="
-                    user &&
-                    user.id !== props.row.id &&
-                    (user?.enterprise_id === user?.view_enterprise_id ? true : false)
-                  "
-                  @click="exclude(props.row.id)"
-                  size="sm"
-                  flat
-                  round
-                  color="red"
-                  icon="delete"
-                />
+                <q-btn size="sm" flat round color="black" icon="edit" />
+                <q-btn size="sm" flat round color="red" icon="delete" />
               </q-td>
             </q-tr>
           </template>
         </q-table>
-        <FormUser
-          :open="showFormUser"
-          :data-edit="selectedDataEdit"
-          mode="actual"
-          @update:open="closeFormUser"
-        />
-        <AlertDataEnterprise
-          :open="showAlertDataEnterprise"
-          @update:open="closeAlertDataEnterprise"
-        />
       </main>
     </q-scroll-area>
-  </section> -->
-  <div>Usuarios</div>
+  </section>
 </template>

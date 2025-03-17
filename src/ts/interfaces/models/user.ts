@@ -5,6 +5,8 @@ export interface User {
   phone: string | null;
   position: string;
   department_id: string | null;
+  view_enterprise_id: string;
+  view_enterprise_name: string;
   created_by: string | null;
   created_at: string;
 }

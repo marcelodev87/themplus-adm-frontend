@@ -1,152 +1,114 @@
 <script setup lang="ts">
-// import TitlePage from 'src/components/shared/TitlePage.vue';
-// import AlertDataEnterprise from 'src/components/shared/AlertDataEnterprise.vue';
-// import { onMounted, reactive, ref, watch } from 'vue';
-// import { storeToRefs } from 'pinia';
-// import { useFeedStore } from 'src/stores/feed-store';
-// import { QuasarTable } from 'src/ts/interfaces/framework/Quasar';
-// import { subscriptions } from 'src/utils/subscriptions';
+import { onMounted, reactive, ref } from 'vue';
+import TitlePage from 'src/components/shared/TitlePage.vue';
+import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 
-// defineOptions({
-//   name: 'Subscriptions',
-// });
+defineOptions({
+  name: 'Subscriptions',
+});
 
-// const { filledData } = storeToRefs(useFeedStore());
-// const { getFeed } = useFeedStore();
+const filterSubscription = ref<string>('');
+const columnsCoupon = reactive<QuasarTable[]>([
+  {
+    name: 'name',
+    label: 'Nome',
+    field: 'name',
+    align: 'left',
+  },
+  {
+    name: 'price',
+    label: 'Preço',
+    field: 'price',
+    align: 'left',
+  },
+  {
+    name: 'created_at',
+    label: 'Data de criação',
+    field: 'created_at',
+    align: 'left',
+  },
+  {
+    name: 'action',
+    label: 'Ação',
+    field: 'action',
+    align: 'right',
+  },
+]);
 
-// const showAlertDataEnterprise = ref<boolean>(false);
-// const columnsSubscriptions = reactive<QuasarTable[]>([
-//   {
-//     name: 'name',
-//     label: 'Assinatura',
-//     field: 'name',
-//     align: 'center',
-//   },
-//   {
-//     name: 'movement',
-//     label: 'Movimentações financeiras',
-//     field: 'movement',
-//     align: 'center',
-//   },
-//   {
-//     name: 'members',
-//     label: 'Gerenciamento de membros',
-//     field: 'members',
-//     align: 'center',
-//   },
-//   {
-//     name: 'financial',
-//     label: 'Painel de contabilidade',
-//     field: 'financial',
-//     align: 'center',
-//   },
-//   {
-//     name: 'assistent',
-//     label: 'Assistente de whatsapp',
-//     field: 'assistent',
-//     align: 'center',
-//   },
-// ]);
+const clear = (): void => {
+  filterSubscription.value = '';
+};
 
-// const fetchFeed = async () => {
-//   await getFeed();
-// };
-// const closeAlertDataEnterprise = async (): Promise<void> => {
-//   showAlertDataEnterprise.value = false;
-//   await fetchFeed();
-// };
-
-// watch(
-//   filledData,
-//   () => {
-//     if (!filledData.value) {
-//       showAlertDataEnterprise.value = true;
-//     }
-//   },
-//   { immediate: true }
-// );
-
-// onMounted(async () => {
-//   await fetchFeed();
-// });
+onMounted(() => {
+  clear();
+});
 </script>
+
 <template>
-  <!-- <section>
-    <header class="row justify-between no-wrap bg-grey-1">
-      <div>
-        <TitlePage title="Painel de assinaturas" />
+  <section>
+    <header
+      :class="
+        !$q.screen.lt.sm
+          ? 'row justify-between no-wrap bg-grey-1'
+          : 'column justify-between no-wrap bg-grey-1'
+      "
+    >
+      <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
+        <TitlePage title="Gerenciamento de assinaturas" />
+      </div>
+      <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end q-gutter-x-sm">
+        <q-btn
+          icon-right="add"
+          label="Assinatura"
+          class="q-mr-sm bg-contabilidade"
+          unelevated
+          no-caps
+        />
       </div>
     </header>
-    <main>
-      <q-scroll-area class="main-scroll q-pa-sm">
-        <section class="q-mt-md">
-          <q-table
-            :rows="subscriptions"
-            :columns="columnsSubscriptions"
-            flat
-            bordered
-            row-key="index"
-            no-data-label="Nenhum assinatura para mostrar"
-            virtual-scroll
-            hide-pagination
-            :rows-per-page-options="[10]"
-          >
-            <template v-slot:header="props">
-              <q-tr :props="props" class="bg-grey-2">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                  <span style="font-size: 16px">{{ col.label }}</span>
-                </q-th>
-              </q-tr>
-            </template>
-            <template v-slot:body="props">
-              <q-tr :props="props" style="height: 28px">
-                <q-td
-                  key="name"
-                  :props="props"
-                  class="text-center text-bold"
-                  style="font-size: 14px"
-                >
-                  {{ props.row.name }}
-                </q-td>
-                <q-td
-                  key="movement"
-                  :props="props"
-                  class="text-center"
-                  style="font-size: 14px"
-                >
-                  {{ props.row.movement }}
-                </q-td>
-                <q-td key="members" :props="props" class="text-center">
-                  <q-icon
-                    :name="props.row.members ? 'check_circle' : 'close'"
-                    size="16px"
-                    :color="props.row.members ? 'green' : 'red'"
-                  />
-                </q-td>
-                <q-td key="financial" :props="props" class="text-center">
-                  <q-icon
-                    :name="props.row.financial ? 'check_circle' : 'close'"
-                    size="16px"
-                    :color="props.row.financial ? 'green' : 'red'"
-                  />
-                </q-td>
-                <q-td key="assistent" :props="props" class="text-center">
-                  <q-icon
-                    :name="props.row.assistent ? 'check_circle' : 'close'"
-                    size="16px"
-                    :color="props.row.assistent ? 'green' : 'red'"
-                  />
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
-        </section>
-      </q-scroll-area>
-      <AlertDataEnterprise
-        :open="showAlertDataEnterprise"
-        @update:open="closeAlertDataEnterprise"
-      />
-    </main>
-  </section> -->
-  <div>Assinaturas</div>
+    <q-scroll-area class="main-scroll">
+      <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
+        <q-table
+          :rows="[]"
+          :columns="columnsCoupon"
+          :filter="filterSubscription"
+          :loading="false"
+          flat
+          bordered
+          dense
+          row-key="index"
+          no-data-label="Nenhuma assinatura para mostrar"
+          virtual-scroll
+          :rows-per-page-options="[20]"
+        >
+          <template v-slot:top>
+            <span class="text-subtitle2">Lista de assinaturas</span>
+            <q-space />
+            <q-input filled v-model="filterSubscription" dense label="Pesquisar">
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props" style="height: 28px">
+              <q-td key="name" :props="props" class="text-left">
+                {{ props.row.name }}
+              </q-td>
+              <q-td key="enterprises_using" :props="props" class="text-left">
+                {{ props.row.price }}
+              </q-td>
+              <q-td key="created_at" :props="props" class="text-left">
+                {{ props.row.created_at }}
+              </q-td>
+              <q-td key="action" :props="props">
+                <q-btn :disable="false" size="sm" flat round color="black" icon="edit" />
+                <q-btn :disable="false" size="sm" flat round color="red" icon="delete" />
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </main>
+    </q-scroll-area>
+  </section>
 </template>

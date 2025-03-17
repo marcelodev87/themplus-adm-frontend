@@ -1,11 +1,11 @@
 import { api } from 'src/boot/axios';
-import { User } from 'src/ts/interfaces/data/User';
+import type { User } from 'src/ts/interfaces/models/user';
 
 const baseUrl = 'user';
 
 export const doLoginService = (
   email: string,
-  password: string
+  password: string,
 ): Promise<{
   status: number;
   data: {
@@ -17,7 +17,7 @@ export const doLoginService = (
 }> => api.post('/login', { email, password });
 
 export const doResetService = (
-  email: string
+  email: string,
 ): Promise<{
   status: number;
   data: {
@@ -26,7 +26,7 @@ export const doResetService = (
 }> => api.post('/reset', { email });
 export const doVerifyService = (
   code: string,
-  email: string
+  email: string,
 ): Promise<{
   status: number;
   data: {
@@ -35,7 +35,7 @@ export const doVerifyService = (
 }> => api.post('/verify', { code, email });
 export const setNewPasswordService = (
   password: string,
-  email: string
+  email: string,
 ): Promise<{
   status: number;
   data: {
@@ -48,7 +48,7 @@ export const doRegisterService = (
   email: string,
   password: string,
   nameEnterprise: string,
-  position: string
+  position: string,
 ): Promise<{
   status: number;
   data: {
@@ -71,7 +71,7 @@ export const updateUserDataService = (
   name: string,
   email: string,
   phone: string | null,
-  department: string | null
+  department: string | null,
 ): Promise<{
   status: number;
   data: {
@@ -82,7 +82,7 @@ export const updateUserDataService = (
 
 export const updateUserPasswordService = (
   passwordActual: string,
-  passwordNew: string
+  passwordNew: string,
 ): Promise<{
   status: number;
   data: {

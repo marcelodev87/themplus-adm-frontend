@@ -3,7 +3,6 @@ import { useStorage } from '@vueuse/core';
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
-import { User } from 'src/ts/interfaces/data/User';
 import {
   doLoginService,
   doRegisterService,
@@ -13,14 +12,13 @@ import {
   updateUserDataService,
   updateUserPasswordService,
 } from 'src/services/auth-service';
+import type { User } from 'src/ts/interfaces/models/user';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     loadingAuth: false as boolean,
     user: useStorage('themplus_user', {} as User | null),
     token: useStorage('themplus_token', null as string | null),
-    enterpriseCreated: useStorage('enterprise_created', null as string | null),
-    enterprisePosition: useStorage('enterprise_position', 'client' as string),
   }),
   actions: {
     setUser(user: User | null) {
@@ -57,9 +55,7 @@ export const useAuthStore = defineStore('auth', {
         if (response.status === 200) {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
-          this.enterpriseCreated = response.data.enterprise_created;
-          this.enterprisePosition = response.data.enterprise_position;
-          this.router.push({ name: 'admin-feed' });
+          await this.router.push({ name: 'admin-dashboard' });
         }
       } catch (error) {
         this.createError(error);
@@ -120,29 +116,21 @@ export const useAuthStore = defineStore('auth', {
       email: string,
       password: string,
       nameEnterprise: string,
-      position: string
+      position: string,
     ) {
       this.setLoading(true);
       try {
         this.setLoading(true);
-        const response = await doRegisterService(
-          name,
-          email,
-          password,
-          nameEnterprise,
-          position
-        );
+        const response = await doRegisterService(name, email, password, nameEnterprise, position);
         if (response.status === 201) {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
-          this.enterpriseCreated = response.data.enterprise_created;
-          this.enterprisePosition = response.data.enterprise_position;
 
           Notify.create({
             message: response.data.message,
             type: 'positive',
           });
-          this.router.push({ name: 'admin-feed' });
+          await this.router.push({ name: 'admin-feed' });
         }
       } catch (error) {
         this.createError(error);
@@ -154,16 +142,11 @@ export const useAuthStore = defineStore('auth', {
       name: string,
       email: string,
       phone: string | null,
-      department: string | null
+      department: string | null,
     ) {
       try {
         this.setLoading(true);
-        const response = await updateUserDataService(
-          name,
-          email,
-          phone,
-          department
-        );
+        const response = await updateUserDataService(name, email, phone, department);
         if (response.status === 200) {
           this.setUser(response.data.user);
 
@@ -181,10 +164,7 @@ export const useAuthStore = defineStore('auth', {
     async updateUserPassword(passwordActual: string, passwordNew: string) {
       try {
         this.setLoading(true);
-        const response = await updateUserPasswordService(
-          passwordActual,
-          passwordNew
-        );
+        const response = await updateUserPasswordService(passwordActual, passwordNew);
         if (response.status === 200) {
           Notify.create({
             message: response.data.message,
