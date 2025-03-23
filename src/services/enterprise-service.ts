@@ -10,7 +10,7 @@ export const getEnterprisesService = (): Promise<{
     enterprises: Enterprise[];
     message: string;
   };
-}> => api.get(`/adm/${baseUrl}`);
+}> => api.get(`/${baseUrl}`);
 
 export const createEnterpriseByAdmService = (
   enterprise: EnterpriseCreate,
@@ -22,7 +22,7 @@ export const createEnterpriseByAdmService = (
     message: string;
   };
 }> =>
-  api.post(`/adm/${baseUrl}`, {
+  api.post(`/${baseUrl}`, {
     enterprise,
     user,
   });
@@ -34,4 +34,4 @@ export const deleteEnterpriseService = (
   data: {
     message: string;
   };
-}> => api.delete(`/adm/${baseUrl}/${id}`);
+}> => api.delete(`/${baseUrl}/${id}`);
