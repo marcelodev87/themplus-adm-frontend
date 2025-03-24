@@ -5,6 +5,7 @@ import { Notify } from 'quasar';
 import { useCouponStore } from 'src/stores/coupon-store';
 import { storeToRefs } from 'pinia';
 import type { CouponData } from 'src/ts/interfaces/models/subscriptions';
+import { checkDataCoupon } from 'src/helpers/checkData';
 
 defineOptions({
   name: 'FormCoupon',
@@ -24,7 +25,7 @@ const showExpired = ref<boolean>(false);
 const showDiscount = ref<boolean>(false);
 const dataCoupon = reactive({
   name: '' as string,
-  movements: 31 as number,
+  movements: 30 as number,
   allowFinancial: 0 as number,
   allowMembers: 0 as number,
   allowAssistantWhatsapp: 0 as number,
@@ -37,57 +38,10 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-const checkData = (): { status: boolean; message?: string } => {
-  if (dataCoupon.name.trim() === '') {
-    return { status: false, message: 'Deve ser informado o nome do cupom' };
-  }
-  if (dataCoupon.movements < 31) {
-    return { status: false, message: 'Deve ter mais de 30 movimentações' };
-  }
-  if (showExpired.value) {
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataCoupon.dateExpires)) {
-      return {
-        status: false,
-        message: 'A data de expiração deve estar no formato dd/mm/yyyy',
-      };
-    }
-
-    const [day, month, year] = dataCoupon.dateExpires.split('/');
-    const dateExpires = new Date(Number(year), Number(month) - 1, Number(day));
-
-    if (isNaN(dateExpires.getTime())) {
-      return {
-        status: false,
-        message: 'Informe uma data de expiração válida no formato dd/mm/yyyy',
-      };
-    }
-
-    const now = new Date();
-    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-
-    if (dateExpires.getTime() < tomorrow.getTime()) {
-      return {
-        status: false,
-        message: 'A data de expiração deve ser no mínimo um dia à frente da data atual',
-      };
-    }
-  }
-  if (showDiscount.value) {
-    if (Number(dataCoupon.discount) <= 0 || Number(dataCoupon.discount) > 100) {
-      return {
-        status: false,
-        message: 'O desconto deve ser maior que 0% e no máximo 100%',
-      };
-    }
-  }
-
-  return { status: true };
-};
-
 const clear = (): void => {
   Object.assign(dataCoupon, {
     name: '',
-    movements: 31,
+    movements: 30,
     allowFinancial: 0,
     allowMembers: 0,
     allowAssistantWhatsapp: 0,
@@ -98,7 +52,11 @@ const clear = (): void => {
   showDiscount.value = false;
 };
 const save = async () => {
-  const check = checkData();
+  const check = checkDataCoupon(
+    dataCoupon, 
+    showDiscount.value, 
+    dataCoupon.dateExpires.trim() !== ''
+  );
   if (check.status) {
     const response = await useCouponStore().createCoupon(
       dataCoupon.name,
@@ -121,7 +79,11 @@ const save = async () => {
   }
 };
 const update = async () => {
-  const check = checkData();
+  const check = checkDataCoupon(
+    dataCoupon, 
+    showDiscount.value,
+    dataCoupon.dateExpires.trim() !== ''
+  );
   if (check.status) {
     const response = await useCouponStore().updateCoupon(
       props.dataId ?? '',

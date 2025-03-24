@@ -6,7 +6,6 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
-import { formatDate } from 'src/helpers/formatDate';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
@@ -22,12 +21,6 @@ const showConfirmAction = ref<boolean>(false);
 const selectedDataEdit = ref<Enterprise | null>(null);
 const selectedDataExclude = ref<string | null>(null);
 const columnsEnterprise = reactive<QuasarTable[]>([
-  {
-    name: 'code_financial',
-    label: 'Código interno',
-    field: 'code_financial',
-    align: 'left',
-  },
   {
     name: 'name',
     label: 'Organização',
@@ -56,12 +49,6 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     name: 'coupon',
     label: 'Cupom',
     field: 'phone',
-    align: 'left',
-  },
-  {
-    name: 'created_at',
-    label: 'Data de registro',
-    field: 'created_at',
     align: 'left',
   },
   {
@@ -162,9 +149,6 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
-              <q-td key="code_financial" :props="props" class="text-left">
-                {{ props.row.code_financial }}
-              </q-td>
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
               </q-td>
@@ -179,9 +163,6 @@ onMounted(async () => {
               </q-td>
               <q-td key="coupon" :props="props" class="text-left">
                 {{ props.row.coupon }}
-              </q-td>
-              <q-td key="created_at" :props="props" class="text-left">
-                {{ formatDate(props.row.created_at)  }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

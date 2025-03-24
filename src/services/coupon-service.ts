@@ -9,7 +9,7 @@ export const getCouponsService = (): Promise<{
     coupons: CouponTable[];
     message: string;
   };
-}> => api.get(`adm/${baseUrl}`);
+}> => api.get(`/${baseUrl}`);
 
 export const getCouponService = (
   id: string,
@@ -18,7 +18,7 @@ export const getCouponService = (
   data: {
     coupon: CouponData;
   };
-}> => api.get(`adm/${baseUrl}/${id}`);
+}> => api.get(`/${baseUrl}/${id}`);
 
 export const createCouponService = (
   name: string,
@@ -35,7 +35,7 @@ export const createCouponService = (
     message: string;
   };
 }> =>
-  api.post(`adm/${baseUrl}`, {
+  api.post(`/${baseUrl}`, {
     name,
     movements,
     allowFinancial,
@@ -61,7 +61,7 @@ export const updateCouponService = (
     message: string;
   };
 }> =>
-  api.put(`adm/${baseUrl}`, {
+  api.put(`/${baseUrl}`, {
     id,
     name,
     movements,
@@ -79,4 +79,4 @@ export const deleteCouponService = (
   data: {
     message: string;
   };
-}> => api.delete(`adm/${baseUrl}/${id}`);
+}> => api.delete(`/${baseUrl}/${id}`);

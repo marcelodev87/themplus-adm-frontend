@@ -6,7 +6,7 @@ export interface Coupon {
 export interface CouponTable {
   id: string;
   name: string;
-  enterprises_using: number;
+  using: number;
   created_at: string;
 }
 

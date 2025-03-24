@@ -5,6 +5,7 @@ import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { useCouponStore } from 'src/stores/coupon-store';
 import { storeToRefs } from 'pinia';
 import FormCoupon from 'src/components/forms/FormCoupon.vue';
+import { formatDate } from 'src/helpers/formatDate';
 
 defineOptions({
   name: 'Coupon',
@@ -28,13 +29,13 @@ const columnsCoupon = reactive<QuasarTable[]>([
     name: 'enterprises_using',
     label: 'Utilizando',
     field: 'enterprises_using',
-    align: 'left',
+    align: 'center',
   },
   {
     name: 'created_at',
     label: 'Data de criação',
     field: 'created_at',
-    align: 'left',
+    align: 'center',
   },
   {
     name: 'action',
@@ -138,11 +139,11 @@ onMounted(async () => {
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="enterprises_using" :props="props" class="text-left">
-                {{ props.row.enterprises_using }}
+              <q-td key="enterprises_using" :props="props" class="text-center">
+                {{ props.row.using }}
               </q-td>
-              <q-td key="created_at" :props="props" class="text-left">
-                {{ props.row.created_at }}
+              <q-td key="created_at" :props="props" class="text-center">
+                {{ formatDate(props.row.created_at)  }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
