@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
@@ -48,7 +49,7 @@ const columnsEnterprise = reactive<QuasarTable[]>([
   {
     name: 'coupon',
     label: 'Cupom',
-    field: 'phone',
+    field: 'coupon',
     align: 'left',
   },
   {
@@ -93,6 +94,27 @@ const openConfirmAction = (id: string): void => {
   selectedDataExclude.value = id;
   showConfirmAction.value = true;
 };
+const customFilterEnterprise = (
+  rows: readonly Enterprise[],
+  terms: string,
+  cols: readonly Enterprise[],
+  getCellValue: (row: Enterprise, col: QuasarTable) => unknown
+): readonly Enterprise[] => {
+  const searchTerm = terms.toLowerCase();
+
+  return rows.filter((item) => {
+    return (
+      (item.name &&
+        item.name.toLowerCase().includes(searchTerm)) ||
+      (item.cpf &&
+        item.cpf.toLowerCase().includes(searchTerm)) ||
+      (item.cnpj &&
+        item.cnpj.toLowerCase().includes(searchTerm)) ||
+      (item.coupon &&
+        item.coupon.name.toLowerCase().includes(searchTerm))
+    );
+  });
+};
 
 onMounted(async () => {
   clear();
@@ -130,6 +152,7 @@ onMounted(async () => {
           :columns="columnsEnterprise"
           :filter="filterEnterprise"
           :loading="loadingEnterprise"
+          :filter-method="customFilterEnterprise"
           flat
           bordered
           dense
@@ -162,7 +185,7 @@ onMounted(async () => {
                 {{ props.row.cpf }}
               </q-td>
               <q-td key="coupon" :props="props" class="text-left">
-                {{ props.row.coupon }}
+                {{ props.row.coupon?.name }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
