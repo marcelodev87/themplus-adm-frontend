@@ -1,12 +1,12 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
-import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
+import type { QuasarTable, QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
@@ -17,10 +17,24 @@ const { getEnterprises, deleteEnterprise } = useEnterpriseStore();
 const { loadingEnterprise, listEnterprises } = storeToRefs(useEnterpriseStore());
 
 const filterEnterprise = ref<string>('');
+const selectCoupon = ref<QuasarSelect<string>>({
+  label: 'Todos',
+  value: 'all',
+})
 const showFormEnterprise = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const selectedDataEdit = ref<Enterprise | null>(null);
 const selectedDataExclude = ref<string | null>(null);
+const optionsCoupons = reactive<QuasarSelect<string>[]>([
+  {
+    label: 'Todos',
+    value: 'all',
+  },
+  {
+    label: 'Somente com cupons',
+    value: 'coupons',
+  },
+]);
 const columnsEnterprise = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -64,7 +78,12 @@ const clear = (): void => {
   selectedDataEdit.value = null;
   selectedDataExclude.value = null;
   filterEnterprise.value = '';
+  selectCoupon.value = {
+    label: 'Todos',
+    value: 'all'
+  }
 };
+const optionsListEnterprise = ref<Enterprise[]>(listEnterprises.value)
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
 };
@@ -115,6 +134,15 @@ const customFilterEnterprise = (
     );
   });
 };
+watch(selectCoupon,(coupon)=> {
+  if(coupon.value === 'all'){
+    optionsListEnterprise.value = listEnterprises.value
+  } else {
+    optionsListEnterprise.value = listEnterprises.value.filter((item) => {
+      return item.coupon
+    })
+  }
+})
 
 onMounted(async () => {
   clear();
@@ -148,7 +176,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="listEnterprises"
+          :rows="optionsListEnterprise"
           :columns="columnsEnterprise"
           :filter="filterEnterprise"
           :loading="loadingEnterprise"
@@ -164,6 +192,24 @@ onMounted(async () => {
           <template v-slot:top>
             <span class="text-subtitle2">Lista de organizações</span>
             <q-space />
+            <q-select
+              v-model="selectCoupon"
+              :options="optionsCoupons"
+              label="Filtre com cupons"
+              outlined
+              dense
+              options-dense
+              map-options
+              bg-color="white"
+              label-color="black"
+              style="width: 200px;"
+              :readonly="loadingEnterprise"
+              class="q-mr-sm"
+            >
+              <template v-slot:prepend>
+                <q-icon name="info" color="black" size="20px" />
+              </template>
+            </q-select>
             <q-input filled v-model="filterEnterprise" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />
