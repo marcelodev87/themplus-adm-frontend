@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
 import type { RenderAuth } from 'src/ts/types/Auth';
-import { checkDataLogin } from 'src/validate/checkData';
+import { checkDataLogin } from 'src/helpers/checkData';
 
 defineOptions({
   name: 'Login',

@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 import { useAuthStore } from 'src/stores/auth-store';
 import TitleAuth from '../shared/TitleAuth.vue';
 import type { RenderAuth, StatusReset } from 'src/ts/types/Auth';
-import { checkDataReset, checkPassword } from 'src/validate/checkData';
+import { checkDataReset, checkPassword } from 'src/helpers/checkData';
 
 defineOptions({
   name: 'ResetPassword',

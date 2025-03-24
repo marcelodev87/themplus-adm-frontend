@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/pages/Dashboard.vue'),
       },
       {
-        path: 'organizações',
+        path: 'organizacoes',
         name: 'admin-enterprise',
         component: () => import('src/pages/Enterprise.vue'),
       },

@@ -6,6 +6,8 @@ import TitlePage from 'src/components/shared/TitlePage.vue';
 import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
+import { formatDate } from 'src/helpers/formatDate';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'Enterprise',
@@ -28,7 +30,7 @@ const columnsEnterprise = reactive<QuasarTable[]>([
   },
   {
     name: 'name',
-    label: 'Banco',
+    label: 'Organização',
     field: 'name',
     align: 'left',
   },
@@ -53,7 +55,7 @@ const columnsEnterprise = reactive<QuasarTable[]>([
   {
     name: 'coupon',
     label: 'Cupom',
-    field: 'coupon.name',
+    field: 'phone',
     align: 'left',
   },
   {
@@ -166,6 +168,9 @@ onMounted(async () => {
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
               </q-td>
+              <q-td key="position" :props="props" class="text-left">
+                {{ props.row.position == 'client' ? 'Cliente' : 'Contador' }}
+              </q-td>
               <q-td key="cnpj" :props="props" class="text-left">
                 {{ props.row.cnpj }}
               </q-td>
@@ -176,7 +181,7 @@ onMounted(async () => {
                 {{ props.row.coupon }}
               </q-td>
               <q-td key="created_at" :props="props" class="text-left">
-                {{ props.row.created_at }}
+                {{ formatDate(props.row.created_at)  }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

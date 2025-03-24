@@ -84,7 +84,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
       try {
         const response = await deleteEnterpriseService(enterpriseId);
         if (response.status === 200) {
-          this.setListEnterprises(this.listEnterprises.filter((item) => item.id !== enterpriseId));
+          this.listEnterprises = this.listEnterprises.filter((item) => item.id !== enterpriseId);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
