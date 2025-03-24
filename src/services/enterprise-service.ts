@@ -27,6 +27,20 @@ export const createEnterpriseByAdmService = (
     user,
   });
 
+export const setCouponService = (
+  enterpriseId: string, couponId: string | null
+): Promise<{
+  status: number;
+  data: {
+    enterprises: Enterprise[];
+    message: string;
+  };
+}> =>
+  api.put(`/${baseUrl}/set-coupon`, {
+    enterpriseId,
+    couponId,
+  });
+
 export const deleteEnterpriseService = (
   id: string,
 ): Promise<{

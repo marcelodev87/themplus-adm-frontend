@@ -8,6 +8,7 @@ import FormEnterprise from 'src/components/forms/FormEnterprise.vue';
 import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarTable, QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
 
 defineOptions({
   name: 'Enterprise',
@@ -21,6 +22,8 @@ const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
   value: 'all',
 })
+const chooseCouponData = ref<{id: string,  couponId: string | null}|null>(null)
+const showChooseCoupon = ref<boolean>(false)
 const showFormEnterprise = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const selectedDataEdit = ref<Enterprise | null>(null);
@@ -89,6 +92,17 @@ const openFormEnterprise = (): void => {
 };
 const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
+};
+const openChooseCoupon = (data: Enterprise): void => {
+  chooseCouponData.value  = {
+    id: data.id,
+    couponId: data.coupon_id
+  }
+  showChooseCoupon.value = true;
+};
+const closeChooseCoupon = (): void => {
+  showChooseCoupon.value = false;
+  chooseCouponData.value = null;
 };
 const fetchEnterprises = async () => {
   await getEnterprises();
@@ -235,6 +249,15 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  @click="openChooseCoupon(props.row)"
+                  :disable="loadingEnterprise"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="sell"
+                />
+                <q-btn
                   @click="handleEdit(props.row)"
                   :disable="loadingEnterprise"
                   size="sm"
@@ -266,6 +289,11 @@ onMounted(async () => {
       message="Excluindo a organização, será apagado tudo que esteja vinculado a mesma. Caso tenha certeza de que deseja excluir a organização, clique em 'Continuar'."
       @update:open="closeConfirmAction"
       @update:ok="closeConfirmActionOk"
+    />
+    <ChooseCoupon 
+      :open="showChooseCoupon" 
+      :enterprise="chooseCouponData"
+      @update:open="closeChooseCoupon"  
     />
   </section>
 </template>

@@ -6,6 +6,7 @@ import {
   createEnterpriseByAdmService,
   deleteEnterpriseService,
   getEnterprisesService,
+  setCouponService,
 } from 'src/services/enterprise-service';
 import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
 import type { UserCeate } from 'src/ts/interfaces/models/user';
@@ -51,6 +52,22 @@ export const useEnterpriseStore = defineStore('enterprise', {
       this.setLoading(true);
       try {
         const response = await getEnterprisesService();
+        if (response.status === 200) {
+          this.clearListEnterprises();
+          this.setListEnterprises(response.data.enterprises);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async setCoupon(enterpriseId: string, couponId: string | null) {
+      this.setLoading(true);
+      try {
+        const response = await setCouponService(enterpriseId, couponId);
         if (response.status === 200) {
           this.clearListEnterprises();
           this.setListEnterprises(response.data.enterprises);
