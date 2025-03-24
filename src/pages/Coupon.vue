@@ -148,7 +148,7 @@ onMounted(async () => {
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row.id)"
-                  :disable="false"
+                  :disable="loadingCoupon"
                   size="sm"
                   flat
                   round
@@ -157,7 +157,7 @@ onMounted(async () => {
                 />
                 <q-btn
                   @click="openConfirmAction(props.row.id)"
-                  :disable="false"
+                  :disable="loadingCoupon"
                   size="sm"
                   flat
                   round
