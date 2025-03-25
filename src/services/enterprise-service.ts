@@ -36,7 +36,7 @@ export const setCouponService = (
     message: string;
   };
 }> =>
-  api.put(`/${baseUrl}/set-coupon`, {
+  api.put(`/${baseUrl}/coupon`, {
     enterpriseId,
     couponId,
   });
