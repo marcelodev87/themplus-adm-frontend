@@ -120,6 +120,7 @@ const openConfirmAction = (id: string): void => {
                 <div class="row items-center justify-center">
                   <q-btn
                     :label="!$q.screen.lt.sm ? 'Adicionar um sub-departamento' : ''"
+                    @click="openFormDepartment(prop.key)"
                     :disable="false"
                     size="sm"
                     rounded
@@ -140,7 +141,7 @@ const openConfirmAction = (id: string): void => {
               </div>
             </template>
           </q-tree>
-          <div v-show="true" class="q-pa-md full-width">
+          <div v-show="treeDepartment.length == 0 && !loadingDepartment" class="q-pa-md full-width">
             <q-banner dense inline-actions class="text-white bg-red" rounded>
               Não há departamentos registrados. Por favor, adicione um novo departamento.
             </q-banner>
