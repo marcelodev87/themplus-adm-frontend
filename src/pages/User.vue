@@ -2,11 +2,19 @@
 import { onMounted, reactive, ref } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
+import { useUsersMembersStore } from 'src/stores/users-store';
+import { storeToRefs } from 'pinia';
+import FormUser from 'src/components/forms/FormUser.vue';
+import type { UserADM } from 'src/ts/interfaces/models/user';
 
 defineOptions({
   name: 'User',
 });
 
+const { listUserMember, loadingUsersMembers } = storeToRefs(useUsersMembersStore());
+
+const dataEdit = ref<UserADM | null>(null);
+const showFormUser = ref<boolean>(false);
 const filterUser = ref<string>('');
 const columnsUser = reactive<QuasarTable[]>([
   {
@@ -24,12 +32,6 @@ const columnsUser = reactive<QuasarTable[]>([
     sortable: true,
   },
   {
-    name: 'phone',
-    label: 'Telefone',
-    field: 'phone',
-    align: 'left',
-  },
-  {
     name: 'position',
     label: 'Cargo',
     field: 'position',
@@ -38,7 +40,7 @@ const columnsUser = reactive<QuasarTable[]>([
   {
     name: 'department',
     label: 'Departamento',
-    field: 'departments.name',
+    field: 'department.name',
     align: 'left',
   },
   {
@@ -58,9 +60,19 @@ const columnsUser = reactive<QuasarTable[]>([
 const clear = (): void => {
   filterUser.value = '';
 };
+const openFormUser = (): void => {
+  showFormUser.value = true;
+};
+const closeFormUser = (): void => {
+  showFormUser.value = false;
+};
+const fetchUsers = async () => {
+  await useUsersMembersStore().getUsersMembers();
+};
 
-onMounted(() => {
+onMounted(async () => {
   clear();
+  await fetchUsers();
 });
 </script>
 
@@ -78,6 +90,7 @@ onMounted(() => {
       </div>
       <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end q-gutter-x-sm">
         <q-btn
+          @click="openFormUser"
           icon-right="add"
           label="Usuário"
           class="q-mr-sm bg-contabilidade"
@@ -89,10 +102,10 @@ onMounted(() => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="[]"
+          :rows="listUserMember"
           :columns="columnsUser"
           :filter="filterUser"
-          :loading="false"
+          :loading="loadingUsersMembers"
           flat
           bordered
           dense
@@ -117,9 +130,6 @@ onMounted(() => {
               </q-td>
               <q-td key="email" :props="props" class="text-left">
                 {{ props.row.email }}
-              </q-td>
-              <q-td key="phone" :props="props" class="text-left">
-                {{ props.row.phone ?? 'Não definido' }}
               </q-td>
               <q-td key="position" :props="props" class="text-left">
                 {{ props.row.position === 'admin' ? 'Administrador' : 'Usuário comum' }}
@@ -153,5 +163,6 @@ onMounted(() => {
         </q-table>
       </main>
     </q-scroll-area>
+    <FormUser :open="showFormUser" :data-edit="dataEdit" @update:open="closeFormUser" />
   </section>
 </template>

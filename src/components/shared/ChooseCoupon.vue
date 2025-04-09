@@ -12,7 +12,7 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
-  enterprise: {id: string, couponId: string | null} | null;
+  enterprise: { id: string; couponId: string | null } | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -24,39 +24,42 @@ const { setCoupon } = useEnterpriseStore();
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
 const selectedCoupon = ref<QuasarSelect<string | null>>({
-    label: 'Nenhum selecionado',
-    value: null
+  label: 'Nenhum selecionado',
+  value: null,
 });
 
 const clear = (): void => {
   selectedCoupon.value = {
     label: 'Nenhum selecionado',
-    value: null
-  }
+    value: null,
+  };
 };
 const save = async () => {
-    const response = await setCoupon (props.enterprise?.id ?? '', selectedCoupon.value.value)
-    if(response?.status === 200) {
-        emit('update:open')
-    }
-}
+  const response = await setCoupon(props.enterprise?.id ?? '', selectedCoupon.value.value);
+  if (response?.status === 200) {
+    emit('update:open');
+  }
+};
 
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
 const optionsCoupons = computed(() => {
-    const list = listCoupon.value.map((item) => {
-        return {
-            label: item.name,
-            value: item.id
-        }
-    })
-    return [...list,{
-        label: 'Nenhum selecionado',
-        value: null
-    }]
-})
+  const list = listCoupon.value.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+  return [
+    ...list,
+    {
+      label: 'Nenhum selecionado',
+      value: null,
+    },
+  ];
+});
 
 watch(open, async () => {
   if (open.value) {
@@ -73,21 +76,21 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
-            <q-select
-              v-model="selectedCoupon"
-              :options="optionsCoupons"
-              label="Selecione o cupom"
-              outlined
-              dense
-              options-dense
-              bg-color="white"
-              label-color="black"
-              :readonly="loadingCoupon || loadingEnterprise"
-            >
-              <template v-slot:prepend>
+          <q-select
+            v-model="selectedCoupon"
+            :options="optionsCoupons"
+            label="Selecione o cupom"
+            outlined
+            dense
+            options-dense
+            bg-color="white"
+            label-color="black"
+            :readonly="loadingCoupon || loadingEnterprise"
+          >
+            <template v-slot:prepend>
               <q-icon name="percent" color="black" size="20px" />
-              </template>
-            </q-select>
+            </template>
+          </q-select>
         </q-form>
       </q-card-section>
 

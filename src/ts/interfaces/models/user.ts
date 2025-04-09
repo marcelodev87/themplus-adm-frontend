@@ -18,3 +18,14 @@ export interface UserCeate {
   password: string;
   phone: string | null;
 }
+
+export interface UserADM {
+  id: string;
+  name: string;
+  email: string;
+  position: string;
+  active: number;
+  created_by: string | null;
+  department_id: string | null;
+  created_at: string;
+}

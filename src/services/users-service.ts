@@ -1,8 +1,9 @@
 // import { AxiosError } from 'axios';
-// import { api } from 'boot/axios';
+import { api } from 'boot/axios';
 // import { Notify } from 'quasar';
+import type { UserADM } from 'src/ts/interfaces/models/user';
 
-// const baseUrl = 'member';
+const baseUrl = 'member';
 
 // const createError = (error: any) => {
 //   let message = 'Error';
@@ -17,14 +18,12 @@
 //   });
 // };
 
-// export const getUsersMembersService = (): Promise<{
-//   status: number;
-//   data: {
-//     users: User[];
-//     filled_data: boolean;
-//     notifications: number;
-//   };
-// }> => api.get(`${baseUrl}`);
+export const getUsersMembersService = (): Promise<{
+  status: number;
+  data: {
+    users: UserADM[];
+  };
+}> => api.get(`${baseUrl}`);
 
 // export const getInboxService = (): Promise<{
 //   status: number;
@@ -70,15 +69,26 @@
 //   };
 // }> => api.get(`${baseUrl}/${enterpriseId}`);
 
-// export const createUserMemberService = (
-//   payload: DataUserMember2,
-// ): Promise<{
-//   status: number;
-//   data: {
-//     users: User[];
-//     message: string;
-//   };
-// }> => api.post(`${baseUrl}/`, payload);
+export const createUserMemberService = (
+  name: string,
+  position: string,
+  email: string,
+  password: string,
+  department: string | null,
+): Promise<{
+  status: number;
+  data: {
+    users: UserADM[];
+    message: string;
+  };
+}> =>
+  api.post(`${baseUrl}/`, {
+    name,
+    position,
+    email,
+    password,
+    department,
+  });
 
 // export const createUserMemberOfficeService = (
 //   payload: DataUserMember3,
@@ -121,28 +131,27 @@
 //   }
 // };
 
-// export const updateUserMemberService = (
-//   id: string,
-//   name: string,
-//   email: string,
-//   phone: string | null,
-//   position: string,
-//   department: string | null,
-// ): Promise<{
-//   status: number;
-//   data: {
-//     users: User[];
-//     message: string;
-//   };
-// }> =>
-//   api.put(`${baseUrl}/`, {
-//     id,
-//     name,
-//     email,
-//     phone,
-//     position,
-//     department,
-//   });
+export const updateUserMemberService = (
+  id: string,
+  name: string,
+  position: string,
+  email: string,
+  department: string | null,
+): Promise<{
+  status: number;
+  data: {
+    users: UserADM[];
+    message: string;
+  };
+}> =>
+  api.put(`${baseUrl}/`, {
+    id,
+    name,
+    email,
+    position,
+    department,
+  });
+
 // export const updateUserMemberByCounter = (
 //   id: string,
 //   name: string,

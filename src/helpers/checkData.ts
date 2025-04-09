@@ -41,7 +41,11 @@ export const checkPassword = (data: { password: string; passwordConfirm: string 
   return { status: true };
 };
 
-export const checkDataCoupon = (data: {name: string, movements: number, dateExpires: string, discount: string}, hasDiscount: boolean, hasDateExpires: boolean): { status: boolean; message?: string } => {
+export const checkDataCoupon = (
+  data: { name: string; movements: number; dateExpires: string; discount: string },
+  hasDiscount: boolean,
+  hasDateExpires: boolean,
+): { status: boolean; message?: string } => {
   if (data.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do cupom' };
   }

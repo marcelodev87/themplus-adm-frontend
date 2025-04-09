@@ -1,5 +1,7 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useDepartmentStore } from 'src/stores/department-store';
 
 defineOptions({
   name: 'DepartmentChoose',
@@ -12,6 +14,8 @@ const emit = defineEmits<{
   'update:open': [void];
   'update:chooseDepartment': [{ id: string; label: string } | null];
 }>();
+
+const { loadingDepartment, treeDepartment} = storeToRefs(useDepartmentStore())
 
 
 const filterDepartment = ref<string>('');
@@ -110,4 +114,4 @@ watch(
       </q-card-actions>
     </q-card>
   </q-dialog>
-</template> -->
+</template>

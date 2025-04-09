@@ -21,9 +21,9 @@ const filterEnterprise = ref<string>('');
 const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
   value: 'all',
-})
-const chooseCouponData = ref<{id: string,  couponId: string | null}|null>(null)
-const showChooseCoupon = ref<boolean>(false)
+});
+const chooseCouponData = ref<{ id: string; couponId: string | null } | null>(null);
+const showChooseCoupon = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const selectedDataEdit = ref<Enterprise | null>(null);
@@ -83,10 +83,10 @@ const clear = (): void => {
   filterEnterprise.value = '';
   selectCoupon.value = {
     label: 'Todos',
-    value: 'all'
-  }
+    value: 'all',
+  };
 };
-const optionsListEnterprise = ref<Enterprise[]>(listEnterprises.value)
+const optionsListEnterprise = ref<Enterprise[]>(listEnterprises.value);
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
 };
@@ -94,10 +94,10 @@ const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
 };
 const openChooseCoupon = (data: Enterprise): void => {
-  chooseCouponData.value  = {
+  chooseCouponData.value = {
     id: data.id,
-    couponId: data.coupon_id
-  }
+    couponId: data.coupon_id,
+  };
   showChooseCoupon.value = true;
 };
 const closeChooseCoupon = (): void => {
@@ -131,32 +131,28 @@ const customFilterEnterprise = (
   rows: readonly Enterprise[],
   terms: string,
   cols: readonly Enterprise[],
-  getCellValue: (row: Enterprise, col: QuasarTable) => unknown
+  getCellValue: (row: Enterprise, col: QuasarTable) => unknown,
 ): readonly Enterprise[] => {
   const searchTerm = terms.toLowerCase();
 
   return rows.filter((item) => {
     return (
-      (item.name &&
-        item.name.toLowerCase().includes(searchTerm)) ||
-      (item.cpf &&
-        item.cpf.toLowerCase().includes(searchTerm)) ||
-      (item.cnpj &&
-        item.cnpj.toLowerCase().includes(searchTerm)) ||
-      (item.coupon &&
-        item.coupon.name.toLowerCase().includes(searchTerm))
+      (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+      (item.cpf && item.cpf.toLowerCase().includes(searchTerm)) ||
+      (item.cnpj && item.cnpj.toLowerCase().includes(searchTerm)) ||
+      (item.coupon && item.coupon.name.toLowerCase().includes(searchTerm))
     );
   });
 };
-watch(selectCoupon,(coupon)=> {
-  if(coupon.value === 'all'){
-    optionsListEnterprise.value = listEnterprises.value
+watch(selectCoupon, (coupon) => {
+  if (coupon.value === 'all') {
+    optionsListEnterprise.value = listEnterprises.value;
   } else {
     optionsListEnterprise.value = listEnterprises.value.filter((item) => {
-      return item.coupon
-    })
+      return item.coupon;
+    });
   }
-})
+});
 
 onMounted(async () => {
   clear();
@@ -216,7 +212,7 @@ onMounted(async () => {
               map-options
               bg-color="white"
               label-color="black"
-              style="width: 200px;"
+              style="width: 200px"
               :readonly="loadingEnterprise"
               class="q-mr-sm"
             >
@@ -290,10 +286,10 @@ onMounted(async () => {
       @update:open="closeConfirmAction"
       @update:ok="closeConfirmActionOk"
     />
-    <ChooseCoupon 
-      :open="showChooseCoupon" 
+    <ChooseCoupon
+      :open="showChooseCoupon"
       :enterprise="chooseCouponData"
-      @update:open="closeChooseCoupon"  
+      @update:open="closeChooseCoupon"
     />
   </section>
 </template>

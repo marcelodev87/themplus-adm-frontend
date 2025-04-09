@@ -143,7 +143,7 @@ onMounted(async () => {
                 {{ props.row.using }}
               </q-td>
               <q-td key="created_at" :props="props" class="text-center">
-                {{ formatDate(props.row.created_at)  }}
+                {{ formatDate(props.row.created_at) }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

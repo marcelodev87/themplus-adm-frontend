@@ -62,15 +62,7 @@ watch(open, () => {
       </q-card-section>
       <q-card-actions align="right">
         <div class="row justify-end items-center q-gutter-x-sm">
-          <q-btn
-            @click="close"
-            color="black"
-            flat
-            label="Voltar"
-            size="md"
-            unelevated
-            no-caps
-          />
+          <q-btn @click="close" color="black" flat label="Voltar" size="md" unelevated no-caps />
           <q-btn
             @click="confirm"
             color="red"

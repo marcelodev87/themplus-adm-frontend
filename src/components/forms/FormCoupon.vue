@@ -53,9 +53,9 @@ const clear = (): void => {
 };
 const save = async () => {
   const check = checkDataCoupon(
-    dataCoupon, 
-    showDiscount.value, 
-    dataCoupon.dateExpires.trim() !== ''
+    dataCoupon,
+    showDiscount.value,
+    dataCoupon.dateExpires.trim() !== '',
   );
   if (check.status) {
     const response = await useCouponStore().createCoupon(
@@ -80,9 +80,9 @@ const save = async () => {
 };
 const update = async () => {
   const check = checkDataCoupon(
-    dataCoupon, 
+    dataCoupon,
     showDiscount.value,
-    dataCoupon.dateExpires.trim() !== ''
+    dataCoupon.dateExpires.trim() !== '',
   );
   if (check.status) {
     const response = await useCouponStore().updateCoupon(

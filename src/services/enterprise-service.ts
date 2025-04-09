@@ -28,7 +28,8 @@ export const createEnterpriseByAdmService = (
   });
 
 export const setCouponService = (
-  enterpriseId: string, couponId: string | null
+  enterpriseId: string,
+  couponId: string | null,
 ): Promise<{
   status: number;
   data: {
