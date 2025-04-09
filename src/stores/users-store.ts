@@ -4,7 +4,9 @@ import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
   createUserMemberService,
+  deleteUserMemberService,
   getUsersMembersService,
+  updateActiveUserService,
   updateUserMemberService,
 } from 'src/services/users-service';
 import type { UserADM } from 'src/ts/interfaces/models/user';
@@ -56,24 +58,24 @@ export const useUsersMembersStore = defineStore('members', {
         this.setLoading(false);
       }
     },
-    // async updateActiveUser(active: number, userId: string) {
-    //   try {
-    //     this.setLoading(true);
-    //     const response = await updateActiveUserService(active, userId);
-    //     if (response.status === 200) {
-    //       this.clearListUser();
-    //       this.setListUser(response.data.users);
-    //       this.createSuccess(response.data.message);
-    //     }
+    async updateActiveUser(active: number, userId: string) {
+      try {
+        this.setLoading(true);
+        const response = await updateActiveUserService(active, userId);
+        if (response.status === 200) {
+          this.clearListUser();
+          this.setListUser(response.data.users);
+          this.createSuccess(response.data.message);
+        }
 
-    //     return response;
-    //   } catch (error) {
-    //     this.createError(error);
-    //     return null;
-    //   } finally {
-    //     this.setLoading(false);
-    //   }
-    // },
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async createUserMember(
       name: string,
       position: string,
@@ -107,7 +109,7 @@ export const useUsersMembersStore = defineStore('members', {
     ) {
       try {
         this.setLoading(true);
-        const response = await updateUserMemberService(id, name, email, position, department);
+        const response = await updateUserMemberService(id, name, position, email, department);
         if (response.status === 200) {
           this.clearListUser();
           this.setListUser(response.data.users);
@@ -122,21 +124,19 @@ export const useUsersMembersStore = defineStore('members', {
         this.setLoading(false);
       }
     },
-    // async deleteUserMember(userMemberId: string) {
-    //   try {
-    //     this.setLoading(true);
-    //     const response = await deleteUserMemberService(userMemberId);
-    //     if (response.status === 200) {
-    //       this.listUserMember = this.listUserMember.filter(
-    //         (item) => item.id !== userMemberId
-    //       );
-    //       this.createSuccess(response.data.message);
-    //     }
-    //   } catch (error) {
-    //     this.createError(error);
-    //   } finally {
-    //     this.setLoading(false);
-    //   }
-    // },
+    async deleteUserMember(userMemberId: string) {
+      try {
+        this.setLoading(true);
+        const response = await deleteUserMemberService(userMemberId);
+        if (response.status === 200) {
+          this.listUserMember = this.listUserMember.filter((item) => item.id !== userMemberId);
+          this.createSuccess(response.data.message);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
   },
 });

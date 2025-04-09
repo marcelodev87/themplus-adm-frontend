@@ -6,12 +6,14 @@ import { useUsersMembersStore } from 'src/stores/users-store';
 import { storeToRefs } from 'pinia';
 import FormUser from 'src/components/forms/FormUser.vue';
 import type { UserADM } from 'src/ts/interfaces/models/user';
+import { useAuthStore } from 'src/stores/auth-store';
 
 defineOptions({
   name: 'User',
 });
 
 const { listUserMember, loadingUsersMembers } = storeToRefs(useUsersMembersStore());
+const { user } = storeToRefs(useAuthStore());
 
 const dataEdit = ref<UserADM | null>(null);
 const showFormUser = ref<boolean>(false);
@@ -59,15 +61,27 @@ const columnsUser = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   filterUser.value = '';
+  dataEdit.value = null;
 };
 const openFormUser = (): void => {
   showFormUser.value = true;
 };
 const closeFormUser = (): void => {
   showFormUser.value = false;
+  clear();
 };
 const fetchUsers = async () => {
   await useUsersMembersStore().getUsersMembers();
+};
+const setActive = async (active: number, userId: string) => {
+  await useUsersMembersStore().updateActiveUser(active, userId);
+};
+const exclude = async (id: string): Promise<void> => {
+  await useUsersMembersStore().deleteUserMember(id);
+};
+const handleEdit = (data: UserADM) => {
+  dataEdit.value = data;
+  openFormUser();
 };
 
 onMounted(async () => {
@@ -145,6 +159,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  @click="setActive(props.row.active === 1 ? 0 : 1, props.row.id)"
                   size="sm"
                   flat
                   round
@@ -155,8 +170,23 @@ onMounted(async () => {
                     {{ props.row.active ? 'Inativar' : 'Ativar' }}
                   </q-tooltip>
                 </q-btn>
-                <q-btn size="sm" flat round color="black" icon="edit" />
-                <q-btn size="sm" flat round color="red" icon="delete" />
+                <q-btn
+                  @click="handleEdit(props.row)"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="edit"
+                />
+                <q-btn
+                  v-show="user && user.id !== props.row.id && props.row.created_by !== null"
+                  @click="exclude(props.row.id)"
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  icon="delete"
+                />
               </q-td>
             </q-tr>
           </template>
