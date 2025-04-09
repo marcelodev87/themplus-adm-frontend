@@ -15,8 +15,7 @@ const emit = defineEmits<{
   'update:chooseDepartment': [{ id: string; label: string } | null];
 }>();
 
-const { loadingDepartment, treeDepartment} = storeToRefs(useDepartmentStore())
-
+const { loadingDepartment, treeDepartment } = storeToRefs(useDepartmentStore());
 
 const filterDepartment = ref<string>('');
 
@@ -45,7 +44,7 @@ watch(
       clear();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 <template>
