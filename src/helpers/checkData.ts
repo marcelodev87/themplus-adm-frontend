@@ -25,6 +25,29 @@ export const checkDataReset = (email: string) => {
   return { status: true };
 };
 
+export const checkDataSubscription = (data: { price: string }) => {
+  if (data.price.trim() === '') {
+    return { status: false, message: 'O preço não pode ser vazio' };
+  }
+
+  const priceNumber = parseFloat(data.price);
+
+  if (isNaN(priceNumber)) {
+    return { status: false, message: 'O preço deve ser um número válido' };
+  }
+
+  if (priceNumber < 0) {
+    return { status: false, message: 'O preço não pode ser negativo' };
+  }
+
+  if (priceNumber == 0) {
+    return { status: false, message: 'O preço deve ser maior que R$ 0,00' };
+  }
+
+  return { status: true };
+};
+
+
 export const checkPassword = (data: { password: string; passwordConfirm: string }) => {
   if (data.password.trim() === '') {
     return { status: false, message: 'Deve ser informado uma senha' };

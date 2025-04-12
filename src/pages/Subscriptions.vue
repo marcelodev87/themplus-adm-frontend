@@ -5,12 +5,16 @@ import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { useSubscriptionStore } from 'src/stores/subscription-store';
 import { storeToRefs } from 'pinia';
 import { formatToBr } from 'src/helpers/formatMoney';
+import FormSubscription from 'src/components/forms/FormSubscription.vue';
 
 defineOptions({
   name: 'Subscriptions',
 });
 
 const {listSubscription, loadingSubscription} = storeToRefs(useSubscriptionStore())
+
+const showFormSubscription = ref<boolean>(false)
+const dataEdit = ref<{id: string, price: string, name: string} | null>(null)
 const filterSubscription = ref<string>('');
 const columnsSubscriptions = reactive<QuasarTable[]>([
   {
@@ -32,12 +36,6 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
     align: 'left',
   },
   {
-    name: 'invoicing',
-    label: 'Faturamento mensal',
-    field: 'invoicing',
-    align: 'left',
-  },
-  {
     name: 'action',
     label: 'Ação',
     field: 'action',
@@ -47,9 +45,21 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   filterSubscription.value = '';
+  dataEdit.value = null
 };
 const fetchSubscriptions = async ()  => {
   await useSubscriptionStore().getSubscriptions()
+}
+const closeFormSubscription = ():void => {
+  showFormSubscription.value = false
+  clear()
+}
+const openFormSubscription = ():void => {
+  showFormSubscription.value = true
+}
+const handleEdit = (data: {id: string, price: string, name: string}): void => {
+  dataEdit.value = data
+  openFormSubscription()
 }
 
 onMounted(async() => {
@@ -99,19 +109,17 @@ onMounted(async() => {
               <q-td key="enterprises_using" :props="props" class="text-left">
                 {{ props.row.enterprises_using }}
               </q-td>
-              <q-td key="invoicing" :props="props" class="text-left">
-                {{ formatToBr(String(Number(props.row.price) * props.row.enterprises_using)) }}
-              </q-td>
               <q-td key="created_at" :props="props" class="text-left">
                 {{ props.row.created_at }}
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn :disable="loadingSubscription" size="sm" flat round color="black" icon="edit" />
+                <q-btn @click="handleEdit(props.row)" v-show="props.row.name !== 'free'" :disable="loadingSubscription" size="sm" flat round color="black" icon="edit" />
               </q-td>
             </q-tr>
           </template>
         </q-table>
       </main>
     </q-scroll-area>
+    <FormSubscription :open="showFormSubscription" :data="dataEdit" @update:open="closeFormSubscription"/>
   </section>
 </template>
