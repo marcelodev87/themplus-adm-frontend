@@ -22,8 +22,8 @@ const emit = defineEmits<{
 
 const { loadingCoupon } = storeToRefs(useCouponStore());
 
-const showExpired = ref<string>('Não');
-const showDiscount = ref<boolean>(false);
+const subscriptions = reactive<{ id: string; name: string }[]>([]);
+const showExpired = ref<'Sim'|'Não'>('Não');
 const selectedTypeCoupon = ref<QuasarSelect<string>>({
   label: 'Plano',
   value: 'subscription',
@@ -48,7 +48,7 @@ const optionsTypeCoupon = reactive([
   },
   {
     label: 'Recurso',
-    value: 'resource',
+    value: 'service',
   },
 ]);
 const optionsResource = reactive([
@@ -95,7 +95,6 @@ const clear = (): void => {
     discount: '',
   });
   showExpired.value = 'Não';
-  showDiscount.value = false;
   selectedTypeCoupon.value = {
     label: 'Plano',
     value: 'subscription',
@@ -116,7 +115,7 @@ const save = async () => {
       dataCoupon.name,
       selectedTypeCoupon.value.value,
       selectedTypeCoupon.value.value === 'subscription' ? selectedSubscription.value.value : null,
-      selectedTypeCoupon.value.value === 'resource' ? selectedResource.value.value : null,
+      selectedTypeCoupon.value.value === 'service' ? selectedResource.value.value : null,
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
     );
@@ -139,7 +138,7 @@ const update = async () => {
       dataCoupon.name,
       selectedTypeCoupon.value.value,
       selectedTypeCoupon.value.value === 'subscription' ? selectedSubscription.value.value : null,
-      selectedTypeCoupon.value.value === 'resource' ? selectedResource.value.value : null,
+      selectedTypeCoupon.value.value === 'service' ? selectedResource.value.value : null,
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
     );
@@ -154,12 +153,42 @@ const update = async () => {
     });
   }
 };
+const setOptions = (coupon: CouponData): void => {
+  if (coupon.type === 'subscription') {
+    selectedTypeCoupon.value = {
+      label: 'Plano',
+      value: 'subscription',
+    };
+
+    const subscription = subscriptions.find((item) => item.id === coupon.subscription_id);
+    selectedSubscription.value = {
+      label: subscription?.name == 'basic' ? 'Plano básico' : 'Plano avançado',
+      value: subscription?.name == 'basic' ? 'basic' : 'advanced',
+    };
+  } else {
+    selectedTypeCoupon.value = {
+      label: 'Recurso',
+      value: 'service',
+    };
+    const resource = optionsResource.find((item) => item.value == coupon.service);
+    selectedResource.value = {
+      label: resource?.label ?? '',
+      value: resource?.value ?? '',
+    };
+  }
+
+  if(coupon.date_expiration){
+    showExpired.value = 'Sim'
+  }
+};
 const mountEdit = (coupon: CouponData): void => {
   Object.assign(dataCoupon, {
     name: coupon.name,
-    discount: coupon.discount,
+    discount: String(coupon.discount),
     dateExpiration: coupon.date_expiration ?? '',
   });
+
+  setOptions(coupon);
 };
 const checkDataEdit = async () => {
   if (props.dataId) {
@@ -175,15 +204,6 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-watch(
-  () => dataCoupon.discount,
-  (discount) => {
-    dataCoupon.discount = discount.replace(/^0+/, '');
-  },
-);
-watch(showDiscount, () => {
-  dataCoupon.discount = '';
-});
 watch(showExpired, () => {
   if (showExpired.value == 'Não') {
     dataCoupon.dateExpiration = '';
@@ -192,6 +212,9 @@ watch(showExpired, () => {
 watch(
   () => dataCoupon.discount,
   (discount) => {
+    if(dataCoupon.discount.trim() !== ''){
+       dataCoupon.discount = discount.replace(/^0+/, '');
+    }
     if (Number(discount) > 100) {
       dataCoupon.discount = '100';
     }
@@ -243,7 +266,7 @@ watch(open, async () => {
             </template>
           </q-select>
           <q-select
-            v-if="selectedTypeCoupon.value === 'resource'"
+            v-if="selectedTypeCoupon.value === 'service'"
             v-model="selectedResource"
             :options="optionsResource"
             label="Recurso"

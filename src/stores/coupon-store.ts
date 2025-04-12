@@ -72,7 +72,7 @@ export const useCouponStore = defineStore('coupon', {
       name: string,
       type: string,
       subscription: string | null,
-      resource: string | null,
+      service: string | null,
       discount: number | null,
       dateExpiration: string | null,
     ) {
@@ -82,7 +82,7 @@ export const useCouponStore = defineStore('coupon', {
           name,
           type,
           subscription,
-          resource,
+          service,
           discount,
           dateExpiration,
         );

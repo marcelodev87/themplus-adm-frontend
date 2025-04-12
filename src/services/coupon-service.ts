@@ -24,7 +24,7 @@ export const createCouponService = (
   name: string,
   type: string,
   subscription: string | null,
-  resource: string | null,
+  service: string | null,
   discount: number | null,
   dateExpiration: string | null,
 ): Promise<{
@@ -37,7 +37,7 @@ export const createCouponService = (
   api.post(`/${baseUrl}`, {
     name,
     type,
-    resource,
+    service,
     subscription,
     discount,
     dateExpiration,

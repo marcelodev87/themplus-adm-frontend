@@ -6,7 +6,9 @@ export interface Coupon {
 export interface CouponTable {
   id: string;
   name: string;
+  type: string;
   using: number;
+  date_expiration: string;
   created_at: string;
 }
 
@@ -15,7 +17,7 @@ export interface CouponData {
   name: string;
   type: string;
   subscription_id: string | null;
-  resource: string | null;
+  service: string | null;
   discount: number;
   date_expiration: string | null;
 }
