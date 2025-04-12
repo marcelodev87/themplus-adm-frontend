@@ -42,25 +42,24 @@ export const checkPassword = (data: { password: string; passwordConfirm: string 
 };
 
 export const checkDataCoupon = (
-  data: { name: string; movements: number; dateExpires: string; discount: string },
-  hasDiscount: boolean,
-  hasDateExpires: boolean,
+  data: { name: string; dateExpiration: string; discount: string },
+  hasDateExpires: string,
 ): { status: boolean; message?: string } => {
   if (data.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do cupom' };
   }
-  if (data.movements < 30) {
-    return { status: false, message: 'Deve ter no minímo 30 movimentações' };
+  if (Number(data.discount) <= 0 || Number(data.discount) > 100) {
+    return { status: false, message: 'Deve ser informado desconto maior que 0% até 100%' };
   }
-  if (hasDateExpires) {
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data.dateExpires)) {
+  if (hasDateExpires === 'Sim') {
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data.dateExpiration)) {
       return {
         status: false,
         message: 'A data de expiração deve estar no formato dd/mm/yyyy',
       };
     }
 
-    const [day, month, year] = data.dateExpires.split('/');
+    const [day, month, year] = data.dateExpiration.split('/');
     const dateExpires = new Date(Number(year), Number(month) - 1, Number(day));
 
     if (isNaN(dateExpires.getTime())) {
@@ -80,14 +79,5 @@ export const checkDataCoupon = (
       };
     }
   }
-  if (hasDiscount) {
-    if (Number(data.discount) <= 0 || Number(data.discount) > 100) {
-      return {
-        status: false,
-        message: 'O desconto deve ser maior que 0% e no máximo 100%',
-      };
-    }
-  }
-
   return { status: true };
 };

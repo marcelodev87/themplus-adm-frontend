@@ -22,12 +22,11 @@ export const getCouponService = (
 
 export const createCouponService = (
   name: string,
-  movements: number,
-  allowFinancial: number,
-  allowMembers: number,
-  allowAssistantWhatsapp: number,
+  type: string,
+  subscription: string | null,
+  resource: string | null,
   discount: number | null,
-  dateExpires: string | null,
+  dateExpiration: string | null,
 ): Promise<{
   status: number;
   data: {
@@ -37,23 +36,21 @@ export const createCouponService = (
 }> =>
   api.post(`/${baseUrl}`, {
     name,
-    movements,
-    allowFinancial,
-    allowMembers,
-    allowAssistantWhatsapp,
+    type,
+    resource,
+    subscription,
     discount,
-    dateExpires,
+    dateExpiration,
   });
 
 export const updateCouponService = (
   id: string,
   name: string,
-  movements: number,
-  allowFinancial: number,
-  allowMembers: number,
-  allowAssistantWhatsapp: number,
+  type: string,
+  subscription: string | null,
+  resource: string | null,
   discount: number | null,
-  dateExpires: string | null,
+  dateExpiration: string | null,
 ): Promise<{
   status: number;
   data: {
@@ -64,12 +61,11 @@ export const updateCouponService = (
   api.put(`/${baseUrl}`, {
     id,
     name,
-    movements,
-    allowFinancial,
-    allowMembers,
-    allowAssistantWhatsapp,
+    type,
+    subscription,
+    resource,
     discount,
-    dateExpires,
+    dateExpiration,
   });
 
 export const deleteCouponService = (

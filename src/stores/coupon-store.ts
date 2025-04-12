@@ -70,23 +70,21 @@ export const useCouponStore = defineStore('coupon', {
     },
     async createCoupon(
       name: string,
-      movements: number,
-      allowFinancial: number,
-      allowMembers: number,
-      allowAssistantWhatsapp: number,
+      type: string,
+      subscription: string | null,
+      resource: string | null,
       discount: number | null,
-      dateExpires: string | null,
+      dateExpiration: string | null,
     ) {
       try {
         this.setLoading(true);
         const response = await createCouponService(
           name,
-          movements,
-          allowFinancial,
-          allowMembers,
-          allowAssistantWhatsapp,
+          type,
+          subscription,
+          resource,
           discount,
-          dateExpires,
+          dateExpiration,
         );
         if (response.status === 200) {
           this.clearListCoupon();
@@ -104,24 +102,22 @@ export const useCouponStore = defineStore('coupon', {
     async updateCoupon(
       id: string,
       name: string,
-      movements: number,
-      allowFinancial: number,
-      allowMembers: number,
-      allowAssistantWhatsapp: number,
+      type: string,
+      subscription: string | null,
+      resource: string | null,
       discount: number | null,
-      dateExpires: string | null,
+      dateExpiration: string | null,
     ) {
       try {
         this.setLoading(true);
         const response = await updateCouponService(
           id,
           name,
-          movements,
-          allowFinancial,
-          allowMembers,
-          allowAssistantWhatsapp,
+          type,
+          subscription,
+          resource,
           discount,
-          dateExpires,
+          dateExpiration,
         );
         if (response.status === 200) {
           this.clearListCoupon();

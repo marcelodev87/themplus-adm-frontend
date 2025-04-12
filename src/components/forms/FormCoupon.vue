@@ -6,6 +6,7 @@ import { useCouponStore } from 'src/stores/coupon-store';
 import { storeToRefs } from 'pinia';
 import type { CouponData } from 'src/ts/interfaces/models/subscriptions';
 import { checkDataCoupon } from 'src/helpers/checkData';
+import type { QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
 
 defineOptions({
   name: 'FormCoupon',
@@ -21,51 +22,103 @@ const emit = defineEmits<{
 
 const { loadingCoupon } = storeToRefs(useCouponStore());
 
-const showExpired = ref<boolean>(false);
+const showExpired = ref<string>('Não');
 const showDiscount = ref<boolean>(false);
+const selectedTypeCoupon = ref<QuasarSelect<string>>({
+  label: 'Plano',
+  value: 'subscription',
+});
+const selectedResource = ref<QuasarSelect<string>>({
+  label: 'Movimentações +100',
+  value: 'mv100',
+});
+const selectedSubscription = ref<QuasarSelect<string>>({
+  label: 'Plano básico',
+  value: 'basic',
+});
 const dataCoupon = reactive({
   name: '' as string,
-  movements: 30 as number,
-  allowFinancial: 0 as number,
-  allowMembers: 0 as number,
-  allowAssistantWhatsapp: 0 as number,
   discount: '' as string,
-  dateExpires: '' as string,
+  dateExpiration: '' as string,
 });
-
-const open = computed({
-  get: () => props.open,
-  set: () => emit('update:open'),
-});
+const optionsTypeCoupon = reactive([
+  {
+    label: 'Plano',
+    value: 'subscription',
+  },
+  {
+    label: 'Recurso',
+    value: 'resource',
+  },
+]);
+const optionsResource = reactive([
+  {
+    label: 'Movimentações +100',
+    value: 'mv100',
+  },
+  {
+    label: 'Movimentações +200',
+    value: 'mv200',
+  },
+  {
+    label: 'Movimentações +1000',
+    value: 'mv1000',
+  },
+  {
+    label: 'Membros +100',
+    value: 'mb100',
+  },
+  {
+    label: 'Membros +200',
+    value: 'mb200',
+  },
+  {
+    label: 'Membros +1000',
+    value: 'mb1000',
+  },
+]);
+const optionsSubscription = reactive([
+  {
+    label: 'Plano básico',
+    value: 'basic',
+  },
+  {
+    label: 'Plano avançado',
+    value: 'advanced',
+  },
+]);
 
 const clear = (): void => {
   Object.assign(dataCoupon, {
     name: '',
-    movements: 30,
-    allowFinancial: 0,
-    allowMembers: 0,
-    allowAssistantWhatsapp: 0,
-    newDiscount: '',
-    dateExpires: '',
+    dateExpiration: '',
+    discount: '',
   });
-  showExpired.value = false;
+  showExpired.value = 'Não';
   showDiscount.value = false;
+  selectedTypeCoupon.value = {
+    label: 'Plano',
+    value: 'subscription',
+  };
+  selectedResource.value = {
+    label: 'Movimentações +100',
+    value: 'mv100',
+  };
+  selectedSubscription.value = {
+    label: 'Plano básico',
+    value: 'basic',
+  };
 };
 const save = async () => {
-  const check = checkDataCoupon(
-    dataCoupon,
-    showDiscount.value,
-    dataCoupon.dateExpires.trim() !== '',
-  );
+  const check = checkDataCoupon(dataCoupon, showExpired.value);
   if (check.status) {
     const response = await useCouponStore().createCoupon(
       dataCoupon.name,
-      dataCoupon.movements,
-      dataCoupon.allowFinancial,
-      dataCoupon.allowMembers,
-      dataCoupon.allowAssistantWhatsapp,
+      selectedTypeCoupon.value.value,
+      selectedTypeCoupon.value.value === 'subscription' ? selectedSubscription.value.value : null,
+      selectedTypeCoupon.value.value === 'resource' ? selectedResource.value.value : null,
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
-      dataCoupon.dateExpires.trim() !== '' ? dataCoupon.dateExpires : null,
+      dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
     );
     if (response?.status === 200) {
       clear();
@@ -79,21 +132,16 @@ const save = async () => {
   }
 };
 const update = async () => {
-  const check = checkDataCoupon(
-    dataCoupon,
-    showDiscount.value,
-    dataCoupon.dateExpires.trim() !== '',
-  );
+  const check = checkDataCoupon(dataCoupon, showExpired.value);
   if (check.status) {
     const response = await useCouponStore().updateCoupon(
       props.dataId ?? '',
       dataCoupon.name,
-      dataCoupon.movements,
-      dataCoupon.allowFinancial,
-      dataCoupon.allowMembers,
-      dataCoupon.allowAssistantWhatsapp,
+      selectedTypeCoupon.value.value,
+      selectedTypeCoupon.value.value === 'subscription' ? selectedSubscription.value.value : null,
+      selectedTypeCoupon.value.value === 'resource' ? selectedResource.value.value : null,
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
-      dataCoupon.dateExpires.trim() !== '' ? dataCoupon.dateExpires : null,
+      dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
     );
     if (response?.status === 200) {
       clear();
@@ -109,12 +157,8 @@ const update = async () => {
 const mountEdit = (coupon: CouponData): void => {
   Object.assign(dataCoupon, {
     name: coupon.name,
-    movements: coupon.movements,
-    allowFinancial: coupon.allow_financial,
-    allowMembers: coupon.allow_members,
-    allowAssistantWhatsapp: coupon.allow_assistant_whatsapp,
-    newPrice: coupon.new_price ?? '',
-    dateExpires: coupon.date_expires ?? '',
+    discount: coupon.discount,
+    dateExpiration: coupon.date_expiration ?? '',
   });
 };
 const checkDataEdit = async () => {
@@ -126,18 +170,33 @@ const checkDataEdit = async () => {
   }
 };
 
+const open = computed({
+  get: () => props.open,
+  set: () => emit('update:open'),
+});
+
 watch(
   () => dataCoupon.discount,
   (discount) => {
     dataCoupon.discount = discount.replace(/^0+/, '');
   },
 );
-watch(showExpired, () => {
-  dataCoupon.dateExpires = '';
-});
 watch(showDiscount, () => {
   dataCoupon.discount = '';
 });
+watch(showExpired, () => {
+  if (showExpired.value == 'Não') {
+    dataCoupon.dateExpiration = '';
+  }
+});
+watch(
+  () => dataCoupon.discount,
+  (discount) => {
+    if (Number(discount) > 100) {
+      dataCoupon.discount = '100';
+    }
+  },
+);
 watch(open, async () => {
   if (open.value) {
     clear();
@@ -157,7 +216,7 @@ watch(open, async () => {
             v-model="dataCoupon.name"
             bg-color="white"
             label-color="black"
-            filled
+            outlined
             label="Nome do cupom"
             dense
             input-class="text-black"
@@ -168,88 +227,58 @@ watch(open, async () => {
               <q-icon name="sell" color="black" size="20px" />
             </template>
           </q-input>
-          <q-input
-            v-model="dataCoupon.movements"
+          <q-select
+            v-model="selectedTypeCoupon"
+            :options="optionsTypeCoupon"
+            label="Tipo de cupom"
+            outlined
+            dense
+            options-dense
             bg-color="white"
             label-color="black"
-            filled
-            label="Quantidade de movimentações"
-            dense
-            input-class="text-black"
-            mask="####"
             :readonly="loadingCoupon"
           >
             <template v-slot:prepend>
-              <q-icon name="pin" color="black" size="20px" />
+              <q-icon name="fact_check" color="black" size="20px" />
             </template>
-          </q-input>
-          <q-toggle
-            v-model="dataCoupon.allowFinancial"
-            :readonly="loadingCoupon"
-            :true-value="1"
-            :false-value="0"
-          >
-            <span>
-              Permitir organização
-              <span class="text-bold">acessar contabilidade</span>
-            </span>
-          </q-toggle>
-          <q-toggle
-            v-model="dataCoupon.allowMembers"
-            :readonly="loadingCoupon"
-            :true-value="1"
-            :false-value="0"
-          >
-            <span>
-              Permitir organização
-              <span class="text-bold">acessar gerencimanto de membros</span>
-            </span>
-          </q-toggle>
-          <q-toggle
-            v-model="dataCoupon.allowAssistantWhatsapp"
-            :readonly="loadingCoupon"
-            :true-value="1"
-            :false-value="0"
-          >
-            <span>
-              Permitir organização
-              <span class="text-bold">ter acesso ao assistente de whatsapp</span>
-            </span>
-          </q-toggle>
-          <q-toggle v-model="showExpired" :readonly="loadingCoupon">
-            <span>
-              O cupom
-              <span class="text-bold">tem data de expiração</span>
-            </span>
-          </q-toggle>
-          <q-input
-            v-show="showExpired"
-            v-model="dataCoupon.dateExpires"
+          </q-select>
+          <q-select
+            v-if="selectedTypeCoupon.value === 'resource'"
+            v-model="selectedResource"
+            :options="optionsResource"
+            label="Recurso"
+            outlined
+            dense
+            options-dense
             bg-color="white"
             label-color="black"
-            filled
-            label="Data de expiração"
-            dense
-            input-class="text-black"
-            mask="##/##/####"
             :readonly="loadingCoupon"
           >
             <template v-slot:prepend>
-              <q-icon name="event" color="black" size="20px" />
+              <q-icon name="check_circle" color="black" size="20px" />
             </template>
-          </q-input>
-          <q-toggle v-model="showDiscount" :readonly="loadingCoupon">
-            <span>
-              O cupom
-              <span class="text-bold">gera desconto na assinatura</span>
-            </span>
-          </q-toggle>
+          </q-select>
+          <q-select
+            v-else
+            v-model="selectedSubscription"
+            :options="optionsSubscription"
+            label="Plano"
+            outlined
+            dense
+            options-dense
+            bg-color="white"
+            label-color="black"
+            :readonly="loadingCoupon"
+          >
+            <template v-slot:prepend>
+              <q-icon name="check_circle" color="black" size="20px" />
+            </template>
+          </q-select>
           <q-input
-            v-show="showDiscount"
             v-model="dataCoupon.discount"
             bg-color="white"
             label-color="black"
-            filled
+            outlined
             label="Desconto"
             dense
             input-class="text-black"
@@ -258,6 +287,37 @@ watch(open, async () => {
           >
             <template v-slot:prepend>
               <q-icon name="percent" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-select
+            v-model="showExpired"
+            :options="['Sim', 'Não']"
+            label="Data de expiração"
+            outlined
+            dense
+            options-dense
+            bg-color="white"
+            label-color="black"
+            :readonly="loadingCoupon"
+          >
+            <template v-slot:prepend>
+              <q-icon name="calendar_month" color="black" size="20px" />
+            </template>
+          </q-select>
+          <q-input
+            v-model="dataCoupon.dateExpiration"
+            bg-color="white"
+            label-color="black"
+            outlined
+            label="Data de expiração"
+            dense
+            input-class="text-black"
+            mask="##/##/####"
+            :readonly="loadingCoupon"
+            :disable="showExpired == 'Não'"
+          >
+            <template v-slot:prepend>
+              <q-icon name="event" color="black" size="20px" />
             </template>
           </q-input>
         </q-form>

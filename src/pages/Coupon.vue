@@ -6,6 +6,7 @@ import { useCouponStore } from 'src/stores/coupon-store';
 import { storeToRefs } from 'pinia';
 import FormCoupon from 'src/components/forms/FormCoupon.vue';
 import { formatDate } from 'src/helpers/formatDate';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'Coupon',
@@ -35,6 +36,12 @@ const columnsCoupon = reactive<QuasarTable[]>([
     name: 'created_at',
     label: 'Data de criação',
     field: 'created_at',
+    align: 'center',
+  },
+  {
+    name: 'date_expiration',
+    label: 'Data de expiração',
+    field: 'date_expiration',
     align: 'center',
   },
   {
@@ -145,6 +152,9 @@ onMounted(async () => {
               <q-td key="created_at" :props="props" class="text-center">
                 {{ formatDate(props.row.created_at) }}
               </q-td>
+              <q-td key="date_expiration" :props="props" class="text-center">
+                {{ props.row.date_expiration }}
+              </q-td>
               <q-td key="action" :props="props">
                 <q-btn
                   @click="handleEdit(props.row.id)"
@@ -175,7 +185,7 @@ onMounted(async () => {
       :open="showConfirmAction"
       label-action="Continuar"
       title="Confirmação de exclusão"
-      message="Excluindo o cupom, as organizações que estiverem vinculadas poderão serem afetadas. Caso tenha certeza de que deseja excluir a organização, clique em 'Continuar'."
+      message="Excluindo o cupom, as organizações que estiverem vinculadas poderão serem afetadas. Caso tenha certeza de que deseja excluir o cupom, clique em 'Continuar'."
       @update:open="closeConfirmAction"
       @update:ok="closeConfirmActionOk"
     />
