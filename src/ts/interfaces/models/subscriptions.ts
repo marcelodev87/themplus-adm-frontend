@@ -21,3 +21,10 @@ export interface CouponData {
   discount: number;
   date_expiration: string | null;
 }
+
+export interface Subscription {
+  id: string
+  enterprises_using: number
+  name: string
+  price: number
+}

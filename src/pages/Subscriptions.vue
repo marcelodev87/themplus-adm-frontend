@@ -2,13 +2,17 @@
 import { onMounted, reactive, ref } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
+import { useSubscriptionStore } from 'src/stores/subscription-store';
+import { storeToRefs } from 'pinia';
+import { formatToBr } from 'src/helpers/formatMoney';
 
 defineOptions({
   name: 'Subscriptions',
 });
 
+const {listSubscription, loadingSubscription} = storeToRefs(useSubscriptionStore())
 const filterSubscription = ref<string>('');
-const columnsCoupon = reactive<QuasarTable[]>([
+const columnsSubscriptions = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Nome',
@@ -22,9 +26,15 @@ const columnsCoupon = reactive<QuasarTable[]>([
     align: 'left',
   },
   {
-    name: 'created_at',
-    label: 'Data de criação',
-    field: 'created_at',
+    name: 'enterprises_using',
+    label: 'Utilizando',
+    field: 'enterprises_using',
+    align: 'left',
+  },
+  {
+    name: 'invoicing',
+    label: 'Faturamento mensal',
+    field: 'invoicing',
     align: 'left',
   },
   {
@@ -38,9 +48,13 @@ const columnsCoupon = reactive<QuasarTable[]>([
 const clear = (): void => {
   filterSubscription.value = '';
 };
+const fetchSubscriptions = async ()  => {
+  await useSubscriptionStore().getSubscriptions()
+}
 
-onMounted(() => {
+onMounted(async() => {
   clear();
+  await fetchSubscriptions()
 });
 </script>
 
@@ -56,23 +70,13 @@ onMounted(() => {
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de assinaturas" />
       </div>
-      <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end q-gutter-x-sm">
-        <q-btn
-          icon-right="add"
-          label="Assinatura"
-          class="q-mr-sm bg-contabilidade"
-          unelevated
-          no-caps
-        />
-      </div>
     </header>
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="[]"
-          :columns="columnsCoupon"
-          :filter="filterSubscription"
-          :loading="false"
+          :rows="listSubscription"
+          :columns="columnsSubscriptions"
+          :loading="loadingSubscription"
           flat
           bordered
           dense
@@ -83,27 +87,26 @@ onMounted(() => {
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de assinaturas</span>
-            <q-space />
-            <q-input filled v-model="filterSubscription" dense label="Pesquisar">
-              <template v-slot:prepend>
-                <q-icon name="search" />
-              </template>
-            </q-input>
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
-              <q-td key="name" :props="props" class="text-left">
+              <q-td key="name" :props="props" class="text-left text-capitalize">
                 {{ props.row.name }}
               </q-td>
+              <q-td key="price" :props="props" class="text-left">
+                {{ formatToBr(props.row.price) }}
+              </q-td>
               <q-td key="enterprises_using" :props="props" class="text-left">
-                {{ props.row.price }}
+                {{ props.row.enterprises_using }}
+              </q-td>
+              <q-td key="invoicing" :props="props" class="text-left">
+                {{ formatToBr(String(Number(props.row.price) * props.row.enterprises_using)) }}
               </q-td>
               <q-td key="created_at" :props="props" class="text-left">
                 {{ props.row.created_at }}
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn :disable="false" size="sm" flat round color="black" icon="edit" />
-                <q-btn :disable="false" size="sm" flat round color="red" icon="delete" />
+                <q-btn :disable="loadingSubscription" size="sm" flat round color="black" icon="edit" />
               </q-td>
             </q-tr>
           </template>
