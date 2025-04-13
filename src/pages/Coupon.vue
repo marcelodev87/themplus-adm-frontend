@@ -99,8 +99,18 @@ const getClassLimit = (data: CouponTable)=>{
     return 'text-blue'
   }
 }
-const getExpirationColor = (dateExpiration: string): string =>{
-  const [day, month, year] = dateExpiration.split('/') as [string, string, string];
+const getExpirationColor = (dateExpiration: string | null | undefined): string => {
+  if (!dateExpiration || typeof dateExpiration !== 'string') {
+    return 'text-grey';
+  }
+
+  const parts = dateExpiration.split('/') as [string, string, string];
+  if (parts.length !== 3) {
+    return 'text-grey';
+  }
+
+  const [day, month, year] = parts;
+
   const expiration = new Date(+year, +month - 1, +day);
   const today = new Date();
 
@@ -198,7 +208,7 @@ onMounted(async () => {
               </q-td>
               <q-td key="date_expiration" :props="props" class="text-center" :class="getExpirationColor(props.row.date_expiration)">
                 {{ props.row.date_expiration }}
-                <q-icon name="info" color="grey" size="14px" class="q-ml-md">
+                <q-icon v-show="props.row.date_expiration" name="info" color="grey" size="14px" class="q-ml-md">
                   <q-tooltip class="bg-grey-2">
                     <div class="text-bold">
                       <span class="text-green">Verde: </span>
