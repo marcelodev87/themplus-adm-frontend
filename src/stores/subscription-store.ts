@@ -2,7 +2,10 @@
 import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
-import { getSubscriptionsService, updateSubscriptionService } from 'src/services/subscription-service';
+import {
+  getSubscriptionsService,
+  updateSubscriptionService,
+} from 'src/services/subscription-service';
 import type { Subscription } from 'src/ts/interfaces/models/subscriptions';
 
 export const useSubscriptionStore = defineStore('subscription', {
@@ -52,19 +55,13 @@ export const useSubscriptionStore = defineStore('subscription', {
         this.setLoading(false);
       }
     },
-    async updateSubscription(
-      id: string,
-      price: number,
-    ) {
+    async updateSubscription(id: string, price: number) {
       try {
         this.setLoading(true);
-        const response = await updateSubscriptionService(
-          id,
-          price
-        );
+        const response = await updateSubscriptionService(id, price);
         if (response.status === 200) {
           this.clearListSubscription();
-        this.setListSubscription(response.data.subscriptions);
+          this.setListSubscription(response.data.subscriptions);
           this.createSuccess(response.data.message);
         }
         return response;

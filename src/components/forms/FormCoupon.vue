@@ -23,8 +23,8 @@ const emit = defineEmits<{
 const { loadingCoupon } = storeToRefs(useCouponStore());
 
 const subscriptions = reactive<{ id: string; name: string }[]>([]);
-const showExpired = ref<'Sim'|'Não'>('Não');
-const showLimit= ref<'Sim'|'Não'>('Não');
+const showExpired = ref<'Sim' | 'Não'>('Não');
+const showLimit = ref<'Sim' | 'Não'>('Não');
 const selectedTypeCoupon = ref<QuasarSelect<string>>({
   label: 'Plano',
   value: 'subscription',
@@ -41,7 +41,7 @@ const dataCoupon = reactive({
   name: '' as string,
   discount: '' as string,
   dateExpiration: '' as string,
-  limit: '' as string
+  limit: '' as string,
 });
 const optionsTypeCoupon = reactive([
   {
@@ -95,7 +95,7 @@ const clear = (): void => {
     name: '',
     dateExpiration: '',
     discount: '',
-    limit: ''
+    limit: '',
   });
   showExpired.value = 'Não';
   selectedTypeCoupon.value = {
@@ -182,8 +182,8 @@ const setOptions = (coupon: CouponData): void => {
     };
   }
 
-  if(coupon.date_expiration){
-    showExpired.value = 'Sim'
+  if (coupon.date_expiration) {
+    showExpired.value = 'Sim';
   }
 };
 const mountEdit = (coupon: CouponData): void => {
@@ -223,8 +223,8 @@ watch(showLimit, () => {
 watch(
   () => dataCoupon.discount,
   (discount) => {
-    if(dataCoupon.discount.trim() !== ''){
-       dataCoupon.discount = discount.replace(/^0+/, '');
+    if (dataCoupon.discount.trim() !== '') {
+      dataCoupon.discount = discount.replace(/^0+/, '');
     }
     if (Number(discount) > 100) {
       dataCoupon.discount = '100';

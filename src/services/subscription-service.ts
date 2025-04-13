@@ -11,7 +11,6 @@ export const getSubscriptionsService = (): Promise<{
   };
 }> => api.get(`/${baseUrl}`);
 
-
 export const updateSubscriptionService = (
   id: string,
   price: number,
@@ -24,5 +23,5 @@ export const updateSubscriptionService = (
 }> =>
   api.put(`/${baseUrl}`, {
     id,
-    price
+    price,
   });

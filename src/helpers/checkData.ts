@@ -47,7 +47,6 @@ export const checkDataSubscription = (data: { price: string }) => {
   return { status: true };
 };
 
-
 export const checkPassword = (data: { password: string; passwordConfirm: string }) => {
   if (data.password.trim() === '') {
     return { status: false, message: 'Deve ser informado uma senha' };

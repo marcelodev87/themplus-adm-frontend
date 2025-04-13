@@ -88,43 +88,42 @@ const openConfirmAction = (id: string): void => {
   selectedDataExclude.value = id;
   showConfirmAction.value = true;
 };
-const getClassLimit = (data: CouponTable)=>{
-  if(data.limit){
-    if(data.using >= data.limit){
-      return 'text-red'
+const getClassLimit = (data: CouponTable) => {
+  if (data.limit) {
+    if (data.using >= data.limit) {
+      return 'text-red';
     } else {
-      return 'text-green'
+      return 'text-green';
     }
   } else {
-    return 'text-blue'
+    return 'text-blue';
   }
-}
-const getExpirationColor = (dateExpiration: string | null | undefined): string => {
-  if (!dateExpiration || typeof dateExpiration !== 'string') {
-    return 'text-grey';
-  }
+};
+const getExpirationColor = (dateExpiration: string | null): string => {
+  if (dateExpiration) {
+    const parts = dateExpiration.split('/') as [string, string, string];
+    if (parts.length !== 3) {
+      return 'text-grey';
+    }
+    const [day, month, year] = parts;
 
-  const parts = dateExpiration.split('/') as [string, string, string];
-  if (parts.length !== 3) {
-    return 'text-grey';
-  }
+    const expiration = new Date(+year, +month - 1, +day);
+    const today = new Date();
 
-  const [day, month, year] = parts;
+    expiration.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
-  const expiration = new Date(+year, +month - 1, +day);
-  const today = new Date();
-
-  expiration.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-
-  if (expiration.getTime() === today.getTime()) {
-    return 'text-orange';
-  } else if (expiration < today) {
-    return 'text-red';
+    if (expiration.getTime() === today.getTime()) {
+      return 'text-orange';
+    } else if (expiration < today) {
+      return 'text-red';
+    } else {
+      return 'text-green';
+    }
   } else {
-    return 'text-green';
+    return 'text-grey';
   }
-}
+};
 
 onMounted(async () => {
   clear();
@@ -184,21 +183,32 @@ onMounted(async () => {
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="enterprises_using" :props="props" class="text-center" :class="getClassLimit(props.row)">
+              <q-td
+                key="enterprises_using"
+                :props="props"
+                class="text-center"
+                :class="getClassLimit(props.row)"
+              >
                 {{ props.row.using }} / {{ props.row.limit ?? '&infin;' }}
                 <q-icon name="info" color="grey" size="14px" class="q-ml-md">
                   <q-tooltip class="bg-grey-2">
-                    <div class="text-bold">
+                    <div class="text-bold" v-show="getClassLimit(props.row) == 'text-green'">
                       <span class="text-green">Verde: </span>
-                      <span class="text-grey">Seu cupom tendo limite para usos e a utilização não chegou na quantidade disponibilizada</span>
+                      <span class="text-grey"
+                        >Seu cupom tendo limite para usos e a utilização não chegou na quantidade
+                        disponibilizada</span
+                      >
                     </div>
-                    <div class="text-bold">
+                    <div class="text-bold" v-show="getClassLimit(props.row) == 'text-blue'">
                       <span class="text-blue text-bold">Azul: </span>
                       <span class="text-grey">Seu cupom não tem limite para utilização</span>
                     </div>
-                    <div class="text-bold">
+                    <div class="text-bold" v-show="getClassLimit(props.row) == 'text-red'">
                       <span class="text-red text-bold">Vermelho: </span>
-                      <span class="text-grey">Seu cupom tendo utilizado todo seu limite de quantidade disponibilizada</span>
+                      <span class="text-grey"
+                        >Seu cupom tendo utilizado todo seu limite de quantidade
+                        disponibilizada</span
+                      >
                     </div>
                   </q-tooltip>
                 </q-icon>
@@ -206,20 +216,42 @@ onMounted(async () => {
               <q-td key="created_at" :props="props" class="text-center">
                 {{ formatDate(props.row.created_at) }}
               </q-td>
-              <q-td key="date_expiration" :props="props" class="text-center" :class="getExpirationColor(props.row.date_expiration)">
+              <q-td
+                key="date_expiration"
+                :props="props"
+                class="text-center"
+                :class="getExpirationColor(props.row.date_expiration)"
+              >
                 {{ props.row.date_expiration }}
-                <q-icon v-show="props.row.date_expiration" name="info" color="grey" size="14px" class="q-ml-md">
+                <q-icon
+                  v-show="props.row.date_expiration"
+                  name="info"
+                  color="grey"
+                  size="14px"
+                  class="q-ml-md"
+                >
                   <q-tooltip class="bg-grey-2">
-                    <div class="text-bold">
+                    <div
+                      class="text-bold"
+                      v-show="getExpirationColor(props.row.date_expiration) == 'text-green'"
+                    >
                       <span class="text-green">Verde: </span>
-                      <span class="text-grey">A data de expiração está dentro do prazo ou não tem data de expiração</span>
+                      <span class="text-grey"
+                        >A data de expiração está dentro do prazo ou não tem data de expiração</span
+                      >
                     </div>
-                    <div class="text-bold">
-                      <span class="text-orange text-bold">Laranja: </span>
+                    <div
+                      class="text-bold"
+                      v-show="getExpirationColor(props.row.date_expiration) == 'text-orange'"
+                    >
+                      <span class="text-orange">Laranja: </span>
                       <span class="text-grey">A data de expiração está para hoje</span>
                     </div>
-                    <div class="text-bold">
-                      <span class="text-red text-bold">Vermelho: </span>
+                    <div
+                      class="text-bold"
+                      v-show="getExpirationColor(props.row.date_expiration) == 'text-red'"
+                    >
+                      <span class="text-red">Vermelho: </span>
                       <span class="text-grey">A data de expiração já ultrapassou a data atual</span>
                     </div>
                   </q-tooltip>

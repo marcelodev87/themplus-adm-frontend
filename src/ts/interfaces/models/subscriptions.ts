@@ -17,7 +17,7 @@ export interface CouponData {
   id: string;
   name: string;
   type: string;
-  limit: number
+  limit: number;
   subscription_id: string | null;
   service: string | null;
   discount: number;
@@ -25,8 +25,8 @@ export interface CouponData {
 }
 
 export interface Subscription {
-  id: string
-  enterprises_using: number
-  name: string
-  price: number
+  id: string;
+  enterprises_using: number;
+  name: string;
+  price: number;
 }

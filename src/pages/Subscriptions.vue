@@ -11,10 +11,10 @@ defineOptions({
   name: 'Subscriptions',
 });
 
-const {listSubscription, loadingSubscription} = storeToRefs(useSubscriptionStore())
+const { listSubscription, loadingSubscription } = storeToRefs(useSubscriptionStore());
 
-const showFormSubscription = ref<boolean>(false)
-const dataEdit = ref<{id: string, price: string, name: string} | null>(null)
+const showFormSubscription = ref<boolean>(false);
+const dataEdit = ref<{ id: string; price: string; name: string } | null>(null);
 const filterSubscription = ref<string>('');
 const columnsSubscriptions = reactive<QuasarTable[]>([
   {
@@ -45,26 +45,26 @@ const columnsSubscriptions = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   filterSubscription.value = '';
-  dataEdit.value = null
+  dataEdit.value = null;
 };
-const fetchSubscriptions = async ()  => {
-  await useSubscriptionStore().getSubscriptions()
-}
-const closeFormSubscription = ():void => {
-  showFormSubscription.value = false
-  clear()
-}
-const openFormSubscription = ():void => {
-  showFormSubscription.value = true
-}
-const handleEdit = (data: {id: string, price: string, name: string}): void => {
-  dataEdit.value = data
-  openFormSubscription()
-}
-
-onMounted(async() => {
+const fetchSubscriptions = async () => {
+  await useSubscriptionStore().getSubscriptions();
+};
+const closeFormSubscription = (): void => {
+  showFormSubscription.value = false;
   clear();
-  await fetchSubscriptions()
+};
+const openFormSubscription = (): void => {
+  showFormSubscription.value = true;
+};
+const handleEdit = (data: { id: string; price: string; name: string }): void => {
+  dataEdit.value = data;
+  openFormSubscription();
+};
+
+onMounted(async () => {
+  clear();
+  await fetchSubscriptions();
 });
 </script>
 
@@ -113,13 +113,26 @@ onMounted(async() => {
                 {{ props.row.created_at }}
               </q-td>
               <q-td key="action" :props="props">
-                <q-btn @click="handleEdit(props.row)" v-show="props.row.name !== 'free'" :disable="loadingSubscription" size="sm" flat round color="black" icon="edit" />
+                <q-btn
+                  @click="handleEdit(props.row)"
+                  v-show="props.row.name !== 'free'"
+                  :disable="loadingSubscription"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="edit"
+                />
               </q-td>
             </q-tr>
           </template>
         </q-table>
       </main>
     </q-scroll-area>
-    <FormSubscription :open="showFormSubscription" :data="dataEdit" @update:open="closeFormSubscription"/>
+    <FormSubscription
+      :open="showFormSubscription"
+      :data="dataEdit"
+      @update:open="closeFormSubscription"
+    />
   </section>
 </template>

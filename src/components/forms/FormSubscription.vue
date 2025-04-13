@@ -12,7 +12,7 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
-  data: {id: string, name: string , price: string} | null;
+  data: { id: string; name: string; price: string } | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -27,7 +27,7 @@ const dataSubscription = reactive({
 
 const clear = (): void => {
   Object.assign(dataSubscription, {
-     name: '' as string,
+    name: '' as string,
     price: '' as string,
   });
 };
@@ -36,7 +36,7 @@ const update = async () => {
   if (check.status) {
     const response = await useSubscriptionStore().updateSubscription(
       props.data?.id ?? '',
-      Number(dataSubscription.price)
+      Number(dataSubscription.price),
     );
     if (response?.status === 200) {
       clear();
@@ -50,11 +50,11 @@ const update = async () => {
   }
 };
 const checkDataEdit = () => {
-    if (props.data) {
-      Object.assign(dataSubscription, {
-        name: props.data.name,
-        price: props.data.price
-      });
+  if (props.data) {
+    Object.assign(dataSubscription, {
+      name: props.data.name,
+      price: props.data.price,
+    });
   }
 };
 
