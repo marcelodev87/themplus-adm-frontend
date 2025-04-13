@@ -99,6 +99,22 @@ const getClassLimit = (data: CouponTable)=>{
     return 'text-blue'
   }
 }
+const getExpirationColor = (dateExpiration: string): string =>{
+  const [day, month, year] = dateExpiration.split('/') as [string, string, string];
+  const expiration = new Date(+year, +month - 1, +day);
+  const today = new Date();
+
+  expiration.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  if (expiration.getTime() === today.getTime()) {
+    return 'text-orange';
+  } else if (expiration < today) {
+    return 'text-red';
+  } else {
+    return 'text-green';
+  }
+}
 
 onMounted(async () => {
   clear();
@@ -160,12 +176,44 @@ onMounted(async () => {
               </q-td>
               <q-td key="enterprises_using" :props="props" class="text-center" :class="getClassLimit(props.row)">
                 {{ props.row.using }} / {{ props.row.limit ?? '&infin;' }}
+                <q-icon name="info" color="grey" size="14px" class="q-ml-md">
+                  <q-tooltip class="bg-grey-2">
+                    <div class="text-bold">
+                      <span class="text-green">Verde: </span>
+                      <span class="text-grey">Seu cupom tendo limite para usos e a utilização não chegou na quantidade disponibilizada</span>
+                    </div>
+                    <div class="text-bold">
+                      <span class="text-blue text-bold">Azul: </span>
+                      <span class="text-grey">Seu cupom não tem limite para utilização</span>
+                    </div>
+                    <div class="text-bold">
+                      <span class="text-red text-bold">Vermelho: </span>
+                      <span class="text-grey">Seu cupom tendo utilizado todo seu limite de quantidade disponibilizada</span>
+                    </div>
+                  </q-tooltip>
+                </q-icon>
               </q-td>
               <q-td key="created_at" :props="props" class="text-center">
                 {{ formatDate(props.row.created_at) }}
               </q-td>
-              <q-td key="date_expiration" :props="props" class="text-center">
+              <q-td key="date_expiration" :props="props" class="text-center" :class="getExpirationColor(props.row.date_expiration)">
                 {{ props.row.date_expiration }}
+                <q-icon name="info" color="grey" size="14px" class="q-ml-md">
+                  <q-tooltip class="bg-grey-2">
+                    <div class="text-bold">
+                      <span class="text-green">Verde: </span>
+                      <span class="text-grey">A data de expiração está dentro do prazo ou não tem data de expiração</span>
+                    </div>
+                    <div class="text-bold">
+                      <span class="text-orange text-bold">Laranja: </span>
+                      <span class="text-grey">A data de expiração está para hoje</span>
+                    </div>
+                    <div class="text-bold">
+                      <span class="text-red text-bold">Vermelho: </span>
+                      <span class="text-grey">A data de expiração já ultrapassou a data atual</span>
+                    </div>
+                  </q-tooltip>
+                </q-icon>
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
