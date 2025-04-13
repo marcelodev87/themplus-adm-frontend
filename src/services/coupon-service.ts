@@ -28,6 +28,7 @@ export const createCouponService = (
   discount: number | null,
   dateExpiration: string | null,
   limit: number | null,
+  description: string | null,
 ): Promise<{
   status: number;
   data: {
@@ -43,6 +44,7 @@ export const createCouponService = (
     discount,
     dateExpiration,
     limit,
+    description
   });
 
 export const updateCouponService = (
@@ -54,6 +56,7 @@ export const updateCouponService = (
   discount: number | null,
   dateExpiration: string | null,
   limit: number | null,
+  description: string | null,
 ): Promise<{
   status: number;
   data: {
@@ -70,6 +73,7 @@ export const updateCouponService = (
     discount,
     dateExpiration,
     limit,
+    description
   });
 
 export const deleteCouponService = (

@@ -42,6 +42,7 @@ const dataCoupon = reactive({
   discount: '' as string,
   dateExpiration: '' as string,
   limit: '' as string,
+  description: '' as string
 });
 const optionsTypeCoupon = reactive([
   {
@@ -96,6 +97,7 @@ const clear = (): void => {
     dateExpiration: '',
     discount: '',
     limit: '',
+    description: '',
   });
   showExpired.value = 'Não';
   selectedTypeCoupon.value = {
@@ -122,6 +124,7 @@ const save = async () => {
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
       dataCoupon.limit.trim() !== '' ? Number(dataCoupon.limit) : null,
+      dataCoupon.description.trim() !== '' ? dataCoupon.description : null,
     );
     if (response?.status === 200) {
       clear();
@@ -146,6 +149,7 @@ const update = async () => {
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
       dataCoupon.limit.trim() !== '' ? Number(dataCoupon.limit) : null,
+      dataCoupon.description.trim() !== '' ? dataCoupon.description : null,
     );
     if (response?.status === 200) {
       clear();
@@ -192,6 +196,7 @@ const mountEdit = (coupon: CouponData): void => {
     limit: coupon.limit,
     discount: String(coupon.discount),
     dateExpiration: coupon.date_expiration ?? '',
+    description: coupon.description ?? '',
   });
 
   setOptions(coupon);
@@ -259,6 +264,21 @@ watch(open, async () => {
           >
             <template v-slot:prepend>
               <q-icon name="sell" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-input
+            v-model="dataCoupon.description"
+            bg-color="white"
+            label-color="black"
+            outlined
+            label="Descrição"
+            dense
+            input-class="text-black"
+            maxlength="200"
+            :readonly="loadingCoupon"
+          >
+            <template v-slot:prepend>
+              <q-icon name="description" color="black" size="20px" />
             </template>
           </q-input>
           <q-select
