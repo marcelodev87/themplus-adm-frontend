@@ -49,7 +49,7 @@ const update = async () => {
     });
   }
 };
-const checkDataEdit = async () => {
+const checkDataEdit = () => {
     if (props.data) {
       Object.assign(dataSubscription, {
         name: props.data.name,
@@ -63,10 +63,10 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-watch(open, async () => {
+watch(open, () => {
   if (open.value) {
     clear();
-    await checkDataEdit();
+    checkDataEdit();
   }
 });
 </script>

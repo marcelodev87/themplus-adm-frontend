@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia';
 import FormCoupon from 'src/components/forms/FormCoupon.vue';
 import { formatDate } from 'src/helpers/formatDate';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+import type { CouponTable } from 'src/ts/interfaces/models/subscriptions';
 
 defineOptions({
   name: 'Coupon',
@@ -28,7 +29,7 @@ const columnsCoupon = reactive<QuasarTable[]>([
   },
   {
     name: 'enterprises_using',
-    label: 'Utilizando',
+    label: 'Utilização',
     field: 'enterprises_using',
     align: 'center',
   },
@@ -87,6 +88,17 @@ const openConfirmAction = (id: string): void => {
   selectedDataExclude.value = id;
   showConfirmAction.value = true;
 };
+const getClassLimit = (data: CouponTable)=>{
+  if(data.limit){
+    if(data.using >= data.limit){
+      return 'text-red'
+    } else {
+      return 'text-green'
+    }
+  } else {
+    return 'text-blue'
+  }
+}
 
 onMounted(async () => {
   clear();
@@ -146,8 +158,8 @@ onMounted(async () => {
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
               </q-td>
-              <q-td key="enterprises_using" :props="props" class="text-center">
-                {{ props.row.using }}
+              <q-td key="enterprises_using" :props="props" class="text-center" :class="getClassLimit(props.row)">
+                {{ props.row.using }} / {{ props.row.limit ?? '&infin;' }}
               </q-td>
               <q-td key="created_at" :props="props" class="text-center">
                 {{ formatDate(props.row.created_at) }}

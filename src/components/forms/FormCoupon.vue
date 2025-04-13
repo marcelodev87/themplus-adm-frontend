@@ -24,6 +24,7 @@ const { loadingCoupon } = storeToRefs(useCouponStore());
 
 const subscriptions = reactive<{ id: string; name: string }[]>([]);
 const showExpired = ref<'Sim'|'Não'>('Não');
+const showLimit= ref<'Sim'|'Não'>('Não');
 const selectedTypeCoupon = ref<QuasarSelect<string>>({
   label: 'Plano',
   value: 'subscription',
@@ -40,6 +41,7 @@ const dataCoupon = reactive({
   name: '' as string,
   discount: '' as string,
   dateExpiration: '' as string,
+  limit: '' as string
 });
 const optionsTypeCoupon = reactive([
   {
@@ -93,6 +95,7 @@ const clear = (): void => {
     name: '',
     dateExpiration: '',
     discount: '',
+    limit: ''
   });
   showExpired.value = 'Não';
   selectedTypeCoupon.value = {
@@ -118,6 +121,7 @@ const save = async () => {
       selectedTypeCoupon.value.value === 'service' ? selectedResource.value.value : null,
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
+      dataCoupon.limit.trim() !== '' ? Number(dataCoupon.limit) : null,
     );
     if (response?.status === 200) {
       clear();
@@ -141,6 +145,7 @@ const update = async () => {
       selectedTypeCoupon.value.value === 'service' ? selectedResource.value.value : null,
       dataCoupon.discount.trim() !== '' ? Number(dataCoupon.discount) : null,
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
+      dataCoupon.limit.trim() !== '' ? Number(dataCoupon.limit) : null,
     );
     if (response?.status === 200) {
       clear();
@@ -184,6 +189,7 @@ const setOptions = (coupon: CouponData): void => {
 const mountEdit = (coupon: CouponData): void => {
   Object.assign(dataCoupon, {
     name: coupon.name,
+    limit: coupon.limit,
     discount: String(coupon.discount),
     dateExpiration: coupon.date_expiration ?? '',
   });
@@ -207,6 +213,11 @@ const open = computed({
 watch(showExpired, () => {
   if (showExpired.value == 'Não') {
     dataCoupon.dateExpiration = '';
+  }
+});
+watch(showLimit, () => {
+  if (showLimit.value == 'Não') {
+    dataCoupon.limit = '';
   }
 });
 watch(
@@ -341,6 +352,37 @@ watch(open, async () => {
           >
             <template v-slot:prepend>
               <q-icon name="event" color="black" size="20px" />
+            </template>
+          </q-input>
+          <q-select
+            v-model="showLimit"
+            :options="['Sim', 'Não']"
+            label="Limite de utilização"
+            outlined
+            dense
+            options-dense
+            bg-color="white"
+            label-color="black"
+            :readonly="loadingCoupon"
+          >
+            <template v-slot:prepend>
+              <q-icon name="donut_large" color="black" size="20px" />
+            </template>
+          </q-select>
+          <q-input
+            v-model="dataCoupon.limit"
+            bg-color="white"
+            label-color="black"
+            outlined
+            label="Limite"
+            dense
+            input-class="text-black"
+            mask="#########"
+            :readonly="loadingCoupon"
+            :disable="showLimit == 'Não'"
+          >
+            <template v-slot:prepend>
+              <q-icon name="pin" color="black" size="20px" />
             </template>
           </q-input>
         </q-form>

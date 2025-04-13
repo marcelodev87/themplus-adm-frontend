@@ -8,6 +8,7 @@ export interface CouponTable {
   name: string;
   type: string;
   using: number;
+  limit: number | null;
   date_expiration: string;
   created_at: string;
 }
@@ -16,6 +17,7 @@ export interface CouponData {
   id: string;
   name: string;
   type: string;
+  limit: number
   subscription_id: string | null;
   service: string | null;
   discount: number;
