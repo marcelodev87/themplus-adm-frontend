@@ -179,7 +179,7 @@ const setOptions = (coupon: CouponData): void => {
       label: 'Recurso',
       value: 'service',
     };
-    const resource = optionsResource.find((item) => item.value == coupon.service);
+    const resource = optionsResource.find((item) => item.value == coupon.service_id);
     selectedResource.value = {
       label: resource?.label ?? '',
       value: resource?.value ?? '',
