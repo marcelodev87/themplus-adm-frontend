@@ -88,7 +88,7 @@ export const useCouponStore = defineStore('coupon', {
           discount,
           dateExpiration,
           limit,
-          description
+          description,
         );
         if (response.status === 200) {
           this.clearListCoupon();
@@ -125,7 +125,7 @@ export const useCouponStore = defineStore('coupon', {
           discount,
           dateExpiration,
           limit,
-          description
+          description,
         );
         if (response.status === 200) {
           this.clearListCoupon();

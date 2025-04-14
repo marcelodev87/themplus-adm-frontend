@@ -42,7 +42,7 @@ const dataCoupon = reactive({
   discount: '' as string,
   dateExpiration: '' as string,
   limit: '' as string,
-  description: '' as string
+  description: '' as string,
 });
 const optionsTypeCoupon = reactive([
   {

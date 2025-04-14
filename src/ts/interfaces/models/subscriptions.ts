@@ -17,7 +17,7 @@ export interface CouponTable {
 export interface CouponData {
   id: string;
   name: string;
-  description: string
+  description: string;
   type: string;
   limit: number;
   subscription_id: string | null;

@@ -32,10 +32,13 @@ export const useDepartmentStore = defineStore('department', {
         const tree: DepartmentNode[] = [];
 
         departments.forEach((department) => {
-          if (department.parent_id && map[department.parent_id]) {
-            map[department.parent_id].children.push(map[department.id]);
-          } else {
-            tree.push(map[department.id]);
+          const parent = map[department.parent_id];
+          const child = map[department.id];
+
+          if (department.parent_id && parent && child) {
+            parent.children.push(child);
+          } else if (child) {
+            tree.push(child);
           }
         });
 

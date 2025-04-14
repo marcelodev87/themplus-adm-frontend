@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-redundant-type-constituents -->
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <!-- eslint-disable no-restricted-syntax -->

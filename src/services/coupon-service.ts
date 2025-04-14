@@ -44,7 +44,7 @@ export const createCouponService = (
     discount,
     dateExpiration,
     limit,
-    description
+    description,
   });
 
 export const updateCouponService = (
@@ -73,7 +73,7 @@ export const updateCouponService = (
     discount,
     dateExpiration,
     limit,
-    description
+    description,
   });
 
 export const deleteCouponService = (
