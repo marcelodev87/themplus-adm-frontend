@@ -67,7 +67,7 @@ const clear = (): void => {
     discount: '',
     limit: '',
     description: '',
-    code: ''
+    code: '',
   });
   showExpired.value = 'Não';
   showLimit.value = 'Não';
@@ -96,7 +96,7 @@ const save = async () => {
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
       dataCoupon.limit.trim() !== '' ? Number(dataCoupon.limit) : null,
       dataCoupon.description.trim() !== '' ? dataCoupon.description : null,
-      dataCoupon.code
+      dataCoupon.code,
     );
     if (response?.status === 200) {
       clear();
@@ -122,7 +122,7 @@ const update = async () => {
       dataCoupon.dateExpiration.trim() !== '' ? dataCoupon.dateExpiration : null,
       dataCoupon.limit.trim() !== '' ? Number(dataCoupon.limit) : null,
       dataCoupon.description.trim() !== '' ? dataCoupon.description : null,
-      dataCoupon.code
+      dataCoupon.code,
     );
     if (response?.status === 200) {
       clear();
@@ -162,11 +162,14 @@ const setOptions = (coupon: CouponData): void => {
   if (coupon.date_expiration) {
     showExpired.value = 'Sim';
   }
+  if (coupon.limit) {
+    showLimit.value = 'Sim';
+  }
 };
 const mountEdit = (coupon: CouponData): void => {
   Object.assign(dataCoupon, {
     name: coupon.name,
-    limit: coupon.limit,
+    limit: coupon.limit ? String(coupon.limit) : '',
     code: coupon.code,
     discount: String(coupon.discount),
     dateExpiration: coupon.date_expiration ?? '',
@@ -186,17 +189,17 @@ const checkDataEdit = async () => {
 const fetchService = async () => {
   await useResourceStore().getResources();
   selectedResource.value = listResource.value[0] ?? { label: '', value: '' };
-}
+};
 const fetchSubscriptions = async () => {
   await useSubscriptionStore().getSubscriptions();
-  selectedSubscription.value = listSubscription.value.length > 0
-    ? {
-        label: listSubscription.value[0]?.name ?? '',
-        value: listSubscription.value[0]?.id ?? '',
-      }
-    : { label: '', value: '' };
+  selectedSubscription.value =
+    listSubscription.value.length > 0
+      ? {
+          label: listSubscription.value[0]?.name ?? '',
+          value: listSubscription.value[0]?.id ?? '',
+        }
+      : { label: '', value: '' };
 };
-
 
 const open = computed({
   get: () => props.open,
@@ -206,10 +209,10 @@ const optionsSubscriptions = computed(() => {
   return listSubscription.value.map((item) => {
     return {
       label: item.name,
-      value: item.id
-    }
-  })
-})
+      value: item.id,
+    };
+  });
+});
 
 watch(showExpired, () => {
   if (showExpired.value == 'Não') {
@@ -281,7 +284,9 @@ watch(open, async () => {
             dense
             input-class="text-black"
             maxlength="40"
-            :readonly="loadingCoupon || loadingResource || props.dataId !== null || loadingSubscription"
+            :readonly="
+              loadingCoupon || loadingResource || props.dataId !== null || loadingSubscription
+            "
           >
             <template v-slot:prepend>
               <q-icon name="code" color="black" size="20px" />
@@ -311,7 +316,9 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon || loadingResource || loadingSubscription"
+            :readonly="
+              loadingCoupon || loadingResource || loadingSubscription || props.dataId !== null
+            "
           >
             <template v-slot:prepend>
               <q-icon name="fact_check" color="black" size="20px" />
@@ -327,7 +334,9 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon || loadingResource || loadingSubscription"
+            :readonly="
+              loadingCoupon || loadingResource || loadingSubscription || props.dataId !== null
+            "
           >
             <template v-slot:prepend>
               <q-icon name="check_circle" color="black" size="20px" />
@@ -343,7 +352,9 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon || loadingResource || loadingSubscription"
+            :readonly="
+              loadingCoupon || loadingResource || loadingSubscription || props.dataId !== null
+            "
           >
             <template v-slot:prepend>
               <q-icon name="check_circle" color="black" size="20px" />
@@ -358,7 +369,9 @@ watch(open, async () => {
             dense
             input-class="text-black"
             mask="###"
-            :readonly="loadingCoupon || loadingResource || loadingSubscription"
+            :readonly="
+              loadingCoupon || loadingResource || loadingSubscription || props.dataId !== null
+            "
           >
             <template v-slot:prepend>
               <q-icon name="percent" color="black" size="20px" />
@@ -373,7 +386,9 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon || loadingResource || loadingSubscription"
+            :readonly="
+              loadingCoupon || loadingResource || loadingSubscription || props.dataId !== null
+            "
           >
             <template v-slot:prepend>
               <q-icon name="calendar_month" color="black" size="20px" />
@@ -388,7 +403,9 @@ watch(open, async () => {
             dense
             input-class="text-black"
             mask="##/##/####"
-            :readonly="loadingCoupon || loadingResource || loadingSubscription"
+            :readonly="
+              loadingCoupon || loadingResource || loadingSubscription || props.dataId !== null
+            "
             :disable="showExpired == 'Não'"
           >
             <template v-slot:prepend>

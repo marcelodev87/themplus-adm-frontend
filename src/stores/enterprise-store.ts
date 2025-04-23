@@ -5,7 +5,9 @@ import { Notify } from 'quasar';
 import {
   createEnterpriseByAdmService,
   deleteEnterpriseService,
+  getCouponsInEnterpriseService,
   getEnterprisesService,
+  removeCouponEnterpriseService,
   setCouponService,
 } from 'src/services/enterprise-service';
 import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
@@ -55,6 +57,32 @@ export const useEnterpriseStore = defineStore('enterprise', {
         if (response.status === 200) {
           this.clearListEnterprises();
           this.setListEnterprises(response.data.enterprises);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getCouponsInEnterprise(entepriseId: string) {
+      this.setLoading(true);
+      try {
+        return await getCouponsInEnterpriseService(entepriseId);
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async removeCouponEnterprise(entepriseId: string, couponId: string) {
+      this.setLoading(true);
+      try {
+        const response = await removeCouponEnterpriseService(entepriseId, couponId);
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
         }
         return response;
       } catch (error) {

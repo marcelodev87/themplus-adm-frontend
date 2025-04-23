@@ -193,7 +193,7 @@ onMounted(async () => {
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="type" :props="props" class="text-left">
-                {{ props.row.type == 'subscription' ? 'Plano': 'Recurso' }}
+                {{ props.row.type == 'subscription' ? 'Plano' : 'Recurso' }}
               </q-td>
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}

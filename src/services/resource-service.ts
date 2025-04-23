@@ -10,5 +10,3 @@ export const getResourcesService = (): Promise<{
     message: string;
   };
 }> => api.get(`/${baseUrl}`);
-
-

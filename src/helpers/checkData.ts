@@ -64,8 +64,8 @@ export const checkPassword = (data: { password: string; passwordConfirm: string 
 };
 
 export const checkDataCoupon = (
-  data: { name: string; dateExpiration: string; discount: string, code: string },
-  hasDateExpires: string
+  data: { name: string; dateExpiration: string; discount: string; code: string },
+  hasDateExpires: string,
 ): { status: boolean; message?: string } => {
   if (data.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do cupom' };

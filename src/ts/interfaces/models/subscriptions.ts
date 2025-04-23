@@ -24,7 +24,14 @@ export interface CouponData {
   subscription_id: string | null;
   service_id: string | null;
   discount: number;
-  code: string
+  code: string;
+  date_expiration: string | null;
+}
+
+export interface CouponEnterprise {
+  id: string;
+  type: string;
+  name: string;
   date_expiration: string | null;
 }
 
