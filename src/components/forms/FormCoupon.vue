@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia';
 import type { CouponData } from 'src/ts/interfaces/models/subscriptions';
 import { checkDataCoupon } from 'src/helpers/checkData';
 import type { QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
+import { useResourceStore } from 'src/stores/resource-store';
 
 defineOptions({
   name: 'FormCoupon',
@@ -21,6 +22,7 @@ const emit = defineEmits<{
 }>();
 
 const { loadingCoupon } = storeToRefs(useCouponStore());
+const { loadingResource, listResource } = storeToRefs(useResourceStore());
 
 const subscriptions = reactive<{ id: string; name: string }[]>([]);
 const showExpired = ref<'Sim' | 'Não'>('Não');
@@ -30,8 +32,8 @@ const selectedTypeCoupon = ref<QuasarSelect<string>>({
   value: 'subscription',
 });
 const selectedResource = ref<QuasarSelect<string>>({
-  label: 'Movimentações +100',
-  value: 'mv100',
+  label: '',
+  value: '',
 });
 const selectedSubscription = ref<QuasarSelect<string>>({
   label: 'Plano básico',
@@ -52,32 +54,6 @@ const optionsTypeCoupon = reactive([
   {
     label: 'Recurso',
     value: 'service',
-  },
-]);
-const optionsResource = reactive([
-  {
-    label: 'Movimentações +100',
-    value: 'mv100',
-  },
-  {
-    label: 'Movimentações +200',
-    value: 'mv200',
-  },
-  {
-    label: 'Movimentações +1000',
-    value: 'mv1000',
-  },
-  {
-    label: 'Membros +100',
-    value: 'mb100',
-  },
-  {
-    label: 'Membros +200',
-    value: 'mb200',
-  },
-  {
-    label: 'Membros +1000',
-    value: 'mb1000',
   },
 ]);
 const optionsSubscription = reactive([
@@ -105,8 +81,8 @@ const clear = (): void => {
     value: 'subscription',
   };
   selectedResource.value = {
-    label: 'Movimentações +100',
-    value: 'mv100',
+    label: '',
+    value: '',
   };
   selectedSubscription.value = {
     label: 'Plano básico',
@@ -179,7 +155,7 @@ const setOptions = (coupon: CouponData): void => {
       label: 'Recurso',
       value: 'service',
     };
-    const resource = optionsResource.find((item) => item.value == coupon.service_id);
+    const resource = listResource.value.find((item) => item.value == coupon.service_id);
     selectedResource.value = {
       label: resource?.label ?? '',
       value: resource?.value ?? '',
@@ -209,6 +185,10 @@ const checkDataEdit = async () => {
     }
   }
 };
+const fetchService = async () => {
+  await useResourceStore().getResources();
+  selectedResource.value = listResource.value[0] ?? { label: '', value: '' };
+}
 
 const open = computed({
   get: () => props.open,
@@ -240,6 +220,7 @@ watch(open, async () => {
   if (open.value) {
     clear();
     await checkDataEdit();
+    await fetchService();
   }
 });
 </script>
@@ -260,7 +241,7 @@ watch(open, async () => {
             dense
             input-class="text-black"
             maxlength="40"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="sell" color="black" size="20px" />
@@ -275,7 +256,7 @@ watch(open, async () => {
             dense
             input-class="text-black"
             maxlength="200"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="description" color="black" size="20px" />
@@ -290,7 +271,7 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="fact_check" color="black" size="20px" />
@@ -299,14 +280,14 @@ watch(open, async () => {
           <q-select
             v-if="selectedTypeCoupon.value === 'service'"
             v-model="selectedResource"
-            :options="optionsResource"
+            :options="listResource"
             label="Recurso"
             outlined
             dense
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="check_circle" color="black" size="20px" />
@@ -322,7 +303,7 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="check_circle" color="black" size="20px" />
@@ -337,7 +318,7 @@ watch(open, async () => {
             dense
             input-class="text-black"
             mask="###"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="percent" color="black" size="20px" />
@@ -352,7 +333,7 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="calendar_month" color="black" size="20px" />
@@ -367,7 +348,7 @@ watch(open, async () => {
             dense
             input-class="text-black"
             mask="##/##/####"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
             :disable="showExpired == 'Não'"
           >
             <template v-slot:prepend>
@@ -383,7 +364,7 @@ watch(open, async () => {
             options-dense
             bg-color="white"
             label-color="black"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
           >
             <template v-slot:prepend>
               <q-icon name="donut_large" color="black" size="20px" />
@@ -398,7 +379,7 @@ watch(open, async () => {
             dense
             input-class="text-black"
             mask="#########"
-            :readonly="loadingCoupon"
+            :readonly="loadingCoupon || loadingResource"
             :disable="showLimit == 'Não'"
           >
             <template v-slot:prepend>
@@ -425,7 +406,7 @@ watch(open, async () => {
             color="primary"
             label="Salvar"
             size="md"
-            :loading="loadingCoupon"
+            :loading="loadingCoupon || loadingResource"
             unelevated
             no-caps
           />
@@ -435,7 +416,7 @@ watch(open, async () => {
             color="primary"
             label="Atualizar"
             size="md"
-            :loading="loadingCoupon"
+            :loading="loadingCoupon || loadingResource"
             unelevated
             no-caps
           />
