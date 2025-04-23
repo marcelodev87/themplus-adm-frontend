@@ -64,11 +64,17 @@ export const checkPassword = (data: { password: string; passwordConfirm: string 
 };
 
 export const checkDataCoupon = (
-  data: { name: string; dateExpiration: string; discount: string },
-  hasDateExpires: string,
+  data: { name: string; dateExpiration: string; discount: string, code: string },
+  hasDateExpires: string
 ): { status: boolean; message?: string } => {
   if (data.name.trim() === '') {
     return { status: false, message: 'Deve ser informado o nome do cupom' };
+  }
+  if (data.code.trim() === '') {
+    return { status: false, message: 'Deve ser informado o código do cupom' };
+  }
+  if (data.code.trim().length <= 5) {
+    return { status: false, message: 'O código do cupom deve conter mais de 5 caracteres' };
   }
   if (Number(data.discount) <= 0 || Number(data.discount) > 100) {
     return { status: false, message: 'Deve ser informado desconto maior que 0% até 100%' };

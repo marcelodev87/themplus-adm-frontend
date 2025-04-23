@@ -23,6 +23,7 @@ export interface CouponData {
   subscription_id: string | null;
   service_id: string | null;
   discount: number;
+  code: string
   date_expiration: string | null;
 }
 
