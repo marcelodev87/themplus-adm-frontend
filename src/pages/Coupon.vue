@@ -22,9 +22,21 @@ const selectedDataEdit = ref<string | null>(null);
 const selectedDataExclude = ref<string | null>(null);
 const columnsCoupon = reactive<QuasarTable[]>([
   {
+    name: 'type',
+    label: 'Tipo',
+    field: 'type',
+    align: 'left',
+  },
+  {
     name: 'name',
     label: 'Nome',
     field: 'name',
+    align: 'left',
+  },
+  {
+    name: 'code',
+    label: 'Código',
+    field: 'code',
     align: 'left',
   },
   {
@@ -180,8 +192,14 @@ onMounted(async () => {
           </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
+              <q-td key="type" :props="props" class="text-left">
+                {{ props.row.type == 'subscription' ? 'Plano': 'Recurso' }}
+              </q-td>
               <q-td key="name" :props="props" class="text-left">
                 {{ props.row.name }}
+              </q-td>
+              <q-td key="code" :props="props" class="text-left">
+                {{ props.row.code }}
               </q-td>
               <q-td
                 key="enterprises_using"

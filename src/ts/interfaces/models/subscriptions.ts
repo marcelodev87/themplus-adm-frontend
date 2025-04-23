@@ -12,6 +12,7 @@ export interface CouponTable {
   limit: number | null;
   date_expiration: string;
   created_at: string;
+  code: string;
 }
 
 export interface CouponData {

@@ -70,6 +70,7 @@ const clear = (): void => {
     code: ''
   });
   showExpired.value = 'Não';
+  showLimit.value = 'Não';
   selectedTypeCoupon.value = {
     label: 'Plano',
     value: 'subscription',
