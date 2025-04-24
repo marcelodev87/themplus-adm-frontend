@@ -22,22 +22,12 @@ const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
   value: 'all',
 });
-const chooseCouponData = ref<{ id: string; couponId: string | null } | null>(null);
+const chooseCouponData = ref<{ id: string } | null>(null);
 const showChooseCoupon = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const selectedDataEdit = ref<Enterprise | null>(null);
 const selectedDataExclude = ref<string | null>(null);
-const optionsCoupons = reactive<QuasarSelect<string>[]>([
-  {
-    label: 'Todos',
-    value: 'all',
-  },
-  {
-    label: 'Somente com cupons',
-    value: 'coupons',
-  },
-]);
 const columnsEnterprise = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -61,12 +51,6 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     name: 'cpf',
     label: 'CPF',
     field: 'cpf',
-    align: 'left',
-  },
-  {
-    name: 'coupon',
-    label: 'Cupom',
-    field: 'coupon',
     align: 'left',
   },
   {
@@ -96,7 +80,6 @@ const closeFormEnterprise = (): void => {
 const openChooseCoupon = (data: Enterprise): void => {
   chooseCouponData.value = {
     id: data.id,
-    couponId: data.coupon_id,
   };
   showChooseCoupon.value = true;
 };
@@ -139,20 +122,10 @@ const customFilterEnterprise = (
     return (
       (item.name && item.name.toLowerCase().includes(searchTerm)) ||
       (item.cpf && item.cpf.toLowerCase().includes(searchTerm)) ||
-      (item.cnpj && item.cnpj.toLowerCase().includes(searchTerm)) ||
-      (item.coupon && item.coupon.name.toLowerCase().includes(searchTerm))
+      (item.cnpj && item.cnpj.toLowerCase().includes(searchTerm))
     );
   });
 };
-watch(selectCoupon, (coupon) => {
-  if (coupon.value === 'all') {
-    optionsListEnterprise.value = listEnterprises.value;
-  } else {
-    optionsListEnterprise.value = listEnterprises.value.filter((item) => {
-      return item.coupon;
-    });
-  }
-});
 
 onMounted(async () => {
   clear();
@@ -202,24 +175,6 @@ onMounted(async () => {
           <template v-slot:top>
             <span class="text-subtitle2">Lista de organizações</span>
             <q-space />
-            <q-select
-              v-model="selectCoupon"
-              :options="optionsCoupons"
-              label="Filtre com cupons"
-              outlined
-              dense
-              options-dense
-              map-options
-              bg-color="white"
-              label-color="black"
-              style="width: 200px"
-              :readonly="loadingEnterprise"
-              class="q-mr-sm"
-            >
-              <template v-slot:prepend>
-                <q-icon name="info" color="black" size="20px" />
-              </template>
-            </q-select>
             <q-input filled v-model="filterEnterprise" dense label="Pesquisar">
               <template v-slot:prepend>
                 <q-icon name="search" />

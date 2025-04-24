@@ -14,7 +14,7 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
-  enterprise: { id: string; couponId: string | null } | null;
+  enterprise: { id: string } | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
@@ -32,7 +32,7 @@ const selectedCoupon = ref<QuasarSelect<string | null>>({
 const showConfirmAction = ref<boolean>(false);
 const selectedDataExclude = ref<string | null>(null);
 const listCouponsEnterprise = reactive<CouponEnterprise[]>([]);
-const filterCoupon = ref<string>('')
+const filterCoupon = ref<string>('');
 const columnsCoupon = reactive<QuasarTable[]>([
   {
     name: 'type',
@@ -67,7 +67,7 @@ const clear = (): void => {
   };
   selectedDataExclude.value = null;
   showConfirmAction.value = false;
-  filterCoupon.value = ''
+  filterCoupon.value = '';
 };
 const fetchGetCouponsInEnterprise = async () => {
   const response = await getCouponsInEnterprise(props.enterprise?.id ?? '');
@@ -79,14 +79,11 @@ const fetchGetCouponsInEnterprise = async () => {
   }
 };
 const removeCoupon = async () => {
-  const response = await removeCouponEnterprise(
-    selectedDataExclude.value ?? '',
-    props.enterprise?.couponId ?? '',
-  );
+  const response = await removeCouponEnterprise(selectedDataExclude.value ?? '');
   if (response?.status === 200) {
-    const arr = listCouponsEnterprise.filter((item) => item.id !== props.enterprise?.couponId);
+    const arr = listCouponsEnterprise.filter((item) => item.id !== selectedDataExclude.value);
     listCouponsEnterprise.splice(0, listCouponsEnterprise.length);
-    arr.map((item) => {
+    arr.forEach((item) => {
       listCouponsEnterprise.push(item);
     });
   }
@@ -156,15 +153,16 @@ const optionsCoupons = computed(() => {
   ];
 });
 const allowApply = computed(() => {
-  if(selectedCoupon.value.value){
-    return true
+  if (selectedCoupon.value.value) {
+    return true;
   }
-  return false
-})
+  return false;
+});
 
 watch(open, async () => {
   if (open.value) {
     clear();
+    listCouponsEnterprise.splice(0, listCouponsEnterprise.length);
     await getCoupons();
     await fetchGetCouponsInEnterprise();
   }
@@ -172,9 +170,9 @@ watch(open, async () => {
 </script>
 <template>
   <q-dialog v-model="open">
-    <q-card class="bg-grey-2 " style="min-width: 90vw;">
+    <q-card class="bg-grey-2" style="min-width: 90vw">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Defina um cupom" />
+        <TitlePage title="Cupons da organização" />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm q-mb-sm">
@@ -195,7 +193,7 @@ watch(open, async () => {
           </q-select>
         </q-form>
         <q-table
-          :rows="listCoupon"
+          :rows="listCouponsEnterprise"
           :columns="columnsCoupon"
           :filter="filterCoupon"
           :loading="loadingCoupon"
@@ -206,7 +204,7 @@ watch(open, async () => {
           no-data-label="Nenhum cupom para mostrar"
           virtual-scroll
           :rows-per-page-options="[5]"
-          style="min-height: 300px;"
+          style="min-height: 300px"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de cupons da organização</span>

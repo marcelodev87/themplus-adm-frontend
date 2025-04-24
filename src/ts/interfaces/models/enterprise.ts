@@ -1,5 +1,3 @@
-import type { Coupon } from './subscriptions';
-
 export interface Enterprise {
   id: string;
   name: string;
@@ -17,8 +15,6 @@ export interface Enterprise {
   subscription_id?: string;
   created_by: string | null;
   code_financial: number | null;
-  coupon_id: string | null;
-  coupon: Coupon;
 }
 
 export interface EnterpriseCreate {

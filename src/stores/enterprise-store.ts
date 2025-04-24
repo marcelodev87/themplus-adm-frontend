@@ -77,10 +77,10 @@ export const useEnterpriseStore = defineStore('enterprise', {
         this.setLoading(false);
       }
     },
-    async removeCouponEnterprise(entepriseId: string, couponId: string) {
+    async removeCouponEnterprise(id: string) {
       this.setLoading(true);
       try {
-        const response = await removeCouponEnterpriseService(entepriseId, couponId);
+        const response = await removeCouponEnterpriseService(id);
         if (response.status === 200) {
           this.createSuccess(response.data.message);
         }
@@ -95,12 +95,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
     async setCoupon(enterpriseId: string, couponId: string | null) {
       this.setLoading(true);
       try {
-        const response = await setCouponService(enterpriseId, couponId);
-        if (response.status === 200) {
-          this.clearListEnterprises();
-          this.setListEnterprises(response.data.enterprises);
-        }
-        return response;
+        return await setCouponService(enterpriseId, couponId);
       } catch (error) {
         this.createError(error);
         return undefined;

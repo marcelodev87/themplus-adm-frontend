@@ -47,7 +47,7 @@ export const setCouponService = (
     message: string;
   };
 }> =>
-  api.put(`/${baseUrl}/coupon`, {
+  api.post(`/${baseUrl}/coupon`, {
     enterpriseId,
     couponId,
   });
@@ -62,11 +62,10 @@ export const deleteEnterpriseService = (
 }> => api.delete(`/${baseUrl}/${id}`);
 
 export const removeCouponEnterpriseService = (
-  entepriseId: string,
   couponId: string,
 ): Promise<{
   status: number;
   data: {
     message: string;
   };
-}> => api.delete(`/${baseUrl}/${entepriseId}/${couponId}`);
+}> => api.delete(`/${baseUrl}/${couponId}/coupon`);
