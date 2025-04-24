@@ -92,6 +92,7 @@ const save = async () => {
   const response = await setCoupon(props.enterprise?.id ?? '', selectedCoupon.value.value);
   if (response?.status === 200) {
     await fetchGetCouponsInEnterprise();
+    clear()
   }
 };
 const closeConfirmActionOk = async () => {
@@ -140,7 +141,7 @@ const open = computed({
 const optionsCoupons = computed(() => {
   const list = listCoupon.value.map((item) => {
     return {
-      label: item.name,
+      label: `${item.type == 'subscription' ? 'Plano' : 'Recurso'} | ${item.name}`,
       value: item.id,
     };
   });

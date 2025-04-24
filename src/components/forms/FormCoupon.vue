@@ -162,14 +162,14 @@ const setOptions = (coupon: CouponData): void => {
   if (coupon.date_expiration) {
     showExpired.value = 'Sim';
   }
-  if (coupon.limit) {
+  if (coupon.limit || coupon.limit == 0) {
     showLimit.value = 'Sim';
   }
 };
 const mountEdit = (coupon: CouponData): void => {
   Object.assign(dataCoupon, {
     name: coupon.name,
-    limit: coupon.limit ? String(coupon.limit) : '',
+    limit: coupon.limit || coupon.limit == 0 ? String(coupon.limit) : '',
     code: coupon.code,
     discount: String(coupon.discount),
     dateExpiration: coupon.date_expiration ?? '',
