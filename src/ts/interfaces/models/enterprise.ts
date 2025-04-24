@@ -15,6 +15,11 @@ export interface Enterprise {
   subscription_id?: string;
   created_by: string | null;
   code_financial: number | null;
+  coupons: {
+    id: string
+    coupon_id: string
+    enterprise_id: string
+  }
 }
 
 export interface EnterpriseCreate {

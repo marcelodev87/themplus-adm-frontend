@@ -42,17 +42,18 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     align: 'left',
   },
   {
-    name: 'cnpj',
-    label: 'CNPJ',
-    field: 'cnpj',
+    name: 'document',
+    label: 'Documento',
+    field: '',
     align: 'left',
   },
   {
-    name: 'cpf',
-    label: 'CPF',
-    field: 'cpf',
+    name: 'coupon',
+    label: 'Cupons',
+    field: '',
     align: 'left',
   },
+  
   {
     name: 'action',
     label: 'Ação',
@@ -189,14 +190,12 @@ onMounted(async () => {
               <q-td key="position" :props="props" class="text-left">
                 {{ props.row.position == 'client' ? 'Cliente' : 'Contador' }}
               </q-td>
-              <q-td key="cnpj" :props="props" class="text-left">
-                {{ props.row.cnpj }}
-              </q-td>
-              <q-td key="cpf" :props="props" class="text-left">
-                {{ props.row.cpf }}
+              <q-td key="document" :props="props" class="text-left">
+                {{ props.row.cnpj ? `CNPJ: ${props.row.cnpj ?? 'Não definido'}` : `CPF: ${props.row.cpf ?? 'Não definido'}`  }}
               </q-td>
               <q-td key="coupon" :props="props" class="text-left">
-                {{ props.row.coupon?.name }}
+                {{  }}
+                <q-badge rounded :color="props.row.coupons.length > 0 ? 'blue' : 'red'" :label="props.row.coupons.length" />
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
