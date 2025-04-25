@@ -141,12 +141,11 @@ export const useAuthStore = defineStore('auth', {
     async updateUserData(
       name: string,
       email: string,
-      phone: string | null,
       department: string | null,
     ) {
       try {
         this.setLoading(true);
-        const response = await updateUserDataService(name, email, phone, department);
+        const response = await updateUserDataService(name, email, department);
         if (response.status === 200) {
           this.setUser(response.data.user);
 

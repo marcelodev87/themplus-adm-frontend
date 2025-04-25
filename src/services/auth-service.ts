@@ -70,7 +70,6 @@ export const doRegisterService = (
 export const updateUserDataService = (
   name: string,
   email: string,
-  phone: string | null,
   department: string | null,
 ): Promise<{
   status: number;
@@ -78,7 +77,7 @@ export const updateUserDataService = (
     user: User;
     message: string;
   };
-}> => api.put(`${baseUrl}/data`, { name, email, phone, department });
+}> => api.put(`${baseUrl}`, { name, email, department });
 
 export const updateUserPasswordService = (
   passwordActual: string,
