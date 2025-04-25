@@ -14,6 +14,7 @@ export interface Enterprise {
   phone: string | null;
   subscription_id?: string;
   created_by: string | null;
+  postion: string;
   code_financial: number | null;
   coupons: {
     id: string;

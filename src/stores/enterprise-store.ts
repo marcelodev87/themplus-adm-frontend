@@ -9,6 +9,7 @@ import {
   getEnterprisesService,
   removeCouponEnterpriseService,
   setCouponService,
+  updateEnterpriseByAdmService,
 } from 'src/services/enterprise-service';
 import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
 import type { UserCeate } from 'src/ts/interfaces/models/user';
@@ -112,6 +113,38 @@ export const useEnterpriseStore = defineStore('enterprise', {
           this.setListEnterprises(response.data.enterprises);
           this.createSuccess(response.data.message);
         }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async updateEnterpriseByAdm(payload: {
+      id: string;
+      name: string;
+      cnpj: string | null;
+      cpf: string | null;
+      cep: string | null;
+      state: string | null;
+      city: string | null;
+      neighborhood: string | null;
+      address: string | null;
+      complement: string | null;
+      number_address: string | null;
+      email: string | null;
+      phone: string | null;
+    }) {
+      this.setLoading(true);
+      try {
+        const response = await updateEnterpriseByAdmService(payload);
+        if (response.status === 200) {
+          this.clearListEnterprises();
+           this.setListEnterprises(response.data.enterprises);
+          this.createSuccess(response.data.message);
+        }
+
         return response;
       } catch (error) {
         this.createError(error);

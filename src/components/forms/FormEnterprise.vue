@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { searchCep } from 'src/services/cep-service';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
+import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 
 defineOptions({
   name: 'FormEnterprise',
@@ -12,14 +13,16 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
+  data: Enterprise | null;
 }>();
 const emit = defineEmits<{
   'update:open': [void];
 }>();
 
-const { createEnterpriseByAdm } = useEnterpriseStore();
+const { createEnterpriseByAdm, updateEnterpriseByAdm } = useEnterpriseStore();
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
+const allowRequest = ref<boolean>(false)
 const isPwd = ref<boolean>(true);
 const isPwd2 = ref<boolean>(true);
 const loadingCep = ref<boolean>(false);
@@ -124,43 +127,45 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Informe um número de endereço válido',
     };
   }
-  if (dataUser.name.trim() === '') {
-    return {
-      status: false,
-      message: 'Deve ser informado o nome do usuário para iniciar a organização',
-    };
-  }
-  if (dataUser.name.trim().length < 2) {
-    return {
-      status: false,
-      message: 'Nome de usuário deve ter mais de 2 caracteres',
-    };
-  }
-  if (dataUser.email.trim() === '') {
-    return { status: false, message: 'Deve ser informado o e-mail do usuário' };
-  }
-  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(dataUser.email.trim())) {
-    return { status: false, message: 'Informe um e-mail válido para seu usuário' };
-  }
-  if (dataUser.phone.trim() !== '') {
-    if (!/^\+?[1-9]\d{1,14}$/.test(dataUser.phone.trim())) {
-      return { status: false, message: 'Digite um telefone válido para seu usuário' };
+  if(props.data ===null) {
+    if (dataUser.name.trim() === '') {
+      return {
+        status: false,
+        message: 'Deve ser informado o nome do usuário para iniciar a organização',
+      };
     }
-  }
-  if (dataUser.password.trim() === '') {
-    return {
-      status: false,
-      message: 'Deve ser informado a senha do usuário',
-    };
-  }
-  if (dataUser.password.trim().length < 7) {
-    return {
-      status: false,
-      message: 'A senha deve conter mais de 7 caracteres',
-    };
-  }
-  if (dataUser.password.trim() !== (dataUser.confirmPassword && dataUser.confirmPassword.trim())) {
-    return { status: false, message: 'As senhas não coincidem' };
+    if (dataUser.name.trim().length < 2) {
+      return {
+        status: false,
+        message: 'Nome de usuário deve ter mais de 2 caracteres',
+      };
+    }
+    if (dataUser.email.trim() === '') {
+      return { status: false, message: 'Deve ser informado o e-mail do usuário' };
+    }
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(dataUser.email.trim())) {
+      return { status: false, message: 'Informe um e-mail válido para seu usuário' };
+    }
+    if (dataUser.phone.trim() !== '') {
+      if (!/^\+?[1-9]\d{1,14}$/.test(dataUser.phone.trim())) {
+        return { status: false, message: 'Digite um telefone válido para seu usuário' };
+      }
+    }
+    if (dataUser.password.trim() === '') {
+      return {
+        status: false,
+        message: 'Deve ser informado a senha do usuário',
+      };
+    }
+    if (dataUser.password.trim().length < 7) {
+      return {
+        status: false,
+        message: 'A senha deve conter mais de 7 caracteres',
+      };
+    }
+    if (dataUser.password.trim() !== (dataUser.confirmPassword && dataUser.confirmPassword.trim())) {
+      return { status: false, message: 'As senhas não coincidem' };
+    }
   }
 
   return { status: true };
@@ -191,6 +196,7 @@ const clear = (): void => {
     confirmPassword: '',
   });
   tab.value = 'enterprise'
+  allowRequest.value = false
 };
 const save = async () => {
   const check = checkData();
@@ -232,9 +238,65 @@ const save = async () => {
     });
   }
 };
+const update = async () => {
+  const check = checkData();
+  if (check.status) {
+    const response = await updateEnterpriseByAdm(
+      {
+      id: props.data?.id ?? '',
+      name: dataEnterprise.name,
+      cnpj:
+        selectedIdentifier.value === 'CNPJ'
+          ? dataEnterprise.cnpj.trim() === ''
+            ? null
+            : dataEnterprise.cnpj
+          : null,
+      cpf:
+        selectedIdentifier.value === 'CPF'
+          ? dataEnterprise.cpf.trim() === ''
+            ? null
+            : dataEnterprise.cpf
+          : null,
+      cep: dataEnterprise.cep.trim() === '' ? null : dataEnterprise.cep,
+      state: dataEnterprise.state.trim() === '' ? null : dataEnterprise.state,
+      city: dataEnterprise.city.trim() === '' ? null : dataEnterprise.city,
+      neighborhood:
+        dataEnterprise.neighborhood.trim() === ''
+          ? null
+          : dataEnterprise.neighborhood,
+      address:
+        dataEnterprise.address.trim() === '' ? null : dataEnterprise.address,
+      complement:
+        dataEnterprise.complement.trim() === ''
+          ? null
+          : dataEnterprise.complement,
+      number_address:
+        dataEnterprise.numberAddress.trim() === ''
+          ? null
+          : dataEnterprise.numberAddress,
+      email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
+      phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
+    }
+      
+    );
+
+    if (response?.status === 200) {
+      emit('update:open');
+      clear();
+    }
+  } else {
+    Notify.create({
+      message: check.message || 'Erro ao criar organização',
+      type: 'negative',
+    });
+  }
+};
 const formattedPhoneEnterprise = computed({
   get() {
-    const phone = dataEnterprise.phone.replace(/\D/g, '');
+    let phone = ''
+    if(dataEnterprise.phone.trim() !== ''){
+       phone = dataEnterprise.phone.replace(/\D/g, '');
+    }
     if (phone.length === 10) {
       return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
     }
@@ -270,6 +332,29 @@ const formattedPhoneUser = computed({
     dataUser.phone = digits;
   },
 });
+const checkEdit = () => {
+  if(props.data){
+    selectedIdentifier.value = props.data.cpf ? 'CPF' : 'CNPJ'
+
+    Object.assign(dataEnterprise, {
+    name: props.data.name ?? '',
+    email: props.data.email ?? '',
+    cnpj: props.data.cnpj ?? '',
+    cpf: props.data.cpf ?? '',
+    cep: props.data.cep ?? '',
+    state: props.data.state ?? '',
+    city: props.data.city ?? '',
+    neighborhood: props.data.neighborhood ?? '',
+    address: props.data.address ?? '',
+    numberAddress: props.data.number_address ?? '',
+    complement: props.data.complement ?? '',
+    phone: props.data.phone ?? '',
+    codeFinancial: props.data.code_financial ?? '',
+    position: props.data.postion == 'client' ? 'Cliente' : 'Contador'
+  });
+  }
+  
+}
 
 const open = computed({
   get: () => props.open,
@@ -279,21 +364,25 @@ const open = computed({
 watch(
   () => dataEnterprise.cep,
   async (cep: string) => {
-    dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
-    if (cep.trim().length === 8) {
-      loadingCep.value = true;
-      const response = await searchCep(cep);
-      if (response.status === 200) {
-        dataEnterprise.neighborhood = response.data.bairro;
-        dataEnterprise.state = response.data.estado;
-        dataEnterprise.city = response.data.localidade;
-        dataEnterprise.address = response.data.logradouro;
+    console.log('allowRequest.value', allowRequest.value);
+    if(allowRequest.value){
+      console.log('ativou');
+      dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
+      if (cep.trim().length === 8) {
+        loadingCep.value = true;
+        const response = await searchCep(cep);
+        if (response.status === 200) {
+          dataEnterprise.neighborhood = response.data.bairro;
+          dataEnterprise.state = response.data.estado;
+          dataEnterprise.city = response.data.localidade;
+          dataEnterprise.address = response.data.logradouro;
+        }
+      } else {
+        dataEnterprise.neighborhood = '';
+        dataEnterprise.state = '';
+        dataEnterprise.city = '';
+        dataEnterprise.address = '';
       }
-    } else {
-      dataEnterprise.neighborhood = '';
-      dataEnterprise.state = '';
-      dataEnterprise.city = '';
-      dataEnterprise.address = '';
     }
     loadingCep.value = false;
   },
@@ -301,9 +390,15 @@ watch(
 watch(
   [() => dataEnterprise.cpf, () => dataEnterprise.cnpj, () => dataEnterprise.numberAddress],
   ([cpf, cnpj, numberAdress]) => {
-    dataEnterprise.cpf = cpf.replace(/\D/g, '');
-    dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
-    dataEnterprise.numberAddress = numberAdress.replace(/\D/g, '');
+    if(dataEnterprise.cpf && dataEnterprise.cpf.trim() !== ''){
+      dataEnterprise.cpf = cpf.replace(/\D/g, '');
+    }
+    if(dataEnterprise.cnpj && dataEnterprise.cnpj.trim() !== ''){
+      dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
+    }
+    if(dataEnterprise.numberAddress && dataEnterprise.numberAddress.trim() !== ''){
+      dataEnterprise.numberAddress = numberAdress.replace(/\D/g, '');
+    }
   },
 );
 watch(
@@ -320,8 +415,13 @@ watch(
 watch(open, () => {
   if (open.value) {
     clear();
+    checkEdit()
   }
 });
+
+onMounted(() => {
+  allowRequest.value = true
+})
 </script>
 <template>
   <q-dialog v-model="open">
@@ -340,7 +440,7 @@ watch(open, () => {
           <template v-slot:before>
             <q-tabs v-model="tab" vertical class="bg-grey-2">
               <q-tab name="enterprise" icon="work" label="Organização" no-caps />
-              <q-tab name="user" icon="person" label="Usuário" no-caps />
+              <q-tab name="user" icon="person" label="Usuário" no-caps v-show="props.data === null"/>
             </q-tabs>
           </template>
 
@@ -366,6 +466,7 @@ watch(open, () => {
                     bg-color="white"
                     label-color="black"
                     class="full-width"
+                    :readonly="props.data !== null"
                   >
                     <template v-slot:prepend>
                       <q-icon name="verified" color="black" size="20px" />
@@ -419,7 +520,7 @@ watch(open, () => {
                         v-model="dataEnterprise.codeFinancial"
                         bg-color="white"
                         label-color="black"
-                        filled
+                        outlined
                         label="Digite o código interno"
                         dense
                         input-class="text-black"
@@ -594,7 +695,7 @@ watch(open, () => {
                 </q-form>
               </q-tab-panel>
 
-              <q-tab-panel name="user" class="bg-grey-2">
+              <q-tab-panel name="user" class="bg-grey-2" >
                 <q-form class="q-gutter-y-sm">
                   <q-input
                     v-model="dataUser.name"
@@ -703,9 +804,20 @@ watch(open, () => {
               no-caps
             />
             <q-btn
+            v-if="props.data === null"
               @click="save"
               color="primary"
               label="Salvar"
+              size="md"
+              :loading="loadingEnterprise || loadingCep"
+              unelevated
+              no-caps
+            />
+            <q-btn
+            v-else
+              @click="update"
+              color="primary"
+              label="Atualizar"
               size="md"
               :loading="loadingEnterprise || loadingCep"
               unelevated

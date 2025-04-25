@@ -71,12 +71,12 @@ const clear = (): void => {
     value: 'all',
   };
 };
-const optionsListEnterprise = ref<Enterprise[]>(listEnterprises.value);
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
 };
 const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
+  clear();
 };
 const openChooseCoupon = (data: Enterprise): void => {
   chooseCouponData.value = {
@@ -160,7 +160,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="optionsListEnterprise"
+          :rows="listEnterprises"
           :columns="columnsEnterprise"
           :filter="filterEnterprise"
           :loading="loadingEnterprise"
@@ -241,7 +241,12 @@ onMounted(async () => {
         </q-table>
       </main>
     </q-scroll-area>
-    <FormEnterprise :open="showFormEnterprise" mode="office" @update:open="closeFormEnterprise" />
+    <FormEnterprise
+      :open="showFormEnterprise"
+      :data="selectedDataEdit"
+      mode="office"
+      @update:open="closeFormEnterprise"
+    />
     <ConfirmAction
       :open="showConfirmAction"
       label-action="Continuar"
