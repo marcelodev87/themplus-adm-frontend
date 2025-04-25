@@ -11,11 +11,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('src/layouts/MainLayout.vue'),
     meta: { requiresAuth: true },
     children: [
-      {
-        path: 'dashboard',
-        name: 'admin-dashboard',
-        component: () => import('src/pages/Dashboard.vue'),
-      },
+      // {
+      //   path: 'dashboard',
+      //   name: 'admin-dashboard',
+      //   component: () => import('src/pages/Dashboard.vue'),
+      // },
       {
         path: 'organizacoes',
         name: 'admin-enterprise',
@@ -31,11 +31,11 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-coupon',
         component: () => import('src/pages/Coupon.vue'),
       },
-      {
-        path: 'atividades',
-        name: 'admin-record',
-        component: () => import('src/pages/Activity.vue'),
-      },
+      // {
+      //   path: 'atividades',
+      //   name: 'admin-record',
+      //   component: () => import('src/pages/Activity.vue'),
+      // },
       {
         path: 'departamentos',
         name: 'admin-departments',

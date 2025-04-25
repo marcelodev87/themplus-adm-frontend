@@ -55,7 +55,7 @@ const closeDrawer = (): void => {
     >
       <q-scroll-area class="fit">
         <q-list>
-          <q-item
+          <!-- <q-item
             clickable
             :to="{ name: 'admin-dashboard' }"
             :active="isActive('admin-dashboard')"
@@ -66,7 +66,7 @@ const closeDrawer = (): void => {
               <q-icon name="space_dashboard" />
             </q-item-section>
             <q-item-section> Dashboard </q-item-section>
-          </q-item>
+          </q-item> -->
           <q-item
             clickable
             :to="{ name: 'admin-enterprise' }"
@@ -103,7 +103,7 @@ const closeDrawer = (): void => {
             </q-item-section>
             <q-item-section> Assinaturas </q-item-section>
           </q-item>
-          <q-item
+          <!-- <q-item
             clickable
             :to="{ name: 'admin-record' }"
             :active="isActive('admin-record')"
@@ -114,7 +114,7 @@ const closeDrawer = (): void => {
               <q-icon name="content_paste_search" />
             </q-item-section>
             <q-item-section> Atividades </q-item-section>
-          </q-item>
+          </q-item> -->
           <q-item
             clickable
             :to="{ name: 'admin-users' }"

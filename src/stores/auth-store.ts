@@ -55,7 +55,8 @@ export const useAuthStore = defineStore('auth', {
         if (response.status === 200) {
           this.setUser(response.data.user);
           this.setToken(response.data.token);
-          await this.router.push({ name: 'admin-dashboard' });
+          await this.router.push({ name: 'admin-enterprise' });
+          // await this.router.push({ name: 'admin-dashboard' });
         }
       } catch (error) {
         this.createError(error);
