@@ -53,7 +53,7 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     field: '',
     align: 'left',
   },
-  
+
   {
     name: 'action',
     label: 'Ação',
@@ -191,11 +191,19 @@ onMounted(async () => {
                 {{ props.row.position == 'client' ? 'Cliente' : 'Contador' }}
               </q-td>
               <q-td key="document" :props="props" class="text-left">
-                {{ props.row.cnpj ? `CNPJ: ${props.row.cnpj ?? 'Não definido'}` : `CPF: ${props.row.cpf ?? 'Não definido'}`  }}
+                {{
+                  props.row.cnpj
+                    ? `CNPJ: ${props.row.cnpj ?? 'Não definido'}`
+                    : `CPF: ${props.row.cpf ?? 'Não definido'}`
+                }}
               </q-td>
               <q-td key="coupon" :props="props" class="text-left">
-                {{  }}
-                <q-badge rounded :color="props.row.coupons.length > 0 ? 'blue' : 'red'" :label="props.row.coupons.length" />
+                {{}}
+                <q-badge
+                  rounded
+                  :color="props.row.coupons.length > 0 ? 'green' : 'red'"
+                  :label="props.row.coupons.length"
+                />
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
@@ -204,9 +212,11 @@ onMounted(async () => {
                   size="sm"
                   flat
                   round
-                  color="black"
+                  color="primary"
                   icon="sell"
-                />
+                >
+                  <q-tooltip>Cupons</q-tooltip>
+                </q-btn>
                 <q-btn
                   @click="handleEdit(props.row)"
                   :disable="loadingEnterprise"

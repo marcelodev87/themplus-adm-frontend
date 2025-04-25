@@ -107,9 +107,10 @@ export const useEnterpriseStore = defineStore('enterprise', {
       this.setLoading(true);
       try {
         const response = await createEnterpriseByAdmService(enterprise, user);
-        if (response.status === 200) {
+        if (response.status === 201) {
           this.clearListEnterprises();
           this.setListEnterprises(response.data.enterprises);
+          this.createSuccess(response.data.message);
         }
         return response;
       } catch (error) {

@@ -16,10 +16,10 @@ export interface Enterprise {
   created_by: string | null;
   code_financial: number | null;
   coupons: {
-    id: string
-    coupon_id: string
-    enterprise_id: string
-  }
+    id: string;
+    coupon_id: string;
+    enterprise_id: string;
+  };
 }
 
 export interface EnterpriseCreate {
@@ -36,4 +36,5 @@ export interface EnterpriseCreate {
   complement: string | null;
   phone: string | null;
   codeFinancial: number | null;
+  position: string;
 }

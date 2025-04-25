@@ -40,6 +40,7 @@ const dataEnterprise = reactive({
   complement: '' as string,
   phone: '' as string,
   codeFinancial: '' as string,
+  position: 'Cliente' as string
 });
 const dataUser = reactive({
   name: '' as string,
@@ -179,6 +180,7 @@ const clear = (): void => {
     complement: '',
     phone: '',
     codeFinancial: '',
+    position: 'Cliente'
   });
   Object.assign(dataUser, {
     name: '',
@@ -188,6 +190,7 @@ const clear = (): void => {
     password: '',
     confirmPassword: '',
   });
+  tab.value = 'enterprise'
 };
 const save = async () => {
   const check = checkData();
@@ -206,7 +209,8 @@ const save = async () => {
         complement: dataEnterprise.complement.trim() === '' ? null : dataEnterprise.complement,
         numberAddress: dataEnterprise.numberAddress,
         phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
-        codeFinancial: Number(dataEnterprise.codeFinancial),
+        codeFinancial: dataEnterprise.codeFinancial.trim() === '' ? null : Number(dataEnterprise.codeFinancial),
+        position: dataEnterprise.position == 'Cliente' ? 'client' : 'counter'
       },
       {
         name: dataUser.name,
@@ -217,7 +221,7 @@ const save = async () => {
       },
     );
 
-    if (response?.status === 200) {
+    if (response?.status === 201) {
       emit('update:open');
       clear();
     }
@@ -351,6 +355,22 @@ watch(open, () => {
             >
               <q-tab-panel name="enterprise" class="bg-grey-2">
                 <q-form class="q-gutter-y-sm">
+                  <q-select
+                    v-model="dataEnterprise.position"
+                    :options="['Cliente', 'Contador']"
+                    label="Tipo de organização"
+                    filled
+                    dense
+                    options-dense
+                    map-options
+                    bg-color="white"
+                    label-color="black"
+                    class="full-width"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="verified" color="black" size="20px" />
+                    </template>
+                  </q-select>
                   <q-input
                     v-model="dataEnterprise.name"
                     bg-color="white"
@@ -379,20 +399,38 @@ watch(open, () => {
                       <q-icon name="mail" color="black" size="20px" />
                     </template>
                   </q-input>
-                  <q-input
-                    v-model="formattedPhoneEnterprise"
-                    bg-color="white"
-                    label-color="black"
-                    outlined
-                    label="Telefone da organização"
-                    dense
-                    input-class="text-black"
-                    :readonly="loadingCep || loadingEnterprise"
-                  >
-                    <template v-slot:prepend>
-                      <q-icon name="call" color="black" size="20px" />
-                    </template>
-                  </q-input>
+                   <div class="row justify-between">
+                     <q-input
+                       v-model="formattedPhoneEnterprise"
+                       bg-color="white"
+                       label-color="black"
+                       outlined
+                       label="Telefone da organização"
+                       dense
+                       input-class="text-black"
+                       class="input-divider"
+                       :readonly="loadingCep || loadingEnterprise"
+                     >
+                       <template v-slot:prepend>
+                         <q-icon name="call" color="black" size="20px" />
+                       </template>
+                     </q-input>
+                      <q-input
+                        v-model="dataEnterprise.codeFinancial"
+                        bg-color="white"
+                        label-color="black"
+                        filled
+                        label="Digite o código interno"
+                        dense
+                        input-class="text-black"
+                        mask="##########"
+                        class="input-divider"
+                      >
+                        <template v-slot:prepend>
+                          <q-icon name="key" color="black" size="20px" />
+                        </template>
+                      </q-input>
+                  </div>
                   <div class="row justify-between">
                     <q-select
                       v-model="selectedIdentifier"

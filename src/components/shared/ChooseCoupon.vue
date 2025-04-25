@@ -92,7 +92,7 @@ const save = async () => {
   const response = await setCoupon(props.enterprise?.id ?? '', selectedCoupon.value.value);
   if (response?.status === 200) {
     await fetchGetCouponsInEnterprise();
-    clear()
+    clear();
   }
 };
 const closeConfirmActionOk = async () => {
