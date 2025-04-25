@@ -364,9 +364,7 @@ const open = computed({
 watch(
   () => dataEnterprise.cep,
   async (cep: string) => {
-    console.log('allowRequest.value', allowRequest.value);
     if(allowRequest.value){
-      console.log('ativou');
       dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
       if (cep.trim().length === 8) {
         loadingCep.value = true;
