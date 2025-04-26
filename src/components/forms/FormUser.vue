@@ -213,7 +213,6 @@ watch(open, async () => {
               <q-icon name="person" color="black" size="20px" />
             </template>
           </q-input>
-          {{ dataUser.email }}
           <q-input
             v-model="dataUser.email"
             bg-color="white"
