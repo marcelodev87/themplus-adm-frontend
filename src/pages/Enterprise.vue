@@ -9,6 +9,7 @@ import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarTable, QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
+import ManageMembers from 'src/components/ManageMembers.vue';
 
 defineOptions({
   name: 'Enterprise',
@@ -26,6 +27,8 @@ const chooseCouponData = ref<{ id: string } | null>(null);
 const showChooseCoupon = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
+const showManageMembers = ref<boolean>(false);
+const selectedEnterprise = ref<string | null>(null);
 const selectedDataEdit = ref<Enterprise | null>(null);
 const selectedDataExclude = ref<string | null>(null);
 const columnsEnterprise = reactive<QuasarTable[]>([
@@ -111,6 +114,13 @@ const openConfirmAction = (id: string): void => {
   selectedDataExclude.value = id;
   showConfirmAction.value = true;
 };
+const openMembersEnterprise = (id: string): void => {
+  selectedEnterprise.value = id;
+  showManageMembers.value = true;
+};
+const closeMembersEnterprise = (): void => {
+  showManageMembers.value = false;
+};
 const customFilterEnterprise = (
   rows: readonly Enterprise[],
   terms: string,
@@ -127,6 +137,13 @@ const customFilterEnterprise = (
     );
   });
 };
+
+watch(showManageMembers, async () => {
+  if (!showManageMembers.value) {
+    clear();
+    await fetchEnterprises();
+  }
+});
 
 onMounted(async () => {
   clear();
@@ -207,6 +224,17 @@ onMounted(async () => {
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
+                  @click="openMembersEnterprise(props.row.id)"
+                  :disable="loadingEnterprise"
+                  size="sm"
+                  flat
+                  round
+                  color="black"
+                  icon="person"
+                >
+                  <q-tooltip>Members</q-tooltip>
+                </q-btn>
+                <q-btn
                   @click="openChooseCoupon(props.row)"
                   :disable="loadingEnterprise"
                   size="sm"
@@ -241,6 +269,11 @@ onMounted(async () => {
         </q-table>
       </main>
     </q-scroll-area>
+    <ManageMembers
+      :open="showManageMembers"
+      :enterprise-id="selectedEnterprise"
+      @update:open="closeMembersEnterprise"
+    />
     <FormEnterprise
       :open="showFormEnterprise"
       :data="selectedDataEdit"
