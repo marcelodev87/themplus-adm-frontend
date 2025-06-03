@@ -5,8 +5,8 @@ import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { storeToRefs } from 'pinia';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import type { User } from 'src/ts/interfaces/models/user';
-import { deleteMemberByEnterprise } from 'src/services/enterprise-service';
 import FormManageMember from './forms/FormManageMembers.vue';
+import { useUsersMembersStore } from 'src/stores/users-store';
 
 defineOptions({
   name: 'ManageMember',
@@ -22,6 +22,7 @@ const emit = defineEmits<{
 
 const { listEnterpriseMembers, loadingEnterprise } = storeToRefs(useEnterpriseStore());
 const { getMembersByEnterprise, clearListMembers } = useEnterpriseStore();
+const { deleteExternalUserMember } = useUsersMembersStore();
 
 const showFormManageMember = ref<boolean>(false);
 const dataMemberSelected = ref<User | null>(null);
@@ -63,10 +64,7 @@ const handleEditMember = (dataMember: User | null) => {
   openFormManageMembers();
 };
 const exclude = async (id: string) => {
-  const response = await deleteMemberByEnterprise(id);
-  if (response.status === 200) {
-    console.log('excluiu');
-  }
+  await deleteExternalUserMember(id);
 };
 const openFormManageMembers = () => {
   showFormManageMember.value = true;
