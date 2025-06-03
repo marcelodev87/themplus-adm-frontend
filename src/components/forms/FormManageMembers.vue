@@ -185,7 +185,6 @@ watch(open, () => {
               unelevated
               no-caps
             />
-            <q-btn @click="exclude(props.row.id)" size="sm" flat round color="red" icon="delete" />
           </div>
         </div>
       </q-card-actions>

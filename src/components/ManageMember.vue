@@ -5,6 +5,7 @@ import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { storeToRefs } from 'pinia';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import type { User } from 'src/ts/interfaces/models/user';
+import { deleteMemberByEnterprise } from 'src/services/enterprise-service';
 import FormManageMember from './forms/FormManageMembers.vue';
 
 defineOptions({
@@ -62,6 +63,12 @@ const columnsMembers = reactive<QuasarTable[]>([
 const handleEditMember = (dataMember: User | null) => {
   dataMemberSelected.value = dataMember;
   openFormManageMembers();
+};
+
+const exclude = async (id: string) => {
+  const response = await deleteMemberByEnterprise(id);
+  if (response.status === 200) {
+  }
 };
 
 const openFormManageMembers = () => {
@@ -132,6 +139,14 @@ watch(open, async () => {
                 >
                   <q-tooltip> Atualizar </q-tooltip>
                 </q-btn>
+                <q-btn
+                  @click="exclude(props.row.id)"
+                  size="sm"
+                  flat
+                  round
+                  color="red"
+                  icon="delete"
+                />
               </q-td>
             </q-tr>
           </template>

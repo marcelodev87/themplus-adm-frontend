@@ -84,6 +84,15 @@ export const updateEnterpriseByAdmService = (payload: {
   };
 }> => api.put(`${baseUrl}/`, payload);
 
+export const deleteMemberByEnterprise = (
+  id: string,
+): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.delete(`/member/delete/${id}`);
+
 export const setCouponService = (
   enterpriseId: string,
   couponId: string | null,
