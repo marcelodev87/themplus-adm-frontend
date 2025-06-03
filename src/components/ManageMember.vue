@@ -4,6 +4,8 @@ import TitlePage from './shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { storeToRefs } from 'pinia';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
+import type { User } from 'src/ts/interfaces/models/user';
+import FormManageMember from './forms/FormManageMembers.vue';
 
 defineOptions({
   name: 'ManageMembers',
@@ -21,6 +23,8 @@ const emit = defineEmits<{
 const { listEnterpriseMembers, loadingEnterprise } = storeToRefs(useEnterpriseStore());
 const { getMembersByEnterprise, clearListMembers } = useEnterpriseStore();
 
+const showFormManageMember = ref<boolean>(false);
+const dataMemberSelected = ref<User | null>(null);
 const filterMembers = ref<string>('');
 const columnsMembers = reactive<QuasarTable[]>([
   {
@@ -54,6 +58,19 @@ const columnsMembers = reactive<QuasarTable[]>([
     align: 'right',
   },
 ]);
+
+const handleEditMember = (dataMember: User | null) => {
+  dataMemberSelected.value = dataMember;
+  openFormManageMembers();
+};
+
+const openFormManageMembers = () => {
+  showFormManageMember.value = true;
+};
+
+const closeFormManageMembers = () => {
+  showFormManageMember.value = false;
+};
 
 const open = computed({
   get: () => props.open,
@@ -105,7 +122,7 @@ watch(open, async () => {
               </q-td>
               <q-td key="action" :props="props" class="text-left">
                 <q-btn
-                  @click="handleEdit(props.row.id)"
+                  @click="handleEditMember(props.row)"
                   size="sm"
                   flat
                   round
@@ -126,5 +143,10 @@ watch(open, async () => {
         </div>
       </q-card-actions>
     </q-card>
+    <FormManageMember
+      :open="showFormManageMember"
+      :user="dataMemberSelected"
+      @update:open="closeFormManageMembers"
+    />
   </q-dialog>
 </template>

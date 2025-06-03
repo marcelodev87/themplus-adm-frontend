@@ -9,7 +9,7 @@ import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarTable, QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
-import ManageMembers from 'src/components/ManageMembers.vue';
+import ManageMembers from 'src/components/ManageMember.vue';
 
 defineOptions({
   name: 'Enterprise',
