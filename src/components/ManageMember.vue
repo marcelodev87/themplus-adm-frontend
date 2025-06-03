@@ -9,14 +9,13 @@ import { deleteMemberByEnterprise } from 'src/services/enterprise-service';
 import FormManageMember from './forms/FormManageMembers.vue';
 
 defineOptions({
-  name: 'ManageMembers',
+  name: 'ManageMember',
 });
 
 const props = defineProps<{
   open: boolean;
   enterpriseId: string | null;
 }>();
-
 const emit = defineEmits<{
   'update:open': [void];
 }>();
@@ -55,7 +54,6 @@ const columnsMembers = reactive<QuasarTable[]>([
   {
     name: 'action',
     label: 'Ação',
-    field: 'action',
     align: 'right',
   },
 ]);
@@ -64,17 +62,15 @@ const handleEditMember = (dataMember: User | null) => {
   dataMemberSelected.value = dataMember;
   openFormManageMembers();
 };
-
 const exclude = async (id: string) => {
   const response = await deleteMemberByEnterprise(id);
   if (response.status === 200) {
+    console.log('excluiu');
   }
 };
-
 const openFormManageMembers = () => {
   showFormManageMember.value = true;
 };
-
 const closeFormManageMembers = () => {
   showFormManageMember.value = false;
 };
@@ -83,6 +79,7 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
+
 watch(open, async () => {
   if (open.value) {
     clearListMembers();
@@ -106,7 +103,7 @@ watch(open, async () => {
           bordered
           dense
           row-key="index"
-          no-data-label="Nenhuma membro da organização para mostrar"
+          no-data-label="Nenhum membro da organização para mostrar"
           virtual-scroll
           :rows-per-page-options="[20]"
         >
@@ -135,12 +132,13 @@ watch(open, async () => {
                   round
                   color="black"
                   icon="edit"
-                  :disable="false"
+                  :disable="loadingEnterprise"
                 >
                   <q-tooltip> Atualizar </q-tooltip>
                 </q-btn>
                 <q-btn
                   @click="exclude(props.row.id)"
+                  :disable="loadingEnterprise"
                   size="sm"
                   flat
                   round

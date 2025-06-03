@@ -11,7 +11,6 @@ import {
   setCouponService,
   updateEnterpriseByAdmService,
   getMembersByEnterpriseService,
-  updateEnterpriseMemberService,
 } from 'src/services/enterprise-service';
 import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
 import type { User, UserCeate } from 'src/ts/interfaces/models/user';
@@ -134,30 +133,6 @@ export const useEnterpriseStore = defineStore('enterprise', {
         if (response.status === 201) {
           this.clearListEnterprises();
           this.setListEnterprises(response.data.enterprises);
-          this.createSuccess(response.data.message);
-        }
-        return response;
-      } catch (error) {
-        this.createError(error);
-        return null;
-      } finally {
-        this.setLoading(false);
-      }
-    },
-    async updateEnterpriseMember(payload: {
-      id: string | null;
-      name: string;
-      email: string;
-      phone: string | null;
-      active: number;
-      position: string;
-    }) {
-      this.setLoading(true);
-      try {
-        const response = await updateEnterpriseMemberService(payload);
-        if (response.status === 200) {
-          this.clearListMembers();
-          this.setListMembers(response.data.members);
           this.createSuccess(response.data.message);
         }
         return response;

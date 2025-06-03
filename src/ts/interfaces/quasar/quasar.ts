@@ -2,7 +2,7 @@
 export interface QuasarTable {
   name: string;
   label: string;
-  field: string | ((row: any) => any);
+  field?: string | ((row: any) => any);
   required?: boolean;
   align?: 'center' | 'left' | 'right';
   sortable?: boolean;

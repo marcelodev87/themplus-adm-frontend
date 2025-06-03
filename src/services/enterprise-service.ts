@@ -47,21 +47,6 @@ export const createEnterpriseByAdmService = (
     user,
   });
 
-export const updateEnterpriseMemberService = (payload: {
-  id: string | null;
-  name: string;
-  email: string;
-  phone: string | null;
-  active: number;
-  position: string;
-}): Promise<{
-  status: number;
-  data: {
-    members: User[];
-    message: string;
-  };
-}> => api.put(`/member/user`, payload);
-
 export const updateEnterpriseByAdmService = (payload: {
   id: string;
   name: string;
