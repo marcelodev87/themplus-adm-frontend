@@ -114,7 +114,7 @@ watch(open, async () => {
                 {{ props.row.email }}
               </q-td>
               <q-td key="position" :props="props" class="text-left">
-                {{ props.row.position }}
+                {{ props.row.position === 'admin' ? 'Administrador' : 'Usuário comum' }}
               </q-td>
               <q-td key="active" :props="props" class="text-left">
                 <q-icon
