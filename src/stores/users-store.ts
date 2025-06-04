@@ -12,9 +12,10 @@ import {
 } from 'src/services/users-service';
 import type { UserADM } from 'src/ts/interfaces/models/user';
 import { useEnterpriseStore } from './enterprise-store';
+import { storeToRefs } from 'pinia';
 
 const { clearListMembers, setListMembers } = useEnterpriseStore();
-let { listEnterpriseMembers } = useEnterpriseStore();
+const { listEnterpriseMembers } = storeToRefs(useEnterpriseStore());
 
 export const useUsersMembersStore = defineStore('members', {
   state: () => ({
@@ -160,12 +161,14 @@ export const useUsersMembersStore = defineStore('members', {
         this.setLoading(false);
       }
     },
-    async deleteExternalUserMember(userMemberId: string) {
+    async deleteExternalUserMember(userId: string) {
       try {
         this.setLoading(true);
-        const response = await deleteUserMemberService(userMemberId);
+        const response = await deleteUserMemberService(userId);
         if (response.status === 200) {
-          listEnterpriseMembers = listEnterpriseMembers.filter((item) => item.id !== userMemberId);
+          const newArray = listEnterpriseMembers.value.filter((item) => item.id !== userId);
+          clearListMembers();
+          setListMembers(newArray);
         }
         this.createSuccess(response.data.message);
       } catch (error) {
