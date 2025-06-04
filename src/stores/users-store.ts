@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosError } from 'axios';
-import { defineStore, storeToRefs } from 'pinia';
+import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
   createUserMemberService,
@@ -14,7 +14,7 @@ import type { UserADM } from 'src/ts/interfaces/models/user';
 import { useEnterpriseStore } from './enterprise-store';
 
 const { clearListMembers, setListMembers } = useEnterpriseStore();
-const { listEnterpriseMembers } = storeToRefs(useEnterpriseStore());
+let { listEnterpriseMembers } = useEnterpriseStore();
 
 export const useUsersMembersStore = defineStore('members', {
   state: () => ({
@@ -164,11 +164,9 @@ export const useUsersMembersStore = defineStore('members', {
       try {
         this.setLoading(true);
         const response = await deleteUserMemberService(userMemberId);
-        // if (response.status === 200) {
-        //   listEnterpriseMembers = listEnterpriseMembers.filter(
-        //     (item: any) => item.id !== userMemberId,
-        //   );
-        // }
+        if (response.status === 200) {
+          listEnterpriseMembers = listEnterpriseMembers.filter((item) => item.id !== userMemberId);
+        }
         this.createSuccess(response.data.message);
       } catch (error) {
         this.createError(error);

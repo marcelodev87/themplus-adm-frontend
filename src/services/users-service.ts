@@ -90,6 +90,7 @@ export const updateActiveUserService = (
     message: string;
   };
 }> => api.put(`${baseUrl}/active/`, { active, userId });
+
 export const deleteUserMemberService = (
   id: string,
 ): Promise<{
@@ -97,7 +98,7 @@ export const deleteUserMemberService = (
   data: {
     message: string;
   };
-}> => api.delete(`${baseUrl}/${id}`);
+}> => api.delete(`${baseUrl}/by-adm/${id}`);
 
 export const deleteUserMemberByEnterpriseService = (
   id: string,
