@@ -7,6 +7,7 @@ import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import type { User } from 'src/ts/interfaces/models/user';
 import FormManageMember from './forms/FormManageMembers.vue';
 import { useUsersMembersStore } from 'src/stores/users-store';
+import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
 defineOptions({
   name: 'ManageMember',
@@ -24,8 +25,10 @@ const { listEnterpriseMembers, loadingEnterprise } = storeToRefs(useEnterpriseSt
 const { getMembersByEnterprise, clearListMembers } = useEnterpriseStore();
 const { deleteExternalUserMember } = useUsersMembersStore();
 
+const showConfirmAction = ref<boolean>(false);
 const showFormManageMember = ref<boolean>(false);
 const dataMemberSelected = ref<User | null>(null);
+const dataMemberSelectedExclude = ref<string | null>(null);
 const filterMembers = ref<string>('');
 const columnsMembers = reactive<QuasarTable[]>([
   {
@@ -59,6 +62,9 @@ const columnsMembers = reactive<QuasarTable[]>([
   },
 ]);
 
+const clear = (): void => {
+  dataMemberSelected.value = null;
+};
 const handleEditMember = (dataMember: User | null) => {
   dataMemberSelected.value = dataMember;
   openFormManageMembers();
@@ -71,6 +77,19 @@ const openFormManageMembers = () => {
 };
 const closeFormManageMembers = () => {
   showFormManageMember.value = false;
+};
+const openConfirmAction = (id: string): void => {
+  dataMemberSelectedExclude.value = id;
+  showConfirmAction.value = true;
+};
+const closeConfirmActionOk = async () => {
+  showConfirmAction.value = false;
+  await exclude(dataMemberSelectedExclude.value ?? '');
+  clear();
+};
+const closeConfirmAction = (): void => {
+  showConfirmAction.value = false;
+  clear();
 };
 
 const open = computed({
@@ -135,7 +154,7 @@ watch(open, async () => {
                   <q-tooltip> Atualizar </q-tooltip>
                 </q-btn>
                 <q-btn
-                  @click="exclude(props.row.id)"
+                  @click="openConfirmAction(props.row.id)"
                   :disable="loadingEnterprise"
                   size="sm"
                   flat
@@ -158,6 +177,14 @@ watch(open, async () => {
       :open="showFormManageMember"
       :user="dataMemberSelected"
       @update:open="closeFormManageMembers"
+    />
+    <ConfirmAction
+      :open="showConfirmAction"
+      label-action="Continuar"
+      title="Confirmação de exclusão"
+      message="Excluindo o membro, será apagado tudo que esteja vinculado ao mesmo. Caso tenha certeza de que deseja excluir este membro, clique em 'Continuar'."
+      @update:open="closeConfirmAction"
+      @update:ok="closeConfirmActionOk"
     />
   </q-dialog>
 </template>
