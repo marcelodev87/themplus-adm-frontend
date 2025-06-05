@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { searchCep } from 'src/services/cep-service';
@@ -362,9 +362,9 @@ const open = computed({
 });
 
 watch(
-  () => dataEnterprise.cep,
-  async (cep: string) => {
-    if(allowRequest.value){
+  [() => dataEnterprise.cep, allowRequest],
+  async ([cep, allowRequest]: [string, boolean]) => {
+    if(allowRequest){
       dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
       if (cep.trim().length === 8) {
         loadingCep.value = true;
@@ -414,12 +414,9 @@ watch(open, () => {
   if (open.value) {
     clear();
     checkEdit()
+    allowRequest.value = true
   }
 });
-
-onMounted(() => {
-  allowRequest.value = true
-})
 </script>
 <template>
   <q-dialog v-model="open">
