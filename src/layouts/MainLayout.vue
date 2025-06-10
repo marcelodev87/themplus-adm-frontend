@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
 import Navbar from 'src/components/headers/Navbar.vue';
-import FormPerfil	 from 'src/components/forms/FormPerfil.vue';
+import FormPerfil from 'src/components/forms/FormPerfil.vue';
 
 defineOptions({
   name: 'MainLayout',
@@ -138,6 +138,18 @@ const closeDrawer = (): void => {
               <q-icon name="group_work" />
             </q-item-section>
             <q-item-section> Departamentos </q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            :to="{ name: 'admin-feedbacks' }"
+            :active="isActive('admin-feedbacks')"
+            active-class=" active-option-menu text-bold"
+            @click="closeDrawer"
+          >
+            <q-item-section avatar>
+              <q-icon name="comment" />
+            </q-item-section>
+            <q-item-section> Feedback </q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
