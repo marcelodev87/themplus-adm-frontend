@@ -154,6 +154,7 @@ watch(open, async () => {
                   <q-tooltip> Atualizar </q-tooltip>
                 </q-btn>
                 <q-btn
+                  v-show="props.row.created_by"
                   @click="openConfirmAction(props.row.id)"
                   :disable="loadingEnterprise"
                   size="sm"
