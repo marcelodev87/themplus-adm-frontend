@@ -7,9 +7,15 @@ import {
   deleteUserMemberService,
   getUsersMembersService,
   updateActiveUserService,
+  updateEnterpriseMemberService,
   updateUserMemberService,
 } from 'src/services/users-service';
 import type { UserADM } from 'src/ts/interfaces/models/user';
+import { useEnterpriseStore } from './enterprise-store';
+import { storeToRefs } from 'pinia';
+
+const { clearListMembers, setListMembers } = useEnterpriseStore();
+const { listEnterpriseMembers } = storeToRefs(useEnterpriseStore());
 
 export const useUsersMembersStore = defineStore('members', {
   state: () => ({
@@ -124,6 +130,23 @@ export const useUsersMembersStore = defineStore('members', {
         this.setLoading(false);
       }
     },
+    async updateEnterpriseMember(id: string, name: string, email: string, phone: string | null) {
+      this.setLoading(true);
+      try {
+        const response = await updateEnterpriseMemberService(id, name, email, phone);
+        if (response.status === 200) {
+          clearListMembers();
+          setListMembers(response.data.members);
+          this.createSuccess(response.data.message);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return null;
+      } finally {
+        this.setLoading(false);
+      }
+    },
     async deleteUserMember(userMemberId: string) {
       try {
         this.setLoading(true);
@@ -132,6 +155,22 @@ export const useUsersMembersStore = defineStore('members', {
           this.listUserMember = this.listUserMember.filter((item) => item.id !== userMemberId);
           this.createSuccess(response.data.message);
         }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async deleteExternalUserMember(userId: string) {
+      try {
+        this.setLoading(true);
+        const response = await deleteUserMemberService(userId);
+        if (response.status === 200) {
+          const newArray = listEnterpriseMembers.value.filter((item) => item.id !== userId);
+          clearListMembers();
+          setListMembers(newArray);
+        }
+        this.createSuccess(response.data.message);
       } catch (error) {
         this.createError(error);
       } finally {

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
 import Navbar from 'src/components/headers/Navbar.vue';
-import FormPerfil	 from 'src/components/forms/FormPerfil.vue';
+import FormPerfil from 'src/components/forms/FormPerfil.vue';
 
 defineOptions({
   name: 'MainLayout',

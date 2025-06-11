@@ -60,11 +60,7 @@ const checkData = (): { status: boolean; message?: string } => {
         message: 'Deve ser informado o e-mail do usuário',
       };
     }
-    if (
-      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-        dataPerfil.email.trim()
-      )
-    ) {
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(dataPerfil.email.trim())) {
       return { status: false, message: 'Informe um e-mail válido' };
     }
   } else if (dataPerfil.passwordActual.trim().length > 0) {
@@ -92,9 +88,7 @@ const checkData = (): { status: boolean; message?: string } => {
         message: 'A nova senha deve conter mais de 7 caracteres',
       };
     }
-    if (
-      dataPerfil.passwordNew.trim() !== dataPerfil.passwordNewConfirm.trim()
-    ) {
+    if (dataPerfil.passwordNew.trim() !== dataPerfil.passwordNewConfirm.trim()) {
       return { status: false, message: 'As novas senhas não coincidem' };
     }
   }
@@ -104,16 +98,9 @@ const update = async () => {
   const check = checkData();
   if (check.status) {
     if (mode.value === 'data') {
-      await updateUserData(
-        dataPerfil.name,
-        dataPerfil.email,
-        dataPerfil.department ?? null
-      );
+      await updateUserData(dataPerfil.name, dataPerfil.email, dataPerfil.department ?? null);
     } else {
-      await updateUserPassword(
-        dataPerfil.passwordActual,
-        dataPerfil.passwordNew
-      );
+      await updateUserPassword(dataPerfil.passwordActual, dataPerfil.passwordNew);
     }
     emit('update:open');
   } else {
@@ -134,9 +121,9 @@ const clear = (): void => {
     departmentName: null,
   });
   mode.value = 'data';
-  isPwd.value = true
-  isPwd2.value = true
-  isPwd3.value = true
+  isPwd.value = true;
+  isPwd2.value = true;
+  isPwd3.value = true;
 };
 const mountUserEdit = () => {
   Object.assign(dataPerfil, {
@@ -146,9 +133,7 @@ const mountUserEdit = () => {
     confirmPassword: '',
     department: user.value?.department_id ?? null,
     departmentName: user.value?.department_id
-      ? listDepartment.value.find(
-          (item) => item.id === user.value?.department_id
-        )?.name
+      ? listDepartment.value.find((item) => item.id === user.value?.department_id)?.name
       : null,
   });
 };
@@ -158,9 +143,7 @@ const openDepartmentChoose = (): void => {
 const closeDepartmentChoose = (): void => {
   showDepartmentChoose.value = false;
 };
-const handleChooseDepartment = (
-  tree: { id: string; label: string } | null
-): void => {
+const handleChooseDepartment = (tree: { id: string; label: string } | null): void => {
   dataPerfil.department = tree === null ? null : tree.id;
   dataPerfil.departmentName = tree === null ? null : tree.label;
   closeDepartmentChoose();
@@ -176,7 +159,7 @@ watch(
       dataPerfil.passwordNew = '';
       dataPerfil.passwordNewConfirm = '';
     }
-  }
+  },
 );
 watch(open, async () => {
   if (open.value) {
@@ -237,11 +220,7 @@ watch(open, async () => {
                 <q-icon name="groups" color="black" size="20px" />
               </template>
               <template v-slot:append>
-                <q-icon
-                  name="search"
-                  class="cursor-pointer"
-                  @click="openDepartmentChoose"
-                />
+                <q-icon name="search" class="cursor-pointer" @click="openDepartmentChoose" />
               </template>
             </q-input>
             <DepartmentChoose

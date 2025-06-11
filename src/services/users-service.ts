@@ -1,5 +1,5 @@
 import { api } from 'boot/axios';
-import type { UserADM } from 'src/ts/interfaces/models/user';
+import type { User, UserADM } from 'src/ts/interfaces/models/user';
 
 const baseUrl = 'member';
 
@@ -61,6 +61,25 @@ export const updateUserMemberService = (
     department,
   });
 
+export const updateEnterpriseMemberService = (
+  id: string | null,
+  name: string,
+  email: string,
+  phone: string | null,
+): Promise<{
+  status: number;
+  data: {
+    members: User[];
+    message: string;
+  };
+}> =>
+  api.put(`${baseUrl}/by-adm`, {
+    id,
+    name,
+    email,
+    phone,
+  });
+
 export const updateActiveUserService = (
   active: number,
   userId: string,
@@ -71,6 +90,7 @@ export const updateActiveUserService = (
     message: string;
   };
 }> => api.put(`${baseUrl}/active/`, { active, userId });
+
 export const deleteUserMemberService = (
   id: string,
 ): Promise<{
@@ -78,7 +98,7 @@ export const deleteUserMemberService = (
   data: {
     message: string;
   };
-}> => api.delete(`${baseUrl}/${id}`);
+}> => api.delete(`${baseUrl}/by-adm/${id}`);
 
 export const deleteUserMemberByEnterpriseService = (
   id: string,

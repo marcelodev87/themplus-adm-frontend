@@ -139,11 +139,7 @@ export const useAuthStore = defineStore('auth', {
         this.setLoading(false);
       }
     },
-    async updateUserData(
-      name: string,
-      email: string,
-      department: string | null,
-    ) {
+    async updateUserData(name: string, email: string, department: string | null) {
       try {
         this.setLoading(true);
         const response = await updateUserDataService(name, email, department);
