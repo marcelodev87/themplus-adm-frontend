@@ -64,8 +64,9 @@ const columnsMembers = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   dataMemberSelected.value = null;
+  dataMemberSelectedExclude.value = null
 };
-const handleEditMember = (dataMember: User | null) => {
+const handleEditMember = (dataMember: User) => {
   dataMemberSelected.value = dataMember;
   openFormManageMembers();
 };
@@ -77,6 +78,7 @@ const openFormManageMembers = () => {
 };
 const closeFormManageMembers = () => {
   showFormManageMember.value = false;
+  clear();
 };
 const openConfirmAction = (id: string): void => {
   dataMemberSelectedExclude.value = id;
@@ -108,7 +110,7 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card style="min-width: 98vw">
       <q-card-section class="q-pa-none">
-        <TitlePage :title="'Gerenciar Membros'" />
+        <TitlePage title="Gerenciar Membros" />
       </q-card-section>
       <q-card-section>
         <q-table

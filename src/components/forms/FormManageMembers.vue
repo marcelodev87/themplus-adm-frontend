@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import TitlePage from '../shared/TitlePage.vue';
 import type { User } from 'src/ts/interfaces/models/user';
