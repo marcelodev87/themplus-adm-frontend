@@ -9,13 +9,13 @@ import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { onMounted, reactive, ref, watch } from 'vue';
 
 defineOptions({
-  name: 'Enterprise',
+  name: 'Feedback',
 });
 
 const { getFeedbacks, getFeedbacksSaved, saveFeedback, exclude, deleteSaved } = useFeedbackStore();
 const { listFeedbacks, loadingFeedback } = storeToRefs(useFeedbackStore());
 
-const tab = ref<'recebidos' | 'salvos'>('recebidos');
+const tab = ref<'received' | 'saved'>('received');
 const showFeedBackDetails = ref<boolean>(false);
 const selectedData = ref<Feedback | null>(null);
 const selectedId = ref<string | null>(null);
@@ -59,6 +59,7 @@ const columnsFeedback = reactive<QuasarTable[]>([
 const clear = () => {
   selectedData.value = null;
   dataSaved.value = false;
+  selectedId.value = null
 };
 const openFeedbackDetails = () => {
   showFeedBackDetails.value = true;
@@ -80,7 +81,6 @@ const closeConfirmAction = (): void => {
   showConfirmAction.value = false;
   clear();
 };
-
 const closeConfirmActionOk = async () => {
   showConfirmAction.value = false;
   if (dataSaved.value) {
@@ -90,17 +90,16 @@ const closeConfirmActionOk = async () => {
   }
   clear();
 };
-
 const handleSaveFeedback = async (id: string | null) => {
   await saveFeedback(id);
 };
 
 watch(tab, async () => {
-  if (tab.value === 'recebidos') {
+  if (tab.value === 'received') {
     await getFeedbacks();
   }
 
-  if (tab.value === 'salvos') {
+  if (tab.value === 'saved') {
     await getFeedbacksSaved();
   }
 });
@@ -111,7 +110,7 @@ onMounted(async () => {
 </script>
 <template>
   <section>
-    <div
+    <header
       :class="
         !$q.screen.lt.sm
           ? 'row justify-between no-wrap bg-grey-1'
@@ -121,141 +120,143 @@ onMounted(async () => {
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de feedbacks" class="bg-grey-1" />
       </div>
-    </div>
-
-    <q-tabs v-model="tab">
-      <q-tab name="recebidos" label="Recebidos" no-caps>
-        <q-icon name="local_post_office" color="black" size="20px" />
-      </q-tab>
-      <q-tab name="salvos" label="Salvos" no-caps>
-        <q-icon name="download" color="black" size="20px" />
-      </q-tab>
-    </q-tabs>
-
-    <q-tab-panels
-      v-model="tab"
-      animated
-      swipeable
-      transition-prev="jump-up"
-      transition-next="jump-up"
-    >
-      <q-tab-panel name="recebidos">
-        <q-table
-          :rows="listFeedbacks"
-          :columns="columnsFeedback"
-          :loading="loadingFeedback"
-          flat
-          bordered
-          dense
-          row-key="index"
-          no-data-label="Nenhuma organização para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[20]"
+    </header>
+    <q-scroll-area class="main-scroll">
+      <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
+        <q-tabs v-model="tab" inline-label>
+          <q-tab name="received" label="Recebidos" no-caps> 
+            <q-icon name="local_post_office" color="black" size="20px" class="q-ml-sm"/>
+          </q-tab>
+          <q-tab name="saved" label="Salvos" no-caps>
+            <q-icon name="download" color="black" size="20px" class="q-ml-sm"/>
+          </q-tab>
+        </q-tabs>
+    
+        <q-tab-panels
+          v-model="tab"
+          animated
+          swipeable
+          transition-prev="jump-up"
+          transition-next="jump-up"
         >
-          <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="user_name" :props="props" class="text-left">
-                {{ props.row.user_name }}
-              </q-td>
-              <q-td key="organization_name" :props="props" class="text-left">
-                {{ props.row.organization_name }}
-              </q-td>
-              <q-td key="created" :props="props" class="text-left">
-                {{ props.row.created }}
-              </q-td>
-              <q-td key="message" :props="props" class="text-left">
-                {{ props.row.message }}
-              </q-td>
-              <q-td key="action" class="text-right">
-                <q-btn
-                  @click="handleFeedbackData(props.row)"
-                  :disable="loadingFeedback"
-                  size="sm"
-                  flat
-                  round
-                  icon="visibility"
-                />
-                <q-btn
-                  @click="handleSaveFeedback(props.row.id)"
-                  :disable="loadingFeedback"
-                  size="sm"
-                  flat
-                  round
-                  icon="vertical_align_bottom"
-                />
-                <q-btn
-                  @click="openConfirmAction(props.row.id, false)"
-                  :disable="loadingFeedback"
-                  size="sm"
-                  flat
-                  round
-                  color="red"
-                  icon="delete"
-                />
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-      </q-tab-panel>
-
-      <q-tab-panel name="salvos">
-        <q-table
-          :rows="listFeedbacks"
-          :columns="columnsFeedback"
-          :loading="loadingFeedback"
-          flat
-          bordered
-          dense
-          row-key="index"
-          no-data-label="Nenhuma organização para mostrar"
-          virtual-scroll
-          :rows-per-page-options="[20]"
-        >
-          <template v-slot:body="props">
-            <q-tr :props="props" style="height: 28px">
-              <q-td key="user_name" :props="props" class="text-left">
-                {{ props.row.user_name }}
-              </q-td>
-              <q-td key="organization_name" :props="props" class="text-left">
-                {{ props.row.organization_name }}
-              </q-td>
-              <q-td key="created" :props="props" class="text-left">
-                {{ props.row.created }}
-              </q-td>
-              <q-td key="message" :props="props" class="text-left">
-                {{ props.row.message }}
-              </q-td>
-              <q-td key="action" class="text-right">
-                <q-btn
-                  @click="handleFeedbackData(props.row)"
-                  :disable="loadingFeedback"
-                  size="sm"
-                  flat
-                  round
-                  icon="visibility"
-                />
-                <q-btn
-                  @click="openConfirmAction(props.row.id, true)"
-                  :disable="loadingFeedback"
-                  size="sm"
-                  flat
-                  round
-                  color="red"
-                  icon="delete"
-                />
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-      </q-tab-panel>
-    </q-tab-panels>
+          <q-tab-panel name="received">
+            <q-table
+              :rows="listFeedbacks"
+              :columns="columnsFeedback"
+              :loading="loadingFeedback"
+              flat
+              bordered
+              dense
+              row-key="index"
+              no-data-label="Nenhuma organização para mostrar"
+              virtual-scroll
+              :rows-per-page-options="[20]"
+            >
+              <template v-slot:body="props">
+                <q-tr :props="props" style="height: 28px">
+                  <q-td key="user_name" :props="props" class="text-left">
+                    {{ props.row.user_name }}
+                  </q-td>
+                  <q-td key="organization_name" :props="props" class="text-left">
+                    {{ props.row.organization_name }}
+                  </q-td>
+                  <q-td key="created" :props="props" class="text-left">
+                    {{ props.row.created.replace(/[-/]/g, '/') }}
+                  </q-td>
+                  <q-td key="message" :props="props" class="text-left">
+                    {{ props.row.message }}
+                  </q-td>
+                  <q-td key="action" class="text-right">
+                    <q-btn
+                      @click="handleFeedbackData(props.row)"
+                      :disable="loadingFeedback"
+                      size="sm"
+                      flat
+                      round
+                      icon="visibility"
+                    />
+                    <q-btn
+                      @click="handleSaveFeedback(props.row.id)"
+                      :disable="loadingFeedback"
+                      size="sm"
+                      flat
+                      round
+                      icon="vertical_align_bottom"
+                    />
+                    <q-btn
+                      @click="openConfirmAction(props.row.id, false)"
+                      :disable="loadingFeedback"
+                      size="sm"
+                      flat
+                      round
+                      color="red"
+                      icon="delete"
+                    />
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
+          </q-tab-panel>
+    
+          <q-tab-panel name="saved">
+            <q-table
+              :rows="listFeedbacks"
+              :columns="columnsFeedback"
+              :loading="loadingFeedback"
+              flat
+              bordered
+              dense
+              row-key="index"
+              no-data-label="Nenhuma organização para mostrar"
+              virtual-scroll
+              :rows-per-page-options="[20]"
+            >
+              <template v-slot:body="props">
+                <q-tr :props="props" style="height: 28px">
+                  <q-td key="user_name" :props="props" class="text-left">
+                    {{ props.row.user_name }}
+                  </q-td>
+                  <q-td key="organization_name" :props="props" class="text-left">
+                    {{ props.row.organization_name }}
+                  </q-td>
+                  <q-td key="created" :props="props" class="text-left">
+                    {{ props.row.created }}
+                  </q-td>
+                  <q-td key="message" :props="props" class="text-left">
+                    {{ props.row.message }}
+                  </q-td>
+                  <q-td key="action" class="text-right">
+                    <q-btn
+                      @click="handleFeedbackData(props.row)"
+                      :disable="loadingFeedback"
+                      size="sm"
+                      flat
+                      round
+                      icon="visibility"
+                    />
+                    <q-btn
+                      @click="openConfirmAction(props.row.id, true)"
+                      :disable="loadingFeedback"
+                      size="sm"
+                      flat
+                      round
+                      color="red"
+                      icon="delete"
+                    />
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
+          </q-tab-panel>
+        </q-tab-panels>
+      </main>
+    </q-scroll-area>
   </section>
   <FeedbackView
     :open="showFeedBackDetails"
     :feedbackData="selectedData"
     @update:open="closeFeedBackDetails"
   />
-
   <ConfirmAction
     :open="showConfirmAction"
     label-action="Continuar"
@@ -264,9 +265,4 @@ onMounted(async () => {
     @update:open="closeConfirmAction"
     @update:ok="closeConfirmActionOk"
   />
-  <section>
-    <q-scroll-area class="main-scroll">
-      <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'"></main>
-    </q-scroll-area>
-  </section>
 </template>

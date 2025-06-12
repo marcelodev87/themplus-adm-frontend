@@ -18,16 +18,16 @@ const emit = defineEmits<{
 }>();
 
 const dataFeedback = reactive({
-  user_name: '' as string,
-  organization_name: '' as string,
+  userName: '' as string,
+  organizationName: '' as string,
   created: '' as string,
   message: '' as string,
 });
 
 const mountFeedback = (): void => {
   Object.assign(dataFeedback, {
-    user_name: props.feedbackData?.user_name,
-    organization_name: props.feedbackData?.organization_name,
+    userName: props.feedbackData?.user_name,
+    organizationName: props.feedbackData?.organization_name,
     created: props.feedbackData?.created,
     message: props.feedbackData?.message,
   });
@@ -53,7 +53,7 @@ watch(open, () => {
       <q-card-section>
         <q-form class="q-gutter-y-sm q-mb-sm">
           <q-input
-            v-model="dataFeedback.user_name"
+            v-model="dataFeedback.userName"
             bg-color="white"
             label-color="black"
             filled
@@ -63,7 +63,7 @@ watch(open, () => {
             readonly
           />
           <q-input
-            v-model="dataFeedback.organization_name"
+            v-model="dataFeedback.organizationName"
             bg-color="white"
             label-color="black"
             filled
@@ -93,7 +93,7 @@ watch(open, () => {
             input-class="text-black"
             readonly
             autogrow
-            style="max-height: 400px; overflow-y: auto"
+            style="max-height: 350px; overflow-y: auto"
           />
         </q-form>
         <q-card-actions align="right" class="q-pa-none">

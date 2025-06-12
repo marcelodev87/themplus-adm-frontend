@@ -149,7 +149,7 @@ const closeDrawer = (): void => {
             <q-item-section avatar>
               <q-icon name="comment" />
             </q-item-section>
-            <q-item-section> Feedback </q-item-section>
+            <q-item-section> Feedbacks </q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
