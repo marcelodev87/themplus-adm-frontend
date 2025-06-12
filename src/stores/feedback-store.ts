@@ -63,7 +63,7 @@ export const useFeedbackStore = defineStore('feedback', {
         this.setLoading(false);
       }
     },
-    async saveFeedback(id: string | null) {
+    async saveFeedback(id: string) {
       this.setLoading(true);
       try {
         const response = await saveFeedback(id);
@@ -92,7 +92,7 @@ export const useFeedbackStore = defineStore('feedback', {
         this.setLoading(false);
       }
     },
-    async exclude(id: string | null) {
+    async exclude(id: string) {
       this.setLoading(true);
       try {
         const response = await exclude(id);
@@ -107,7 +107,7 @@ export const useFeedbackStore = defineStore('feedback', {
         this.setLoading(false);
       }
     },
-    async deleteSaved(id: string | null) {
+    async deleteSaved(id: string) {
       this.setLoading(true);
       try {
         const response = await deleteSaved(id);

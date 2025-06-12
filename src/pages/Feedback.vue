@@ -59,7 +59,7 @@ const columnsFeedback = reactive<QuasarTable[]>([
 const clear = () => {
   selectedData.value = null;
   dataSaved.value = false;
-  selectedId.value = null
+  selectedId.value = null;
 };
 const openFeedbackDetails = () => {
   showFeedBackDetails.value = true;
@@ -90,7 +90,7 @@ const closeConfirmActionOk = async () => {
   }
   clear();
 };
-const handleSaveFeedback = async (id: string | null) => {
+const handleSaveFeedback = async (id: string) => {
   await saveFeedback(id);
 };
 
@@ -124,14 +124,14 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-tabs v-model="tab" inline-label>
-          <q-tab name="received" label="Recebidos" no-caps> 
-            <q-icon name="local_post_office" color="black" size="20px" class="q-ml-sm"/>
+          <q-tab name="received" label="Recebidos" no-caps>
+            <q-icon name="local_post_office" color="black" size="20px" class="q-ml-sm" />
           </q-tab>
           <q-tab name="saved" label="Salvos" no-caps>
-            <q-icon name="download" color="black" size="20px" class="q-ml-sm"/>
+            <q-icon name="download" color="black" size="20px" class="q-ml-sm" />
           </q-tab>
         </q-tabs>
-    
+
         <q-tab-panels
           v-model="tab"
           animated
@@ -197,7 +197,7 @@ onMounted(async () => {
               </template>
             </q-table>
           </q-tab-panel>
-    
+
           <q-tab-panel name="saved">
             <q-table
               :rows="listFeedbacks"

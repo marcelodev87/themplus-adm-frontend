@@ -141,7 +141,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
         const response = await updateEnterpriseByAdmService(payload);
         if (response.status === 200) {
           this.clearListEnterprises();
-           this.setListEnterprises(response.data.enterprises);
+          this.setListEnterprises(response.data.enterprises);
           this.createSuccess(response.data.message);
         }
 

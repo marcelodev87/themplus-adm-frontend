@@ -12,7 +12,7 @@ export const getFeedbacks = (): Promise<{
 }> => api.get(`${baseUrl}`);
 
 export const saveFeedback = (
-  id: string | null,
+  id: string,
 ): Promise<{
   status: number;
   data: {
@@ -30,7 +30,7 @@ export const getFeedbacksSaved = (): Promise<{
 }> => api.get(`${baseUrl}/saved`);
 
 export const exclude = (
-  id: string | null,
+  id: string,
 ): Promise<{
   status: number;
   data: {
@@ -40,7 +40,7 @@ export const exclude = (
 }> => api.delete(`${baseUrl}/${id}`);
 
 export const deleteSaved = (
-  id: string | null,
+  id: string,
 ): Promise<{
   status: number;
   data: {

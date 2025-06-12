@@ -22,7 +22,7 @@ const emit = defineEmits<{
 const { createEnterpriseByAdm, updateEnterpriseByAdm } = useEnterpriseStore();
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
-const allowRequest = ref<boolean>(false)
+const allowRequest = ref<boolean>(false);
 const isPwd = ref<boolean>(true);
 const isPwd2 = ref<boolean>(true);
 const loadingCep = ref<boolean>(false);
@@ -43,7 +43,7 @@ const dataEnterprise = reactive({
   complement: '' as string,
   phone: '' as string,
   codeFinancial: '' as string,
-  position: 'Cliente' as string
+  position: 'Cliente' as string,
 });
 const dataUser = reactive({
   name: '' as string,
@@ -127,7 +127,7 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Informe um número de endereço válido',
     };
   }
-  if(props.data ===null) {
+  if (props.data === null) {
     if (dataUser.name.trim() === '') {
       return {
         status: false,
@@ -163,7 +163,9 @@ const checkData = (): { status: boolean; message?: string } => {
         message: 'A senha deve conter mais de 7 caracteres',
       };
     }
-    if (dataUser.password.trim() !== (dataUser.confirmPassword && dataUser.confirmPassword.trim())) {
+    if (
+      dataUser.password.trim() !== (dataUser.confirmPassword && dataUser.confirmPassword.trim())
+    ) {
       return { status: false, message: 'As senhas não coincidem' };
     }
   }
@@ -185,7 +187,7 @@ const clear = (): void => {
     complement: '',
     phone: '',
     codeFinancial: '',
-    position: 'Cliente'
+    position: 'Cliente',
   });
   Object.assign(dataUser, {
     name: '',
@@ -195,8 +197,8 @@ const clear = (): void => {
     password: '',
     confirmPassword: '',
   });
-  tab.value = 'enterprise'
-  allowRequest.value = false
+  tab.value = 'enterprise';
+  allowRequest.value = false;
 };
 const save = async () => {
   const check = checkData();
@@ -215,8 +217,9 @@ const save = async () => {
         complement: dataEnterprise.complement.trim() === '' ? null : dataEnterprise.complement,
         numberAddress: dataEnterprise.numberAddress,
         phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
-        codeFinancial: dataEnterprise.codeFinancial.trim() === '' ? null : Number(dataEnterprise.codeFinancial),
-        position: dataEnterprise.position == 'Cliente' ? 'client' : 'counter'
+        codeFinancial:
+          dataEnterprise.codeFinancial.trim() === '' ? null : Number(dataEnterprise.codeFinancial),
+        position: dataEnterprise.position == 'Cliente' ? 'client' : 'counter',
       },
       {
         name: dataUser.name,
@@ -241,8 +244,7 @@ const save = async () => {
 const update = async () => {
   const check = checkData();
   if (check.status) {
-    const response = await updateEnterpriseByAdm(
-      {
+    const response = await updateEnterpriseByAdm({
       id: props.data?.id ?? '',
       name: dataEnterprise.name,
       cnpj:
@@ -260,25 +262,14 @@ const update = async () => {
       cep: dataEnterprise.cep.trim() === '' ? null : dataEnterprise.cep,
       state: dataEnterprise.state.trim() === '' ? null : dataEnterprise.state,
       city: dataEnterprise.city.trim() === '' ? null : dataEnterprise.city,
-      neighborhood:
-        dataEnterprise.neighborhood.trim() === ''
-          ? null
-          : dataEnterprise.neighborhood,
-      address:
-        dataEnterprise.address.trim() === '' ? null : dataEnterprise.address,
-      complement:
-        dataEnterprise.complement.trim() === ''
-          ? null
-          : dataEnterprise.complement,
+      neighborhood: dataEnterprise.neighborhood.trim() === '' ? null : dataEnterprise.neighborhood,
+      address: dataEnterprise.address.trim() === '' ? null : dataEnterprise.address,
+      complement: dataEnterprise.complement.trim() === '' ? null : dataEnterprise.complement,
       number_address:
-        dataEnterprise.numberAddress.trim() === ''
-          ? null
-          : dataEnterprise.numberAddress,
+        dataEnterprise.numberAddress.trim() === '' ? null : dataEnterprise.numberAddress,
       email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
       phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
-    }
-      
-    );
+    });
 
     if (response?.status === 200) {
       emit('update:open');
@@ -293,9 +284,9 @@ const update = async () => {
 };
 const formattedPhoneEnterprise = computed({
   get() {
-    let phone = ''
-    if(dataEnterprise.phone.trim() !== ''){
-       phone = dataEnterprise.phone.replace(/\D/g, '');
+    let phone = '';
+    if (dataEnterprise.phone.trim() !== '') {
+      phone = dataEnterprise.phone.replace(/\D/g, '');
     }
     if (phone.length === 10) {
       return `(${phone.substring(0, 2)}) ${phone.substring(2, 6)}-${phone.substring(6)}`;
@@ -333,68 +324,64 @@ const formattedPhoneUser = computed({
   },
 });
 const checkEdit = () => {
-  if(props.data){
-    selectedIdentifier.value = props.data.cpf ? 'CPF' : 'CNPJ'
+  if (props.data) {
+    selectedIdentifier.value = props.data.cpf ? 'CPF' : 'CNPJ';
 
     Object.assign(dataEnterprise, {
-    name: props.data.name ?? '',
-    email: props.data.email ?? '',
-    cnpj: props.data.cnpj ?? '',
-    cpf: props.data.cpf ?? '',
-    cep: props.data.cep ?? '',
-    state: props.data.state ?? '',
-    city: props.data.city ?? '',
-    neighborhood: props.data.neighborhood ?? '',
-    address: props.data.address ?? '',
-    numberAddress: props.data.number_address ?? '',
-    complement: props.data.complement ?? '',
-    phone: props.data.phone ?? '',
-    codeFinancial: props.data.code_financial ?? '',
-    position: props.data.postion == 'client' ? 'Cliente' : 'Contador'
-  });
+      name: props.data.name ?? '',
+      email: props.data.email ?? '',
+      cnpj: props.data.cnpj ?? '',
+      cpf: props.data.cpf ?? '',
+      cep: props.data.cep ?? '',
+      state: props.data.state ?? '',
+      city: props.data.city ?? '',
+      neighborhood: props.data.neighborhood ?? '',
+      address: props.data.address ?? '',
+      numberAddress: props.data.number_address ?? '',
+      complement: props.data.complement ?? '',
+      phone: props.data.phone ?? '',
+      codeFinancial: props.data.code_financial ?? '',
+      position: props.data.postion == 'client' ? 'Cliente' : 'Contador',
+    });
   }
-  
-}
+};
 
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
 
-watch(
-  [() => dataEnterprise.cep, allowRequest],
-  async ([cep, allowRequest]: [string, boolean]) => {
-    if(allowRequest){
-      dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
-      if (cep.trim().length === 8) {
-        loadingCep.value = true;
-        const response = await searchCep(cep);
-        if (response.status === 200) {
-          dataEnterprise.neighborhood = response.data.bairro;
-          dataEnterprise.state = response.data.estado;
-          dataEnterprise.city = response.data.localidade;
-          dataEnterprise.address = response.data.logradouro;
-        }
-      } else {
-        dataEnterprise.neighborhood = '';
-        dataEnterprise.state = '';
-        dataEnterprise.city = '';
-        dataEnterprise.address = '';
+watch([() => dataEnterprise.cep, allowRequest], async ([cep, allowRequest]: [string, boolean]) => {
+  if (allowRequest) {
+    dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
+    if (cep.trim().length === 8) {
+      loadingCep.value = true;
+      const response = await searchCep(cep);
+      if (response.status === 200) {
+        dataEnterprise.neighborhood = response.data.bairro;
+        dataEnterprise.state = response.data.estado;
+        dataEnterprise.city = response.data.localidade;
+        dataEnterprise.address = response.data.logradouro;
       }
+    } else {
+      dataEnterprise.neighborhood = '';
+      dataEnterprise.state = '';
+      dataEnterprise.city = '';
+      dataEnterprise.address = '';
     }
-    loadingCep.value = false;
-  },
-);
+  }
+  loadingCep.value = false;
+});
 watch(
   [() => dataEnterprise.cpf, () => dataEnterprise.cnpj, () => dataEnterprise.numberAddress],
   ([cpf, cnpj, numberAdress]) => {
-    if(dataEnterprise.cpf && dataEnterprise.cpf.trim() !== ''){
+    if (dataEnterprise.cpf && dataEnterprise.cpf.trim() !== '') {
       dataEnterprise.cpf = cpf.replace(/\D/g, '');
     }
-    if(dataEnterprise.cnpj && dataEnterprise.cnpj.trim() !== ''){
+    if (dataEnterprise.cnpj && dataEnterprise.cnpj.trim() !== '') {
       dataEnterprise.cnpj = cnpj.replace(/\D/g, '');
     }
-    if(dataEnterprise.numberAddress && dataEnterprise.numberAddress.trim() !== ''){
+    if (dataEnterprise.numberAddress && dataEnterprise.numberAddress.trim() !== '') {
       dataEnterprise.numberAddress = numberAdress.replace(/\D/g, '');
     }
   },
@@ -413,8 +400,8 @@ watch(
 watch(open, () => {
   if (open.value) {
     clear();
-    checkEdit()
-    allowRequest.value = true
+    checkEdit();
+    allowRequest.value = true;
   }
 });
 </script>
@@ -435,7 +422,13 @@ watch(open, () => {
           <template v-slot:before>
             <q-tabs v-model="tab" vertical class="bg-grey-2">
               <q-tab name="enterprise" icon="work" label="Organização" no-caps />
-              <q-tab name="user" icon="person" label="Usuário" no-caps v-show="props.data === null"/>
+              <q-tab
+                name="user"
+                icon="person"
+                label="Usuário"
+                no-caps
+                v-show="props.data === null"
+              />
             </q-tabs>
           </template>
 
@@ -495,37 +488,37 @@ watch(open, () => {
                       <q-icon name="mail" color="black" size="20px" />
                     </template>
                   </q-input>
-                   <div class="row justify-between">
-                     <q-input
-                       v-model="formattedPhoneEnterprise"
-                       bg-color="white"
-                       label-color="black"
-                       outlined
-                       label="Telefone da organização"
-                       dense
-                       input-class="text-black"
-                       class="input-divider"
-                       :readonly="loadingCep || loadingEnterprise"
-                     >
-                       <template v-slot:prepend>
-                         <q-icon name="call" color="black" size="20px" />
-                       </template>
-                     </q-input>
-                      <q-input
-                        v-model="dataEnterprise.codeFinancial"
-                        bg-color="white"
-                        label-color="black"
-                        outlined
-                        label="Digite o código interno"
-                        dense
-                        input-class="text-black"
-                        mask="##########"
-                        class="input-divider"
-                      >
-                        <template v-slot:prepend>
-                          <q-icon name="key" color="black" size="20px" />
-                        </template>
-                      </q-input>
+                  <div class="row justify-between">
+                    <q-input
+                      v-model="formattedPhoneEnterprise"
+                      bg-color="white"
+                      label-color="black"
+                      outlined
+                      label="Telefone da organização"
+                      dense
+                      input-class="text-black"
+                      class="input-divider"
+                      :readonly="loadingCep || loadingEnterprise"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="call" color="black" size="20px" />
+                      </template>
+                    </q-input>
+                    <q-input
+                      v-model="dataEnterprise.codeFinancial"
+                      bg-color="white"
+                      label-color="black"
+                      outlined
+                      label="Digite o código interno"
+                      dense
+                      input-class="text-black"
+                      mask="##########"
+                      class="input-divider"
+                    >
+                      <template v-slot:prepend>
+                        <q-icon name="key" color="black" size="20px" />
+                      </template>
+                    </q-input>
                   </div>
                   <div class="row justify-between">
                     <q-select
@@ -690,7 +683,7 @@ watch(open, () => {
                 </q-form>
               </q-tab-panel>
 
-              <q-tab-panel name="user" class="bg-grey-2" >
+              <q-tab-panel name="user" class="bg-grey-2">
                 <q-form class="q-gutter-y-sm">
                   <q-input
                     v-model="dataUser.name"
@@ -799,7 +792,7 @@ watch(open, () => {
               no-caps
             />
             <q-btn
-            v-if="props.data === null"
+              v-if="props.data === null"
               @click="save"
               color="primary"
               label="Salvar"
@@ -809,7 +802,7 @@ watch(open, () => {
               no-caps
             />
             <q-btn
-            v-else
+              v-else
               @click="update"
               color="primary"
               label="Atualizar"
