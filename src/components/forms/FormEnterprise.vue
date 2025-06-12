@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { Notify } from 'quasar';
 import { searchCep } from 'src/services/cep-service';
