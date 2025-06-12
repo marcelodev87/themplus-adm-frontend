@@ -139,6 +139,18 @@ const closeDrawer = (): void => {
             </q-item-section>
             <q-item-section> Departamentos </q-item-section>
           </q-item>
+          <q-item
+            clickable
+            :to="{ name: 'admin-feedbacks' }"
+            :active="isActive('admin-feedbacks')"
+            active-class=" active-option-menu text-bold"
+            @click="closeDrawer"
+          >
+            <q-item-section avatar>
+              <q-icon name="comment" />
+            </q-item-section>
+            <q-item-section> Feedbacks </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>

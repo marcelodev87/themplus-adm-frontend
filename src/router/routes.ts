@@ -46,6 +46,11 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-subscription',
         component: () => import('src/pages/Subscriptions.vue'),
       },
+      {
+        path: 'feedbacks',
+        name: 'admin-feedbacks',
+        component: () => import('src/pages/Feedback.vue'),
+      },
     ],
   },
   {

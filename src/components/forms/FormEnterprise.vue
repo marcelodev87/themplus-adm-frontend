@@ -351,30 +351,27 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-watch(
-  [() => dataEnterprise.cep, allowRequest],
-  async ([cep, allowRequest]: [string, boolean]) => {
-    if (allowRequest) {
-      dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
-      if (cep.trim().length === 8) {
-        loadingCep.value = true;
-        const response = await searchCep(cep);
-        if (response.status === 200) {
-          dataEnterprise.neighborhood = response.data.bairro;
-          dataEnterprise.state = response.data.estado;
-          dataEnterprise.city = response.data.localidade;
-          dataEnterprise.address = response.data.logradouro;
-        }
-      } else {
-        dataEnterprise.neighborhood = '';
-        dataEnterprise.state = '';
-        dataEnterprise.city = '';
-        dataEnterprise.address = '';
+watch([() => dataEnterprise.cep, allowRequest], async ([cep, allowRequest]: [string, boolean]) => {
+  if (allowRequest) {
+    dataEnterprise.cep = dataEnterprise.cep.replace(/\D/g, '');
+    if (cep.trim().length === 8) {
+      loadingCep.value = true;
+      const response = await searchCep(cep);
+      if (response.status === 200) {
+        dataEnterprise.neighborhood = response.data.bairro;
+        dataEnterprise.state = response.data.estado;
+        dataEnterprise.city = response.data.localidade;
+        dataEnterprise.address = response.data.logradouro;
       }
+    } else {
+      dataEnterprise.neighborhood = '';
+      dataEnterprise.state = '';
+      dataEnterprise.city = '';
+      dataEnterprise.address = '';
     }
-    loadingCep.value = false;
-  },
-);
+  }
+  loadingCep.value = false;
+});
 watch(
   [() => dataEnterprise.cpf, () => dataEnterprise.cnpj, () => dataEnterprise.numberAddress],
   ([cpf, cnpj, numberAdress]) => {
