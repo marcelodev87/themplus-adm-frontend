@@ -9,6 +9,7 @@ import {
   getEnterprisesService,
   getSelectEnterprisesService,
   removeCouponEnterpriseService,
+  sendNotificationEnterpriseService,
   setCouponService,
   updateEnterpriseByAdmService,
 } from 'src/services/enterprise-service';
@@ -24,7 +25,6 @@ export const useEnterpriseStore = defineStore('enterprise', {
     loadingEnterprise: false as boolean,
     enterprise: null as Enterprise | null,
     listEnterprises: [] as Enterprise[],
-    enterpriseSelect: null as EnterpriseSelect | null,
     listEnterprisesSelect: [] as EnterpriseSelect[],
   }),
   actions: {
@@ -39,9 +39,6 @@ export const useEnterpriseStore = defineStore('enterprise', {
     },
     clearListEnterprises() {
       this.listEnterprises.splice(0, this.listEnterprises.length);
-    },
-    setEnterpriseSelect(enterpriseSelect: EnterpriseSelect) {
-      this.enterpriseSelect = enterpriseSelect;
     },
     setListEnterpriseSelect(enterprisesSelect: EnterpriseSelect[]) {
       enterprisesSelect.map((item) => this.listEnterprisesSelect.push(item));
@@ -88,7 +85,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
       try {
         const response = await getSelectEnterprisesService();
         if (response.status === 200) {
-          this.clearListEnterprises();
+          this.clearListEnterpriseSelect();
           this.setListEnterpriseSelect(response.data.enterprises);
         }
         return response;
@@ -129,6 +126,25 @@ export const useEnterpriseStore = defineStore('enterprise', {
       this.setLoading(true);
       try {
         return await setCouponService(enterpriseId, couponId);
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async sendNotificationEnterprise(data: {
+      title: string;
+      text: string;
+      enterprisesId: string[];
+    }) {
+      this.setLoading(true);
+      try {
+        const response = await sendNotificationEnterpriseService(data);
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
+        }
+        return response;
       } catch (error) {
         this.createError(error);
         return undefined;

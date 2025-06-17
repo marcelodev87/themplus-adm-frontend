@@ -46,7 +46,11 @@ const save = async () => {
   }
 };
 const update = async () => {
-  const response = await updateTemplate(props.template?.id ?? '', dataTemplate.title, dataTemplate.text);
+  const response = await updateTemplate(
+    props.template?.id ?? '',
+    dataTemplate.title,
+    dataTemplate.text,
+  );
   if (response?.status === 200) {
     clear();
     emit('update:open');
@@ -74,11 +78,7 @@ watch(open, () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic">
       <q-card-section class="q-pa-none">
-        <TitlePage
-          :title="
-            props.template ? 'Atualizar template' : 'Criar template'
-          "
-        />
+        <TitlePage :title="props.template ? 'Atualizar template' : 'Criar template'" />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">

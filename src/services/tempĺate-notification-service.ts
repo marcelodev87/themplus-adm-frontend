@@ -32,7 +32,7 @@ export const updateTempĺateService = (
     templates: TemplateNotification[];
     message: string;
   };
-}> => api.put(`/${baseUrl}`, { id ,title, text });
+}> => api.put(`/${baseUrl}`, { id, title, text });
 
 export const deleteTemplateService = (
   id: string,

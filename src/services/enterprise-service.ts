@@ -25,6 +25,17 @@ export const getSelectEnterprisesService = (): Promise<{
   };
 }> => api.get(`/${baseUrl}/list-select`);
 
+export const sendNotificationEnterpriseService = (data: {
+  title: string;
+  text: string;
+  enterprisesId: string[];
+}): Promise<{
+  status: number;
+  data: {
+    message: string;
+  };
+}> => api.post(`/${baseUrl}/sendNotification`, data);
+
 export const getCouponsInEnterpriseService = (
   entepriseId: string,
 ): Promise<{
