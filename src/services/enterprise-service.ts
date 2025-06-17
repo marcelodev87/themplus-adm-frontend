@@ -1,5 +1,9 @@
 import { api } from 'boot/axios';
-import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
+import type {
+  Enterprise,
+  EnterpriseCreate,
+  EnterpriseSelect,
+} from 'src/ts/interfaces/models/enterprise';
 import type { CouponEnterprise } from 'src/ts/interfaces/models/subscriptions';
 import type { UserCeate } from 'src/ts/interfaces/models/user';
 
@@ -12,6 +16,14 @@ export const getEnterprisesService = (): Promise<{
     message: string;
   };
 }> => api.get(`/${baseUrl}`);
+
+export const getSelectEnterprisesService = (): Promise<{
+  status: number;
+  data: {
+    enterprises: EnterpriseSelect[];
+    message: string;
+  };
+}> => api.get(`/${baseUrl}/list-select`);
 
 export const getCouponsInEnterpriseService = (
   entepriseId: string,

@@ -39,3 +39,8 @@ export interface EnterpriseCreate {
   codeFinancial: number | null;
   position: string;
 }
+
+export interface EnterpriseSelect {
+  id: string;
+  name: string;
+}

@@ -7,11 +7,16 @@ import {
   deleteEnterpriseService,
   getCouponsInEnterpriseService,
   getEnterprisesService,
+  getSelectEnterprisesService,
   removeCouponEnterpriseService,
   setCouponService,
   updateEnterpriseByAdmService,
 } from 'src/services/enterprise-service';
-import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
+import type {
+  Enterprise,
+  EnterpriseCreate,
+  EnterpriseSelect,
+} from 'src/ts/interfaces/models/enterprise';
 import type { UserCeate } from 'src/ts/interfaces/models/user';
 
 export const useEnterpriseStore = defineStore('enterprise', {
@@ -19,6 +24,8 @@ export const useEnterpriseStore = defineStore('enterprise', {
     loadingEnterprise: false as boolean,
     enterprise: null as Enterprise | null,
     listEnterprises: [] as Enterprise[],
+    enterpriseSelect: null as EnterpriseSelect | null,
+    listEnterprisesSelect: [] as EnterpriseSelect[],
   }),
   actions: {
     setLoading(loading: boolean) {
@@ -32,6 +39,15 @@ export const useEnterpriseStore = defineStore('enterprise', {
     },
     clearListEnterprises() {
       this.listEnterprises.splice(0, this.listEnterprises.length);
+    },
+    setEnterpriseSelect(enterpriseSelect: EnterpriseSelect) {
+      this.enterpriseSelect = enterpriseSelect;
+    },
+    setListEnterpriseSelect(enterprisesSelect: EnterpriseSelect[]) {
+      enterprisesSelect.map((item) => this.listEnterprisesSelect.push(item));
+    },
+    clearListEnterpriseSelect() {
+      this.listEnterprisesSelect.splice(0, this.listEnterprisesSelect.length);
     },
     createError(error: any) {
       let message = 'Error';
@@ -58,6 +74,22 @@ export const useEnterpriseStore = defineStore('enterprise', {
         if (response.status === 200) {
           this.clearListEnterprises();
           this.setListEnterprises(response.data.enterprises);
+        }
+        return response;
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getSelectEnterprises() {
+      this.setLoading(true);
+      try {
+        const response = await getSelectEnterprisesService();
+        if (response.status === 200) {
+          this.clearListEnterprises();
+          this.setListEnterpriseSelect(response.data.enterprises);
         }
         return response;
       } catch (error) {
@@ -141,7 +173,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
         const response = await updateEnterpriseByAdmService(payload);
         if (response.status === 200) {
           this.clearListEnterprises();
-           this.setListEnterprises(response.data.enterprises);
+          this.setListEnterprises(response.data.enterprises);
           this.createSuccess(response.data.message);
         }
 

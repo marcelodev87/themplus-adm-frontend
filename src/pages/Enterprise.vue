@@ -9,6 +9,7 @@ import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarTable, QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
+import NotificationManagement from 'src/details/NotificationManagement.vue';
 
 defineOptions({
   name: 'Enterprise',
@@ -26,6 +27,7 @@ const chooseCouponData = ref<{ id: string } | null>(null);
 const showChooseCoupon = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
+const showNotificationManagement = ref<boolean>(false);
 const selectedDataEdit = ref<Enterprise | null>(null);
 const selectedDataExclude = ref<string | null>(null);
 const columnsEnterprise = reactive<QuasarTable[]>([
@@ -77,6 +79,12 @@ const openFormEnterprise = (): void => {
 const closeFormEnterprise = (): void => {
   showFormEnterprise.value = false;
   clear();
+};
+const openNotificationManagement = (): void => {
+  showNotificationManagement.value = true;
+};
+const closeNotificationManagement = (): void => {
+  showNotificationManagement.value = false;
 };
 const openChooseCoupon = (data: Enterprise): void => {
   chooseCouponData.value = {
@@ -147,14 +155,26 @@ onMounted(async () => {
         <TitlePage title="Gerenciamento de organizações" />
       </div>
       <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end q-gutter-x-sm">
-        <q-btn
-          @click="openFormEnterprise"
-          icon-right="add"
-          label="Organização"
-          class="q-mr-sm bg-contabilidade"
-          unelevated
-          no-caps
-        />
+        <div>
+          <q-btn
+            @click="openNotificationManagement"
+            icon-right="add"
+            label="Notificaçoes"
+            class="q-mr-sm bg-contabilidade"
+            unelevated
+            no-caps
+          />
+        </div>
+        <div>
+          <q-btn
+            @click="openFormEnterprise"
+            icon-right="add"
+            label="Organização"
+            class="q-mr-sm bg-contabilidade"
+            unelevated
+            no-caps
+          />
+        </div>
       </div>
     </header>
     <q-scroll-area class="main-scroll">
@@ -246,6 +266,10 @@ onMounted(async () => {
       :data="selectedDataEdit"
       mode="office"
       @update:open="closeFormEnterprise"
+    />
+    <NotificationManagement
+      :open="showNotificationManagement"
+      @update:open="closeNotificationManagement"
     />
     <ConfirmAction
       :open="showConfirmAction"
