@@ -75,9 +75,9 @@ const send = async (): Promise<void> => {
   const check = checkData();
   if (check.status) {
     const data = {
+      enterprisesId: selectedEnterprise.value.map((item) => item.id),
       title: dataTemplate.title,
       text: dataTemplate.text,
-      enterprisesId: selectedEnterprise.value.map((item) => item.id),
     };
     const response = await sendNotificationEnterprise(data);
 
@@ -110,6 +110,7 @@ const open = computed({
 });
 
 watch(selectedTemplate, () => {
+  dataTemplate.title = selectedTemplate.value.label;
   dataTemplate.text = selectedTemplate.value.value;
 });
 watch(open, async () => {
@@ -142,7 +143,7 @@ watch(open, async () => {
             bg-color="white"
             label-color="black"
             outlined
-            label="Título da notificaçãp"
+            label="Título da notificação"
             dense
             input-class="text-black no-resize"
             type="textarea"
