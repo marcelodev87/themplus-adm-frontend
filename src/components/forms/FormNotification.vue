@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watchEffect } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import TitlePage from '../shared/TitlePage.vue';
 import type { TemplateNotification } from 'src/ts/interfaces/models/template-notification';
 import { useTemplateNotificationStore } from 'src/stores/template-notification-store';
@@ -14,7 +14,7 @@ defineOptions({
 
 const props = defineProps<{
   open: boolean;
-  template?: TemplateNotification | null;
+  template: TemplateNotification | null;
 }>();
 
 const emit = defineEmits<{
@@ -45,8 +45,8 @@ const save = async () => {
     });
   }
 };
-const update = async (id: string) => {
-  const response = await updateTemplate(id, dataTemplate.title, dataTemplate.text);
+const update = async () => {
+  const response = await updateTemplate(props.template?.id ?? '', dataTemplate.title, dataTemplate.text);
   if (response?.status === 200) {
     clear();
     emit('update:open');
@@ -64,13 +64,8 @@ const open = computed({
   set: () => emit('update:open'),
 });
 
-// watch(open, () => {
-//   if (open.value) {
-//     mountEdit();
-//   }
-// });
-watchEffect(() => {
-  if (props.open && props.template) {
+watch(open, () => {
+  if (open.value) {
     mountEdit();
   }
 });
@@ -81,12 +76,12 @@ watchEffect(() => {
       <q-card-section class="q-pa-none">
         <TitlePage
           :title="
-            props.template ? 'Atualizar template de notificação' : 'Criar template de notificação'
+            props.template ? 'Atualizar template' : 'Criar template'
           "
         />
       </q-card-section>
       <q-card-section class="q-pa-sm">
-        <q-form lass="q-gutter-y-sm">
+        <q-form class="q-gutter-y-sm">
           <q-input
             v-model="dataTemplate.title"
             bg-color="white"
@@ -104,10 +99,9 @@ watchEffect(() => {
             outlined
             label="Texto"
             dense
-            input-class="text-black"
+            input-class="text-black no-resize"
             type="textarea"
             rows="5"
-            style="max-height: 250px"
           />
         </q-form>
       </q-card-section>
@@ -125,7 +119,7 @@ watchEffect(() => {
         />
         <q-btn
           v-else
-          @click="update(props.template.id)"
+          @click="update"
           color="primary"
           label="Atualizar"
           size="md"

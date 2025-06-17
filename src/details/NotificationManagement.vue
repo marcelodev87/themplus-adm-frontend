@@ -94,8 +94,8 @@ watch(open, async () => {
     <q-card class="bg-grey-2 form-basic" style="min-width: 70vw">
       <q-card-section class="q-pa-none">
         <TitlePage title="Gerenciamento de Notificações" />
-        <q-card-section class="q-pa-none">
-          <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end q-gutter-x-sm">
+        <q-card-section class="q-my-sm q-pa-none">
+          <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end">
             <q-btn
               @click="openFormNotification()"
               icon-right="add"
@@ -104,7 +104,6 @@ watch(open, async () => {
               unelevated
               no-caps
             />
-
             <q-btn
               @click="openSendNotification"
               icon-right="send"
@@ -116,7 +115,7 @@ watch(open, async () => {
           </div>
         </q-card-section>
       </q-card-section>
-      <q-card-section>
+      <q-card-section class="q-pa-none">
         <q-table
           :rows="listTemplates"
           :rows-per-page-options="[10]"
@@ -163,7 +162,7 @@ watch(open, async () => {
         </q-table>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn color="red" label="Fechar" size="md" flat @click="open = false" unelevated no-caps />
+        <q-btn color="red" label="Fechar" size="md" @click="open = false" unelevated no-caps />
       </q-card-actions>
       <FormNotification
         :open="showFormNotification"
