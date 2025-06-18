@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
-import TitlePage from './shared/TitlePage.vue';
+import TitlePage from '../shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { storeToRefs } from 'pinia';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import type { User } from 'src/ts/interfaces/models/user';
-import FormManageMember from './forms/FormManageMembers.vue';
+import FormManageMembers from '../forms/FormManageMembers.vue';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 
@@ -176,7 +176,7 @@ watch(open, async () => {
         </div>
       </q-card-actions>
     </q-card>
-    <FormManageMember
+    <FormManageMembers
       :open="showFormManageMember"
       :user="dataMemberSelected"
       @update:open="closeFormManageMembers"

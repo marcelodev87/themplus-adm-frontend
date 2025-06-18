@@ -9,8 +9,8 @@ import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarTable, QuasarSelect } from 'src/ts/interfaces/quasar/quasar';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
-import ManageMembers from 'src/components/ManageMember.vue';
-import NotificationManagement from 'src/details/NotificationManagement.vue';
+import MemberManage from 'src/components/manage/MemberManage.vue';
+import NotificationManagement from 'src/components/manage/NotificationManage.vue';
 
 defineOptions({
   name: 'Enterprise',
@@ -289,7 +289,7 @@ onMounted(async () => {
         </q-table>
       </main>
     </q-scroll-area>
-    <ManageMembers
+    <MemberManage
       :open="showManageMembers"
       :enterprise-id="selectedEnterprise"
       @update:open="closeMembersEnterprise"

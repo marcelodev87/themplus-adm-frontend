@@ -40,6 +40,7 @@ const columnsTemplates = reactive<QuasarTable[]>([
     label: 'Messagem',
     field: 'text',
     align: 'left',
+    style: 'max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
   },
   {
     name: 'action',
@@ -93,7 +94,7 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic" style="min-width: 70vw">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Gerenciamento de Notificações" />
+        <TitlePage title="Gerenciamento de notificações" />
         <q-card-section class="q-my-sm q-pa-none">
           <div v-if="!$q.screen.lt.sm" class="col-6 row items-center justify-end">
             <q-btn
