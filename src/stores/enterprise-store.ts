@@ -9,10 +9,10 @@ import {
   getEnterprisesService,
   getSelectEnterprisesService,
   removeCouponEnterpriseService,
-  sendNotificationEnterpriseService,
   setCouponService,
   updateEnterpriseByAdmService,
 } from 'src/services/enterprise-service';
+import { sendNotificationService } from 'src/services/send-notification-service';
 import type {
   Enterprise,
   EnterpriseCreate,
@@ -140,7 +140,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
     }) {
       this.setLoading(true);
       try {
-        const response = await sendNotificationEnterpriseService(data);
+        const response = await sendNotificationService(data);
         if (response.status === 200) {
           this.createSuccess(response.data.message);
         }
