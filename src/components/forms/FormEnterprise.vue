@@ -401,7 +401,7 @@ watch(open, () => {
   if (open.value) {
     clear();
     checkEdit();
-    allowRequest.value = true
+    allowRequest.value = true;
   }
 });
 </script>

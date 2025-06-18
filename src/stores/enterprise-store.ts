@@ -19,7 +19,7 @@ import type {
   EnterpriseCreate,
   EnterpriseSelect,
 } from 'src/ts/interfaces/models/enterprise';
-import type { UserCeate } from 'src/ts/interfaces/models/user';
+import type { User, UserCeate } from 'src/ts/interfaces/models/user';
 
 export const useEnterpriseStore = defineStore('enterprise', {
   state: () => ({
@@ -27,6 +27,7 @@ export const useEnterpriseStore = defineStore('enterprise', {
     enterprise: null as Enterprise | null,
     listEnterprises: [] as Enterprise[],
     listEnterprisesSelect: [] as EnterpriseSelect[],
+    listEnterpriseMembers: [] as User[],
   }),
   actions: {
     setLoading(loading: boolean) {
@@ -49,6 +50,9 @@ export const useEnterpriseStore = defineStore('enterprise', {
     },
     clearListEnterpriseSelect() {
       this.listEnterprisesSelect.splice(0, this.listEnterprisesSelect.length);
+    },
+    clearListMembers() {
+      this.listEnterpriseMembers.splice(0, this.listEnterpriseMembers.length);
     },
     createError(error: any) {
       let message = 'Error';
@@ -80,6 +84,20 @@ export const useEnterpriseStore = defineStore('enterprise', {
       } catch (error) {
         this.createError(error);
         return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getMembersByEnterprise(enterpriseId: string) {
+      this.setLoading(true);
+      try {
+        const response = await getMembersByEnterpriseService(enterpriseId);
+        if (response.status === 200) {
+          this.clearListMembers();
+          this.setListMembers(response.data.members);
+        }
+      } catch (error) {
+        this.createError(error);
       } finally {
         this.setLoading(false);
       }

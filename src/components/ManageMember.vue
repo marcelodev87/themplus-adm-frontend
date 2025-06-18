@@ -64,7 +64,7 @@ const columnsMembers = reactive<QuasarTable[]>([
 
 const clear = (): void => {
   dataMemberSelected.value = null;
-  dataMemberSelectedExclude.value = null
+  dataMemberSelectedExclude.value = null;
 };
 const handleEditMember = (dataMember: User) => {
   dataMemberSelected.value = dataMember;

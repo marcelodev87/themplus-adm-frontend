@@ -17,6 +17,16 @@ export const getEnterprisesService = (): Promise<{
   };
 }> => api.get(`/${baseUrl}`);
 
+export const getMembersByEnterpriseService = (
+  enterpriseId: string,
+): Promise<{
+  status: number;
+  data: {
+    members: User[];
+    message: string;
+  };
+}> => api.get(`/${baseUrl}/members/${enterpriseId}`);
+
 export const getSelectEnterprisesService = (): Promise<{
   status: number;
   data: {
