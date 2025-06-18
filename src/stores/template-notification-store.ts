@@ -6,7 +6,7 @@ import {
   getTemplatesService,
   saveTemplateService,
   updateTempĺateService,
-} from 'src/services/tempĺate-notification-service';
+} from 'src/services/template-notification-service';
 import type { TemplateNotification } from 'src/ts/interfaces/models/template-notification';
 
 export const useTemplateNotificationStore = defineStore('template-notification', {

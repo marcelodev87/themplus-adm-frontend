@@ -129,13 +129,14 @@ watch(open, async () => {
   <q-dialog v-model="open">
     <q-card class="bg-grey-2 form-basic" style="width: 900px; max-width: 98vw">
       <q-card-section class="q-pa-none">
-        <TitlePage title="Enviar Notificação" />
+        <TitlePage title="Enviar notificação" />
       </q-card-section>
       <q-card-section class="q-pa-sm">
         <q-form class="q-gutter-y-sm">
           <q-select
             v-model="selectedTemplate"
             :options="optionsTemplate"
+            label="Utilize um template"
             map-options
             outlined
             dense
@@ -150,10 +151,8 @@ watch(open, async () => {
             outlined
             label="Título da notificação"
             dense
-            input-class="text-black no-resize"
-            type="textarea"
+            input-class="text-black"
             rows="5"
-            style="max-height: 250px"
           />
           <q-input
             v-model="dataTemplate.text"
@@ -183,7 +182,7 @@ watch(open, async () => {
             <template v-slot:top>
               <span class="text-subtitle2">Lista de organizações</span>
               <q-space />
-              <q-input filled v-model="filterEnterprise" dense label="Pesquisar">
+              <q-input outlined v-model="filterEnterprise" dense label="Pesquisar">
                 <template v-slot:prepend>
                   <q-icon name="search" />
                 </template>

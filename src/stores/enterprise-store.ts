@@ -12,7 +12,7 @@ import {
   setCouponService,
   updateEnterpriseByAdmService,
 } from 'src/services/enterprise-service';
-import { sendNotificationService } from 'src/services/send-notification-service';
+import { sendNotificationService } from 'src/services/notification-service';
 import type {
   Enterprise,
   EnterpriseCreate,

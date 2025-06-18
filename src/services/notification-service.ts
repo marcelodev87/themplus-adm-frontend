@@ -1,6 +1,6 @@
 import { api } from 'boot/axios';
 
-const baseUrl = 'send-notification';
+const baseUrl = 'notification';
 
 export const sendNotificationService = (data: {
   title: string;
@@ -11,4 +11,4 @@ export const sendNotificationService = (data: {
   data: {
     message: string;
   };
-}> => api.post(`/${baseUrl}/`, data);
+}> => api.post(`/${baseUrl}/send`, data);
