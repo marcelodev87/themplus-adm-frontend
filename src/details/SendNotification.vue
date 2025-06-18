@@ -110,8 +110,13 @@ const open = computed({
 });
 
 watch(selectedTemplate, () => {
-  dataTemplate.title = selectedTemplate.value.label;
-  dataTemplate.text = selectedTemplate.value.value;
+  if (selectedTemplate.value.value === '') {
+    dataTemplate.title = '';
+    dataTemplate.text = '';
+  } else {
+    dataTemplate.title = selectedTemplate.value.label;
+    dataTemplate.text = selectedTemplate.value.value;
+  }
 });
 watch(open, async () => {
   if (open.value) {
