@@ -7,20 +7,26 @@ import {
   deleteEnterpriseService,
   getCouponsInEnterpriseService,
   getEnterprisesService,
+  getSelectEnterprisesService,
   removeCouponEnterpriseService,
   setCouponService,
   updateEnterpriseByAdmService,
   getMembersByEnterpriseService,
 } from 'src/services/enterprise-service';
-import type { Enterprise, EnterpriseCreate } from 'src/ts/interfaces/models/enterprise';
-import type { User, UserCeate } from 'src/ts/interfaces/models/user';
+import { sendNotificationService } from 'src/services/notification-service';
+import type {
+  Enterprise,
+  EnterpriseCreate,
+  EnterpriseSelect,
+} from 'src/ts/interfaces/models/enterprise';
+import type { UserCeate } from 'src/ts/interfaces/models/user';
 
 export const useEnterpriseStore = defineStore('enterprise', {
   state: () => ({
     loadingEnterprise: false as boolean,
     enterprise: null as Enterprise | null,
     listEnterprises: [] as Enterprise[],
-    listEnterpriseMembers: [] as User[],
+    listEnterprisesSelect: [] as EnterpriseSelect[],
   }),
   actions: {
     setLoading(loading: boolean) {
@@ -38,8 +44,11 @@ export const useEnterpriseStore = defineStore('enterprise', {
     clearListEnterprises() {
       this.listEnterprises.splice(0, this.listEnterprises.length);
     },
-    clearListMembers() {
-      this.listEnterpriseMembers.splice(0, this.listEnterpriseMembers.length);
+    setListEnterpriseSelect(enterprisesSelect: EnterpriseSelect[]) {
+      enterprisesSelect.map((item) => this.listEnterprisesSelect.push(item));
+    },
+    clearListEnterpriseSelect() {
+      this.listEnterprisesSelect.splice(0, this.listEnterprisesSelect.length);
     },
     createError(error: any) {
       let message = 'Error';
@@ -75,16 +84,18 @@ export const useEnterpriseStore = defineStore('enterprise', {
         this.setLoading(false);
       }
     },
-    async getMembersByEnterprise(enterpriseId: string) {
+    async getSelectEnterprises() {
       this.setLoading(true);
       try {
-        const response = await getMembersByEnterpriseService(enterpriseId);
+        const response = await getSelectEnterprisesService();
         if (response.status === 200) {
-          this.clearListMembers();
-          this.setListMembers(response.data.members);
+          this.clearListEnterpriseSelect();
+          this.setListEnterpriseSelect(response.data.enterprises);
         }
+        return response;
       } catch (error) {
         this.createError(error);
+        return undefined;
       } finally {
         this.setLoading(false);
       }
@@ -119,6 +130,25 @@ export const useEnterpriseStore = defineStore('enterprise', {
       this.setLoading(true);
       try {
         return await setCouponService(enterpriseId, couponId);
+      } catch (error) {
+        this.createError(error);
+        return undefined;
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async sendNotificationEnterprise(data: {
+      title: string;
+      text: string;
+      enterprisesId: string[];
+    }) {
+      this.setLoading(true);
+      try {
+        const response = await sendNotificationService(data);
+        if (response.status === 200) {
+          this.createSuccess(response.data.message);
+        }
+        return response;
       } catch (error) {
         this.createError(error);
         return undefined;
