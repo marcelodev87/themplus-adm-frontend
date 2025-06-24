@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import FeedbackView from 'src/components/details/FeedbackView.vue';
+import FormSetting from 'src/components/forms/FormSetting.vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { useFeedbackStore } from 'src/stores/feedback-store';
 import type { Feedback } from 'src/ts/interfaces/models/feedback';
@@ -21,6 +22,7 @@ const selectedData = ref<Feedback | null>(null);
 const selectedId = ref<string | null>(null);
 const showConfirmAction = ref<boolean>(false);
 const dataSaved = ref<boolean>(false);
+const showSettingsFeedback = ref<boolean>(false);
 const columnsFeedback = reactive<QuasarTable[]>([
   {
     name: 'user_name',
@@ -60,6 +62,12 @@ const clear = () => {
   selectedData.value = null;
   dataSaved.value = false;
   selectedId.value = null;
+};
+const openFeedbackSetting = () => {
+  showSettingsFeedback.value = true;
+};
+const closeFeedbackSetting = () => {
+  showSettingsFeedback.value = false;
 };
 const openFeedbackDetails = () => {
   showFeedBackDetails.value = true;
@@ -119,6 +127,16 @@ onMounted(async () => {
     >
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de feedbacks" class="bg-grey-1" />
+      </div>
+      <div>
+        <q-btn
+          @click="openFeedbackSetting"
+          icon-right="settings"
+          label="Configurações"
+          unelevated
+          no-caps
+          flat
+        />
       </div>
     </header>
     <q-scroll-area class="main-scroll">
@@ -257,6 +275,7 @@ onMounted(async () => {
     :feedbackData="selectedData"
     @update:open="closeFeedBackDetails"
   />
+  <FormSetting :open="showSettingsFeedback" @update:open="closeFeedbackSetting" />
   <ConfirmAction
     :open="showConfirmAction"
     label-action="Continuar"
