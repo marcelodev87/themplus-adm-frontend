@@ -128,7 +128,10 @@ onMounted(async () => {
       <div :class="!$q.screen.lt.sm ? 'col-5' : 'col-12'">
         <TitlePage title="Gerenciamento de feedbacks" class="bg-grey-1" />
       </div>
-      <div>
+      <div
+        class="col-7 row items-center justify-end q-gutter-x-sm"
+        :class="!$q.screen.lt.sm ? '' : 'q-mb-sm'"
+      >
         <q-btn
           @click="openFeedbackSetting"
           icon-right="settings"
@@ -136,6 +139,7 @@ onMounted(async () => {
           unelevated
           no-caps
           flat
+          class="q-mr-sm bg-contabilidade"
         />
       </div>
     </header>

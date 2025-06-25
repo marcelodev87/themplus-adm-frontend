@@ -78,6 +78,7 @@ watch(open, async () => {
         </q-toggle>
       </q-card-section>
       <q-card-actions align="right">
+        <q-btn color="red" label="Fechar" size="md" @click="open = false" unelevated no-caps flat />
         <q-btn
           @click="update"
           :loading="loadingSetting"
@@ -87,7 +88,6 @@ watch(open, async () => {
           unelevated
           no-caps
         />
-        <q-btn color="red" label="Fechar" size="md" @click="open = false" unelevated no-caps flat />
       </q-card-actions>
     </q-card>
   </q-dialog>
