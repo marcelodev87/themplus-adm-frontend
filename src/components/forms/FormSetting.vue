@@ -62,8 +62,8 @@ watch(open, async () => {
 <template>
   <q-dialog v-model="open">
     <q-card>
-      <q-card-section>
-        <TitlePage title="Configurações de feedbacks" />
+      <q-card-section class="q-pa-none">
+        <TitlePage class="bg-grey-3" title="Configurações de feedbacks" />
       </q-card-section>
       <q-card-section>
         <q-toggle
