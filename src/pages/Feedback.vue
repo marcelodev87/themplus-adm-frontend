@@ -161,7 +161,7 @@ onMounted(async () => {
           transition-prev="jump-up"
           transition-next="jump-up"
         >
-          <q-tab-panel name="received">
+          <q-tab-panel name="received" class="q-pa-none">
             <q-table
               :rows="listFeedbacks"
               :columns="columnsFeedback"
