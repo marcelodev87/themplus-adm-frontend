@@ -45,7 +45,7 @@ const columnsFeedback = reactive<QuasarTable[]>([
   },
   {
     name: 'message',
-    label: 'Menssagem',
+    label: 'Mensagem',
     field: 'message',
     align: 'left',
     style: 'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
