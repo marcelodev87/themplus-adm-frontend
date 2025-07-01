@@ -160,6 +160,7 @@ onMounted(async () => {
           swipeable
           transition-prev="jump-up"
           transition-next="jump-up"
+          class="q-pt-sm"
         >
           <q-tab-panel name="received" class="q-pa-none">
             <q-table
