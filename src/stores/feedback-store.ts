@@ -7,6 +7,7 @@ import {
   saveFeedback,
   exclude,
   deleteSaved,
+  getNotificationsFeedback,
 } from 'src/services/feedback-service';
 import type { Feedback } from 'src/ts/interfaces/models/feedback';
 
@@ -15,6 +16,7 @@ export const useFeedbackStore = defineStore('feedback', {
     loadingFeedback: false as boolean,
     feedaback: null as Feedback | null,
     listFeedbacks: [] as Feedback[],
+    notifications: 0 as number,
   }),
 
   actions: {
@@ -29,6 +31,12 @@ export const useFeedbackStore = defineStore('feedback', {
     },
     clearListFeedbacks() {
       this.listFeedbacks.splice(0, this.listFeedbacks.length);
+    },
+    setNotifications(notifications: number) {
+      this.notifications = notifications;
+    },
+    clearNotifications() {
+      this.notifications = 0;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createError(error: any) {
@@ -56,6 +64,20 @@ export const useFeedbackStore = defineStore('feedback', {
         if (response.status === 200) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
+        }
+      } catch (error) {
+        this.createError(error);
+      } finally {
+        this.setLoading(false);
+      }
+    },
+    async getNotificationsFeedback() {
+      this.setLoading(true);
+      try {
+        const response = await getNotificationsFeedback();
+        if (response.status === 200) {
+          this.clearNotifications();
+          this.setNotifications(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);

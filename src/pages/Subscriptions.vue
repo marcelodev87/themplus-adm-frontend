@@ -6,6 +6,7 @@ import { useSubscriptionStore } from 'src/stores/subscription-store';
 import { storeToRefs } from 'pinia';
 import { formatToBr } from 'src/helpers/formatMoney';
 import FormSubscription from 'src/components/forms/FormSubscription.vue';
+import { useFeedbackStore } from 'src/stores/feedback-store';
 
 defineOptions({
   name: 'Subscriptions',
@@ -65,6 +66,7 @@ const handleEdit = (data: { id: string; price: string; name: string }): void => 
 onMounted(async () => {
   clear();
   await fetchSubscriptions();
+  await useFeedbackStore().getNotificationsFeedback();
 });
 </script>
 

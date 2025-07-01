@@ -11,6 +11,14 @@ export const getFeedbacks = (): Promise<{
   };
 }> => api.get(`${baseUrl}`);
 
+export const getNotificationsFeedback = (): Promise<{
+  status: number;
+  data: {
+    notifications: number;
+    message: string;
+  };
+}> => api.get(`${baseUrl}/notifications`);
+
 export const saveFeedback = (
   id: string,
 ): Promise<{

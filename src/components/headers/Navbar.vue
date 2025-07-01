@@ -1,14 +1,26 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import UserOptions from './UserOptions.vue';
+import { useFeedbackStore } from 'src/stores/feedback-store';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 defineOptions({
   name: 'Navbar',
 });
 
+const { notifications } = storeToRefs(useFeedbackStore());
+
+const router = useRouter();
+
 const emit = defineEmits<{
   'update:openFormPerfil': [void];
   'update:changeOpenMenu': [void];
 }>();
+
+onMounted(async () => {
+  await useFeedbackStore().getNotificationsFeedback();
+});
 </script>
 <template>
   <nav>
@@ -31,7 +43,26 @@ const emit = defineEmits<{
         />
       </div>
       <div class="row justify-end">
-        <UserOptions @update:open-form-perfil="emit('update:openFormPerfil')" />
+        <div>
+          <q-btn
+            @click="router.push('feedbacks')"
+            flat
+            color="black"
+            icon-right="notifications"
+            rounded
+            class="q-mr-md"
+          >
+            <q-tooltip> Notificações </q-tooltip>
+            <q-badge
+              v-show="notifications > 0"
+              color="red"
+              rounded
+              floating
+              :label="notifications"
+            />
+          </q-btn>
+          <UserOptions @update:open-form-perfil="emit('update:openFormPerfil')" />
+        </div>
       </div>
     </q-toolbar>
   </nav>

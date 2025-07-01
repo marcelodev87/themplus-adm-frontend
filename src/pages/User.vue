@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia';
 import FormUser from 'src/components/forms/FormUser.vue';
 import type { UserADM } from 'src/ts/interfaces/models/user';
 import { useAuthStore } from 'src/stores/auth-store';
+import { useFeedbackStore } from 'src/stores/feedback-store';
 
 defineOptions({
   name: 'User',
@@ -87,6 +88,7 @@ const handleEdit = (data: UserADM) => {
 onMounted(async () => {
   clear();
   await fetchUsers();
+  await useFeedbackStore().getNotificationsFeedback();
 });
 </script>
 
