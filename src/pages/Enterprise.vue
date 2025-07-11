@@ -157,7 +157,7 @@ watch(showManageMembers, async () => {
 onMounted(async () => {
   clear();
   await fetchEnterprises();
-  await useFeedbackStore().getNotificationsFeedback();
+  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 

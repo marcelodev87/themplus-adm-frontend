@@ -141,7 +141,7 @@ const getExpirationColor = (dateExpiration: string | null): string => {
 onMounted(async () => {
   clear();
   await fetchCoupons();
-  await useFeedbackStore().getNotificationsFeedback();
+  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 

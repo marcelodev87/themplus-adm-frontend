@@ -67,7 +67,7 @@ const openConfirmAction = (id: string): void => {
 
 onMounted(async () => {
   clear();
-  await useFeedbackStore().getNotificationsFeedback();
+  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 <template>

@@ -66,7 +66,7 @@ const handleEdit = (data: { id: string; price: string; name: string }): void => 
 onMounted(async () => {
   clear();
   await fetchSubscriptions();
-  await useFeedbackStore().getNotificationsFeedback();
+  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 

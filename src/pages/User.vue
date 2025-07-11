@@ -88,7 +88,7 @@ const handleEdit = (data: UserADM) => {
 onMounted(async () => {
   clear();
   await fetchUsers();
-  await useFeedbackStore().getNotificationsFeedback();
+  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 

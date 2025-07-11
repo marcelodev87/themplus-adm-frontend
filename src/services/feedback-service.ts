@@ -14,10 +14,10 @@ export const getFeedbacksService = (): Promise<{
 export const getCountFeedbacksService = (): Promise<{
   status: number;
   data: {
-    notifications: number;
+    countFeedbacks: number;
     message: string;
   };
-}> => api.get(`${baseUrl}/notifications`);
+}> => api.get(`${baseUrl}/countFeedbacks`);
 
 export const saveFeedbackService = (
   id: string,

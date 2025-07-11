@@ -77,7 +77,7 @@ export const useFeedbackStore = defineStore('feedback', {
         const response = await getCountFeedbacksService();
         if (response.status === 200) {
           this.clearcountFeedbacks();
-          this.setcountFeedbacks(response.data.notifications);
+          this.setcountFeedbacks(response.data.countFeedbacks);
         }
       } catch (error) {
         this.createError(error);
