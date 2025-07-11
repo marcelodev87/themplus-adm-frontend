@@ -2,12 +2,12 @@ import { AxiosError } from 'axios';
 import { defineStore } from 'pinia';
 import { Notify } from 'quasar';
 import {
-  getFeedbacks,
-  getFeedbacksSaved,
-  saveFeedback,
-  exclude,
-  deleteSaved,
-  getNotificationsFeedback,
+  getFeedbacksService,
+  getFeedbacksSavedService,
+  saveFeedbackService,
+  excludeService,
+  deleteSavedService,
+  getCountFeedbacksService,
 } from 'src/services/feedback-service';
 import type { Feedback } from 'src/ts/interfaces/models/feedback';
 
@@ -16,7 +16,7 @@ export const useFeedbackStore = defineStore('feedback', {
     loadingFeedback: false as boolean,
     feedaback: null as Feedback | null,
     listFeedbacks: [] as Feedback[],
-    notifications: 0 as number,
+    countFeedbacks: 0 as number,
   }),
 
   actions: {
@@ -32,11 +32,11 @@ export const useFeedbackStore = defineStore('feedback', {
     clearListFeedbacks() {
       this.listFeedbacks.splice(0, this.listFeedbacks.length);
     },
-    setNotifications(notifications: number) {
-      this.notifications = notifications;
+    setcountFeedbacks(countFeedbacks: number) {
+      this.countFeedbacks = countFeedbacks;
     },
-    clearNotifications() {
-      this.notifications = 0;
+    clearcountFeedbacks() {
+      this.countFeedbacks = 0;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createError(error: any) {
@@ -60,7 +60,7 @@ export const useFeedbackStore = defineStore('feedback', {
     async getFeedbacks() {
       this.setLoading(true);
       try {
-        const response = await getFeedbacks();
+        const response = await getFeedbacksService();
         if (response.status === 200) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
@@ -71,13 +71,13 @@ export const useFeedbackStore = defineStore('feedback', {
         this.setLoading(false);
       }
     },
-    async getNotificationsFeedback() {
+    async getcountFeedbacks() {
       this.setLoading(true);
       try {
-        const response = await getNotificationsFeedback();
+        const response = await getCountFeedbacksService();
         if (response.status === 200) {
-          this.clearNotifications();
-          this.setNotifications(response.data.notifications);
+          this.clearcountFeedbacks();
+          this.setcountFeedbacks(response.data.notifications);
         }
       } catch (error) {
         this.createError(error);
@@ -88,7 +88,7 @@ export const useFeedbackStore = defineStore('feedback', {
     async saveFeedback(id: string) {
       this.setLoading(true);
       try {
-        const response = await saveFeedback(id);
+        const response = await saveFeedbackService(id);
         if (response.status === 201) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
@@ -103,7 +103,7 @@ export const useFeedbackStore = defineStore('feedback', {
     async getFeedbacksSaved() {
       this.setLoading(true);
       try {
-        const response = await getFeedbacksSaved();
+        const response = await getFeedbacksSavedService();
         if (response.status === 200) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
@@ -117,7 +117,7 @@ export const useFeedbackStore = defineStore('feedback', {
     async exclude(id: string) {
       this.setLoading(true);
       try {
-        const response = await exclude(id);
+        const response = await excludeService(id);
         if (response.status === 200) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
@@ -132,7 +132,7 @@ export const useFeedbackStore = defineStore('feedback', {
     async deleteSaved(id: string) {
       this.setLoading(true);
       try {
-        const response = await deleteSaved(id);
+        const response = await deleteSavedService(id);
         if (response.status === 200) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
