@@ -47,7 +47,7 @@ const emit = defineEmits<{
             rounded
             class="q-mr-md"
           >
-            <q-tooltip> Notificações </q-tooltip>
+            <q-tooltip> Feedbacks </q-tooltip>
             <q-badge
               v-show="countFeedbacks > 0"
               color="red"
