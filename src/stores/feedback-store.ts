@@ -35,9 +35,6 @@ export const useFeedbackStore = defineStore('feedback', {
     setcountFeedbacks(countFeedbacks: number) {
       this.countFeedbacks = countFeedbacks;
     },
-    clearcountFeedbacks() {
-      this.countFeedbacks = 0;
-    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createError(error: any) {
       let message = 'Error';
@@ -64,6 +61,7 @@ export const useFeedbackStore = defineStore('feedback', {
         if (response.status === 200) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
+          this.setcountFeedbacks(response.data.feedbacks.length);
         }
       } catch (error) {
         this.createError(error);
@@ -76,7 +74,6 @@ export const useFeedbackStore = defineStore('feedback', {
       try {
         const response = await getCountFeedbacksService();
         if (response.status === 200) {
-          this.clearcountFeedbacks();
           this.setcountFeedbacks(response.data.countFeedbacks);
         }
       } catch (error) {
@@ -92,6 +89,7 @@ export const useFeedbackStore = defineStore('feedback', {
         if (response.status === 201) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
+          this.setcountFeedbacks(response.data.feedbacks.length);
           this.createSuccess(response.data.message);
         }
       } catch (error) {
@@ -121,6 +119,7 @@ export const useFeedbackStore = defineStore('feedback', {
         if (response.status === 200) {
           this.clearListFeedbacks();
           this.setListFeedbacks(response.data.feedbacks);
+          this.setcountFeedbacks(response.data.feedbacks.length);
           this.createSuccess(response.data.message);
         }
       } catch (error) {

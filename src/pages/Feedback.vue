@@ -116,7 +116,6 @@ watch(tab, async () => {
 
 onMounted(async () => {
   await getFeedbacks();
-  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 <template>
