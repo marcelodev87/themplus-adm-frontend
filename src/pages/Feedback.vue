@@ -1,13 +1,15 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import FeedbackView from 'src/components/details/FeedbackView.vue';
 import FormSetting from 'src/components/forms/FormSetting.vue';
+import Paginate from 'src/components/general/Paginate.vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { useFeedbackStore } from 'src/stores/feedback-store';
 import type { Feedback } from 'src/ts/interfaces/models/feedback';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 
 defineOptions({
   name: 'Feedback',
@@ -16,6 +18,9 @@ defineOptions({
 const { getFeedbacks, getFeedbacksSaved, saveFeedback, exclude, deleteSaved } = useFeedbackStore();
 const { listFeedbacks, loadingFeedback } = storeToRefs(useFeedbackStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(14);
+const filterAlert = ref<string>('');
 const tab = ref<'received' | 'saved'>('received');
 const showFeedBackDetails = ref<boolean>(false);
 const selectedData = ref<Feedback | null>(null);
@@ -63,6 +68,9 @@ const clear = () => {
   dataSaved.value = false;
   selectedId.value = null;
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const openFeedbackSetting = () => {
   showSettingsFeedback.value = true;
 };
@@ -101,6 +109,35 @@ const closeConfirmActionOk = async () => {
 const handleSaveFeedback = async (id: string) => {
   await saveFeedback(id);
 };
+const customFilterMembersEnterprise = (
+  rows: readonly Feedback[],
+  terms: string,
+  cols: readonly Feedback[],
+  getCellValue: (row: Feedback, col: QuasarTable) => unknown,
+): readonly Feedback[] => {
+  const searchTerm = terms.toLowerCase();
+  resetPage();
+  return listFeedbacks.value.filter((item) => {
+    currentPage.value = 1;
+    return (
+      (item.user_name && item.user_name.toLowerCase().includes(searchTerm)) ||
+      (item.organization_name && item.organization_name.toLowerCase().includes(searchTerm))
+    );
+  });
+};
+
+const listFeedbacksCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listFeedbacks.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  const filterLength = customFilterMembersEnterprise([], filterAlert.value, [], () => null).length;
+  if (filterAlert.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
+  return Math.ceil(listFeedbacks.value.length / rowsPerPage.value);
+});
 
 watch(tab, async () => {
   if (tab.value === 'received') {
@@ -164,7 +201,7 @@ onMounted(async () => {
         >
           <q-tab-panel name="received" class="q-pa-none">
             <q-table
-              :rows="listFeedbacks"
+              :rows="listFeedbacksCurrent"
               :columns="columnsFeedback"
               :loading="loadingFeedback"
               flat
@@ -173,7 +210,7 @@ onMounted(async () => {
               row-key="index"
               no-data-label="Nenhuma organização para mostrar"
               virtual-scroll
-              :rows-per-page-options="[20]"
+              :rows-per-page-options="[rowsPerPage]"
             >
               <template v-slot:body="props">
                 <q-tr :props="props" style="height: 28px">
@@ -218,12 +255,15 @@ onMounted(async () => {
                   </q-td>
                 </q-tr>
               </template>
+              <template v-slot:bottom>
+                <Paginate v-model="currentPage" :max="maxPages" :length="listFeedbacks.length" />
+              </template>
             </q-table>
           </q-tab-panel>
 
           <q-tab-panel name="saved">
             <q-table
-              :rows="listFeedbacks"
+              :rows="listFeedbacksCurrent"
               :columns="columnsFeedback"
               :loading="loadingFeedback"
               flat
@@ -232,7 +272,7 @@ onMounted(async () => {
               row-key="index"
               no-data-label="Nenhuma organização para mostrar"
               virtual-scroll
-              :rows-per-page-options="[20]"
+              :rows-per-page-options="[rowsPerPage]"
             >
               <template v-slot:body="props">
                 <q-tr :props="props" style="height: 28px">
@@ -268,6 +308,9 @@ onMounted(async () => {
                     />
                   </q-td>
                 </q-tr>
+              </template>
+              <template v-slot:bottom>
+                <Paginate v-model="currentPage" :max="maxPages" :length="listFeedbacks.length" />
               </template>
             </q-table>
           </q-tab-panel>

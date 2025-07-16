@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import TitlePage from 'src/components/shared/TitlePage.vue';
@@ -11,6 +11,7 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
 import MemberManage from 'src/components/manage/MemberManage.vue';
 import NotificationManagement from 'src/components/manage/NotificationManage.vue';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Enterprise',
@@ -19,6 +20,9 @@ defineOptions({
 const { getEnterprises, deleteEnterprise } = useEnterpriseStore();
 const { loadingEnterprise, listEnterprises } = storeToRefs(useEnterpriseStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(14);
+const filterAlert = ref<string>('');
 const filterEnterprise = ref<string>('');
 const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
@@ -75,6 +79,9 @@ const clear = (): void => {
     label: 'Todos',
     value: 'all',
   };
+};
+const resetPage = (): void => {
+  currentPage.value = 1;
 };
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
@@ -136,8 +143,9 @@ const customFilterEnterprise = (
   getCellValue: (row: Enterprise, col: QuasarTable) => unknown,
 ): readonly Enterprise[] => {
   const searchTerm = terms.toLowerCase();
-
-  return rows.filter((item) => {
+  resetPage();
+  return listEnterprises.value.filter((item) => {
+    currentPage.value = 1;
     return (
       (item.name && item.name.toLowerCase().includes(searchTerm)) ||
       (item.cpf && item.cpf.toLowerCase().includes(searchTerm)) ||
@@ -145,6 +153,19 @@ const customFilterEnterprise = (
     );
   });
 };
+
+const listEnterpriseCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listEnterprises.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  const filterLength = customFilterEnterprise([], filterAlert.value, [], () => null).length;
+  if (filterAlert.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
+  return Math.ceil(listEnterprises.value.length / rowsPerPage.value);
+});
 
 watch(showManageMembers, async () => {
   if (!showManageMembers.value) {
@@ -197,11 +218,11 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="listEnterprises"
+          :rows="listEnterpriseCurrent"
           :columns="columnsEnterprise"
           :filter="filterEnterprise"
-          :loading="loadingEnterprise"
           :filter-method="customFilterEnterprise"
+          :loading="loadingEnterprise"
           flat
           bordered
           dense
@@ -285,6 +306,9 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate v-model="currentPage" :max="maxPages" :length="listEnterprises.length" />
           </template>
         </q-table>
       </main>

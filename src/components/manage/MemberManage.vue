@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from '../shared/TitlePage.vue';
@@ -8,6 +9,7 @@ import type { User } from 'src/ts/interfaces/models/user';
 import FormManageMembers from '../forms/FormManageMembers.vue';
 import { useUsersMembersStore } from 'src/stores/users-store';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'ManageMember',
@@ -25,11 +27,14 @@ const { listEnterpriseMembers, loadingEnterprise } = storeToRefs(useEnterpriseSt
 const { getMembersByEnterprise, clearListMembers } = useEnterpriseStore();
 const { deleteExternalUserMember } = useUsersMembersStore();
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const showConfirmAction = ref<boolean>(false);
 const showFormManageMember = ref<boolean>(false);
 const dataMemberSelected = ref<User | null>(null);
 const dataMemberSelectedExclude = ref<string | null>(null);
 const filterMembers = ref<string>('');
+const filterAlert = ref<string>('');
 const columnsMembers = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -66,6 +71,9 @@ const clear = (): void => {
   dataMemberSelected.value = null;
   dataMemberSelectedExclude.value = null;
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const handleEditMember = (dataMember: User) => {
   dataMemberSelected.value = dataMember;
   openFormManageMembers();
@@ -93,10 +101,35 @@ const closeConfirmAction = (): void => {
   showConfirmAction.value = false;
   clear();
 };
+const customFilterMembersEnterprise = (
+  rows: readonly User[],
+  terms: string,
+  cols: readonly User[],
+  getCellValue: (row: User, col: QuasarTable) => unknown,
+): readonly User[] => {
+  const searchTerm = terms.toLowerCase();
+  resetPage();
+  return listEnterpriseMembers.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
 
 const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
+});
+const listEnterpriseMembersCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listEnterpriseMembers.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  const filterLength = customFilterMembersEnterprise([], filterAlert.value, [], () => null).length;
+  if (filterAlert.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
+  return Math.ceil(listEnterpriseMembers.value.length / rowsPerPage.value);
 });
 
 watch(open, async () => {
@@ -114,9 +147,10 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section>
         <q-table
-          :rows="listEnterpriseMembers"
+          :rows="listEnterpriseMembersCurrent"
           :columns="columnsMembers"
           :filter="filterMembers"
+          :filter-method="customFilterMembersEnterprise"
           :loading="loadingEnterprise"
           flat
           bordered
@@ -124,7 +158,7 @@ watch(open, async () => {
           row-key="index"
           no-data-label="Nenhum membro da organização para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
@@ -167,6 +201,13 @@ watch(open, async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="listEnterpriseMembers.length"
+            />
           </template>
         </q-table>
       </q-card-section>

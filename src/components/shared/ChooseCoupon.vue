@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
@@ -6,7 +7,8 @@ import type { QuasarSelect, QuasarTable } from 'src/ts/interfaces/quasar/quasar'
 import { useCouponStore } from 'src/stores/coupon-store';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import ConfirmAction from '../confirm/ConfirmAction.vue';
-import type { CouponEnterprise } from 'src/ts/interfaces/models/subscriptions';
+import type { Coupon, CouponEnterprise } from 'src/ts/interfaces/models/subscriptions';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'ChooseCoupon',
@@ -25,6 +27,9 @@ const { loadingCoupon, listCoupon } = storeToRefs(useCouponStore());
 const { setCoupon, removeCouponEnterprise, getCouponsInEnterprise } = useEnterpriseStore();
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
+const filterAlert = ref<string>('');
 const selectedCoupon = ref<QuasarSelect<string | null>>({
   label: 'Nenhum selecionado',
   value: null,
@@ -68,6 +73,9 @@ const clear = (): void => {
   selectedDataExclude.value = null;
   showConfirmAction.value = false;
   filterCoupon.value = '';
+};
+const resetPage = (): void => {
+  currentPage.value = 1;
 };
 const fetchGetCouponsInEnterprise = async () => {
   const response = await getCouponsInEnterprise(props.enterprise?.id ?? '');
@@ -133,6 +141,19 @@ const getExpirationColor = (dateExpiration: string | null): string => {
     return 'text-grey';
   }
 };
+const customFilterMembersEnterprise = (
+  rows: readonly Coupon[],
+  terms: string,
+  cols: readonly Coupon[],
+  getCellValue: (row: Coupon, col: QuasarTable) => unknown,
+): readonly Coupon[] => {
+  const searchTerm = terms.toLowerCase();
+  resetPage();
+  return listCoupon.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && item.name.toLowerCase().includes(searchTerm);
+  });
+};
 
 const open = computed({
   get: () => props.open,
@@ -158,6 +179,18 @@ const allowApply = computed(() => {
     return true;
   }
   return false;
+});
+const listCouponEnterpriseCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listCoupon.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  const filterLength = customFilterMembersEnterprise([], filterAlert.value, [], () => null).length;
+  if (filterAlert.value.length > 0) {
+    return Math.ceil(filterLength / rowsPerPage.value);
+  }
+  return Math.ceil(listCoupon.value.length / rowsPerPage.value);
 });
 
 watch(open, async () => {
@@ -194,7 +227,7 @@ watch(open, async () => {
           </q-select>
         </q-form>
         <q-table
-          :rows="listCouponsEnterprise"
+          :rows="listCouponEnterpriseCurrent"
           :columns="columnsCoupon"
           :filter="filterCoupon"
           :loading="loadingCoupon"
@@ -204,7 +237,7 @@ watch(open, async () => {
           row-key="index"
           no-data-label="Nenhum cupom para mostrar"
           virtual-scroll
-          :rows-per-page-options="[5]"
+          :rows-per-page-options="[rowsPerPage]"
           style="min-height: 300px"
         >
           <template v-slot:top>
@@ -277,6 +310,9 @@ watch(open, async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate v-model="currentPage" :max="maxPages" :length="listCoupon.length" />
           </template>
         </q-table>
       </q-card-section>
