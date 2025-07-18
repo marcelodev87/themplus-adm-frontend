@@ -19,7 +19,6 @@ const { user } = storeToRefs(useAuthStore());
 
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(14);
-const filterAlert = ref<string>('');
 const dataEdit = ref<UserADM | null>(null);
 const showFormUser = ref<boolean>(false);
 const filterUser = ref<string>('');
@@ -111,8 +110,8 @@ const listUserMemberCurrent = computed(() => {
   return listUserMember.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterMembersEnterprise([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
+  const filterLength = customFilterMembersEnterprise([], filterUser.value, [], () => null).length;
+  if (filterUser.value.length > 0) {
     return Math.ceil(filterLength / rowsPerPage.value);
   }
   return Math.ceil(listUserMember.value.length / rowsPerPage.value);

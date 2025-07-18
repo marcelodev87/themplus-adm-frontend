@@ -27,7 +27,6 @@ const { getSelectEnterprises, sendNotificationEnterprise } = useEnterpriseStore(
 
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
-const filterAlert = ref<string>('');
 const filterEnterprise = ref<string>('');
 const columnsEnterprise = reactive<QuasarTable[]>([
   {
@@ -120,8 +119,8 @@ const listEnterprisesCurrent = computed(() => {
   return listEnterprises.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterEnterprise([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
+  const filterLength = customFilterEnterprise([], filterEnterprise.value, [], () => null).length;
+  if (filterEnterprise.value.length > 0) {
     return Math.ceil(filterLength / rowsPerPage.value);
   }
   return Math.ceil(listEnterprises.value.length / rowsPerPage.value);

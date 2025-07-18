@@ -19,7 +19,6 @@ const { loadingCoupon, listCoupon } = storeToRefs(useCouponStore());
 
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
-const filterAlert = ref<string>('');
 const filterCoupon = ref<string>('');
 const showFormCoupon = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
@@ -164,8 +163,8 @@ const listCouponCurrent = computed(() => {
   return listCoupon.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterCoupon([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
+  const filterLength = customFilterCoupon([], filterCoupon.value, [], () => null).length;
+  if (filterCoupon.value.length > 0) {
     return Math.ceil(filterLength / rowsPerPage.value);
   }
   return Math.ceil(listCoupon.value.length / rowsPerPage.value);

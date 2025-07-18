@@ -29,7 +29,6 @@ const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
-const filterAlert = ref<string>('');
 const selectedCoupon = ref<QuasarSelect<string | null>>({
   label: 'Nenhum selecionado',
   value: null,
@@ -141,7 +140,7 @@ const getExpirationColor = (dateExpiration: string | null): string => {
     return 'text-grey';
   }
 };
-const customFilterMembersEnterprise = (
+const customFilterCoupon = (
   rows: readonly Coupon[],
   terms: string,
   cols: readonly Coupon[],
@@ -186,8 +185,8 @@ const listCouponEnterpriseCurrent = computed(() => {
   return listCoupon.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterMembersEnterprise([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
+  const filterLength = customFilterCoupon([], filterCoupon.value, [], () => null).length;
+  if (filterCoupon.value.length > 0) {
     return Math.ceil(filterLength / rowsPerPage.value);
   }
   return Math.ceil(listCoupon.value.length / rowsPerPage.value);
@@ -230,6 +229,7 @@ watch(open, async () => {
           :rows="listCouponEnterpriseCurrent"
           :columns="columnsCoupon"
           :filter="filterCoupon"
+          :filter-method="customFilterCoupon"
           :loading="loadingCoupon"
           flat
           bordered

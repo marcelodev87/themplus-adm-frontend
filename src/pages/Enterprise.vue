@@ -22,7 +22,6 @@ const { loadingEnterprise, listEnterprises } = storeToRefs(useEnterpriseStore())
 
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(14);
-const filterAlert = ref<string>('');
 const filterEnterprise = ref<string>('');
 const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
@@ -160,8 +159,8 @@ const listEnterpriseCurrent = computed(() => {
   return listEnterprises.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterEnterprise([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
+  const filterLength = customFilterEnterprise([], filterEnterprise.value, [], () => null).length;
+  if (filterEnterprise.value.length > 0) {
     return Math.ceil(filterLength / rowsPerPage.value);
   }
   return Math.ceil(listEnterprises.value.length / rowsPerPage.value);
