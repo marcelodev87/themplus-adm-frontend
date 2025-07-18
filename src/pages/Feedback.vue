@@ -105,10 +105,12 @@ const handleSaveFeedback = async (id: string) => {
 watch(tab, async () => {
   if (tab.value === 'received') {
     await getFeedbacks();
+    await useFeedbackStore().getcountFeedbacks();
   }
 
   if (tab.value === 'saved') {
     await getFeedbacksSaved();
+    await useFeedbackStore().getcountFeedbacks();
   }
 });
 

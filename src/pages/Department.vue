@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { useQuasar } from 'quasar';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useDepartmentStore } from 'src/stores/department-store';
 import { useAuthStore } from 'src/stores/auth-store';
 import { storeToRefs } from 'pinia';
 import type { Department } from 'src/ts/interfaces/models/department';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import FormDepartment from 'src/components/forms/FormDepartment.vue';
+import { useFeedbackStore } from 'src/stores/feedback-store';
 
 defineOptions({
   name: 'Department',
@@ -63,6 +64,11 @@ const openConfirmAction = (id: string): void => {
   dataExcludeId.value = id;
   showConfirmAction.value = true;
 };
+
+onMounted(async () => {
+  clear();
+  await useFeedbackStore().getcountFeedbacks();
+});
 </script>
 <template>
   <section>

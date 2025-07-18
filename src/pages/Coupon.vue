@@ -8,6 +8,7 @@ import FormCoupon from 'src/components/forms/FormCoupon.vue';
 import { formatDate } from 'src/helpers/formatDate';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import type { CouponTable } from 'src/ts/interfaces/models/subscriptions';
+import { useFeedbackStore } from 'src/stores/feedback-store';
 
 defineOptions({
   name: 'Coupon',
@@ -140,6 +141,7 @@ const getExpirationColor = (dateExpiration: string | null): string => {
 onMounted(async () => {
   clear();
   await fetchCoupons();
+  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 

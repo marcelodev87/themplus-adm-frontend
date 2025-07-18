@@ -11,6 +11,7 @@ import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
 import MemberManage from 'src/components/manage/MemberManage.vue';
 import NotificationManagement from 'src/components/manage/NotificationManage.vue';
+import { useFeedbackStore } from 'src/stores/feedback-store';
 
 defineOptions({
   name: 'Enterprise',
@@ -156,6 +157,7 @@ watch(showManageMembers, async () => {
 onMounted(async () => {
   clear();
   await fetchEnterprises();
+  await useFeedbackStore().getcountFeedbacks();
 });
 </script>
 
