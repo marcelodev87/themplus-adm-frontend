@@ -18,7 +18,7 @@ defineOptions({
 const { loadingCoupon, listCoupon } = storeToRefs(useCouponStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
+const rowsPerPage = ref<number>(11);
 const filterCoupon = ref<string>('');
 const showFormCoupon = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
@@ -143,31 +143,27 @@ const getExpirationColor = (dateExpiration: string | null): string => {
     return 'text-grey';
   }
 };
-const customFilterCoupon = (
-  rows: readonly CouponTable[],
-  terms: string,
-  cols: readonly CouponTable[],
-  getCellValue: (row: CouponTable, col: QuasarTable) => unknown,
-): readonly CouponTable[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredCoupon = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterCoupon.value);
   resetPage();
   return listCoupon.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listCouponCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listCoupon.value.slice(start, end);
+  return filteredCoupon.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterCoupon([], filterCoupon.value, [], () => null).length;
-  if (filterCoupon.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listCoupon.value.length / rowsPerPage.value);
+  return Math.ceil(filteredCoupon.value.length / rowsPerPage.value);
 });
 
 onMounted(async () => {
@@ -204,9 +200,7 @@ onMounted(async () => {
         <q-table
           :rows="listCouponCurrent"
           :columns="columnsCoupon"
-          :filter="filterCoupon"
           :loading="loadingCoupon"
-          :filter-method="customFilterCoupon"
           flat
           bordered
           dense
@@ -332,7 +326,7 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <Paginate v-model="currentPage" :max="maxPages" :length="listCoupon.length" />
+            <Paginate v-model="currentPage" :max="maxPages" :length="filteredCoupon.length" />
           </template>
         </q-table>
       </main>

@@ -28,7 +28,7 @@ const { setCoupon, removeCouponEnterprise, getCouponsInEnterprise } = useEnterpr
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(10);
+const rowsPerPage = ref<number>(11);
 const selectedCoupon = ref<QuasarSelect<string | null>>({
   label: 'Nenhum selecionado',
   value: null,
@@ -140,19 +140,19 @@ const getExpirationColor = (dateExpiration: string | null): string => {
     return 'text-grey';
   }
 };
-const customFilterCoupon = (
-  rows: readonly Coupon[],
-  terms: string,
-  cols: readonly Coupon[],
-  getCellValue: (row: Coupon, col: QuasarTable) => unknown,
-): readonly Coupon[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredCoupon = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterCoupon.value);
   resetPage();
   return listCoupon.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const open = computed({
   get: () => props.open,
@@ -182,14 +182,10 @@ const allowApply = computed(() => {
 const listCouponEnterpriseCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listCoupon.value.slice(start, end);
+  return filteredCoupon.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterCoupon([], filterCoupon.value, [], () => null).length;
-  if (filterCoupon.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listCoupon.value.length / rowsPerPage.value);
+  return Math.ceil(filteredCoupon.value.length / rowsPerPage.value);
 });
 
 watch(open, async () => {
@@ -228,8 +224,6 @@ watch(open, async () => {
         <q-table
           :rows="listCouponEnterpriseCurrent"
           :columns="columnsCoupon"
-          :filter="filterCoupon"
-          :filter-method="customFilterCoupon"
           :loading="loadingCoupon"
           flat
           bordered
@@ -312,7 +306,7 @@ watch(open, async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <Paginate v-model="currentPage" :max="maxPages" :length="listCoupon.length" />
+            <Paginate v-model="currentPage" :max="maxPages" :length="filteredCoupon.length" />
           </template>
         </q-table>
       </q-card-section>

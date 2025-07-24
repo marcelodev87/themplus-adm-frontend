@@ -19,8 +19,8 @@ const { getFeedbacks, getFeedbacksSaved, saveFeedback, exclude, deleteSaved } = 
 const { listFeedbacks, loadingFeedback } = storeToRefs(useFeedbackStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(14);
-const filterAlert = ref<string>('');
+const rowsPerPage = ref<number>(11);
+const filterFeedback = ref<string>('');
 const tab = ref<'received' | 'saved'>('received');
 const showFeedBackDetails = ref<boolean>(false);
 const selectedData = ref<Feedback | null>(null);
@@ -109,34 +109,30 @@ const closeConfirmActionOk = async () => {
 const handleSaveFeedback = async (id: string) => {
   await saveFeedback(id);
 };
-const customFilterMembersEnterprise = (
-  rows: readonly Feedback[],
-  terms: string,
-  cols: readonly Feedback[],
-  getCellValue: (row: Feedback, col: QuasarTable) => unknown,
-): readonly Feedback[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredMembersEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
   resetPage();
+  const searchTerm = normalize(filterFeedback.value);
   return listFeedbacks.value.filter((item) => {
-    currentPage.value = 1;
     return (
-      (item.user_name && item.user_name.toLowerCase().includes(searchTerm)) ||
-      (item.organization_name && item.organization_name.toLowerCase().includes(searchTerm))
+      (item.user_name && normalize(item.user_name).includes(searchTerm)) ||
+      (item.organization_name && normalize(item.organization_name).includes(searchTerm))
     );
   });
-};
+});
 
 const listFeedbacksCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listFeedbacks.value.slice(start, end);
+  return filteredMembersEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterMembersEnterprise([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listFeedbacks.value.length / rowsPerPage.value);
+  return Math.ceil(filteredMembersEnterprise.value.length / rowsPerPage.value);
 });
 
 watch(tab, async () => {
@@ -310,7 +306,11 @@ onMounted(async () => {
                 </q-tr>
               </template>
               <template v-slot:bottom>
-                <Paginate v-model="currentPage" :max="maxPages" :length="listFeedbacks.length" />
+                <Paginate
+                  v-model="currentPage"
+                  :max="maxPages"
+                  :length="filteredMembersEnterprise.length"
+                />
               </template>
             </q-table>
           </q-tab-panel>

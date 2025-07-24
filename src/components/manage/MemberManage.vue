@@ -34,7 +34,6 @@ const showFormManageMember = ref<boolean>(false);
 const dataMemberSelected = ref<User | null>(null);
 const dataMemberSelectedExclude = ref<string | null>(null);
 const filterMembers = ref<string>('');
-const filterAlert = ref<string>('');
 const columnsMembers = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -101,19 +100,20 @@ const closeConfirmAction = (): void => {
   showConfirmAction.value = false;
   clear();
 };
-const customFilterMembersEnterprise = (
-  rows: readonly User[],
-  terms: string,
-  cols: readonly User[],
-  getCellValue: (row: User, col: QuasarTable) => unknown,
-): readonly User[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredMembersEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterMembers.value);
   resetPage();
   return listEnterpriseMembers.value.filter((item) => {
     currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const open = computed({
   get: () => props.open,
@@ -122,14 +122,10 @@ const open = computed({
 const listEnterpriseMembersCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listEnterpriseMembers.value.slice(start, end);
+  return filteredMembersEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterMembersEnterprise([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listEnterpriseMembers.value.length / rowsPerPage.value);
+  return Math.ceil(filteredMembersEnterprise.value.length / rowsPerPage.value);
 });
 
 watch(open, async () => {
@@ -149,8 +145,6 @@ watch(open, async () => {
         <q-table
           :rows="listEnterpriseMembersCurrent"
           :columns="columnsMembers"
-          :filter="filterMembers"
-          :filter-method="customFilterMembersEnterprise"
           :loading="loadingEnterprise"
           flat
           bordered
@@ -206,7 +200,7 @@ watch(open, async () => {
             <Paginate
               v-model="currentPage"
               :max="maxPages"
-              :length="listEnterpriseMembers.length"
+              :length="filteredMembersEnterprise.length"
             />
           </template>
         </q-table>

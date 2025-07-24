@@ -21,7 +21,7 @@ const { getEnterprises, deleteEnterprise } = useEnterpriseStore();
 const { loadingEnterprise, listEnterprises } = storeToRefs(useEnterpriseStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(14);
+const rowsPerPage = ref<number>(11);
 const filterEnterprise = ref<string>('');
 const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
@@ -135,35 +135,31 @@ const openMembersEnterprise = (id: string): void => {
 const closeMembersEnterprise = (): void => {
   showManageMembers.value = false;
 };
-const customFilterEnterprise = (
-  rows: readonly Enterprise[],
-  terms: string,
-  cols: readonly Enterprise[],
-  getCellValue: (row: Enterprise, col: QuasarTable) => unknown,
-): readonly Enterprise[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterEnterprise.value);
   resetPage();
   return listEnterprises.value.filter((item) => {
-    currentPage.value = 1;
     return (
-      (item.name && item.name.toLowerCase().includes(searchTerm)) ||
-      (item.cpf && item.cpf.toLowerCase().includes(searchTerm)) ||
-      (item.cnpj && item.cnpj.toLowerCase().includes(searchTerm))
+      (item.name && normalize(item.name).includes(searchTerm)) ||
+      (item.cpf && normalize(item.cpf).includes(searchTerm)) ||
+      (item.cnpj && normalize(item.cnpj).includes(searchTerm))
     );
   });
-};
+});
 
 const listEnterpriseCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listEnterprises.value.slice(start, end);
+  return filteredEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterEnterprise([], filterEnterprise.value, [], () => null).length;
-  if (filterEnterprise.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listEnterprises.value.length / rowsPerPage.value);
+  return Math.ceil(filteredEnterprise.value.length / rowsPerPage.value);
 });
 
 watch(showManageMembers, async () => {
@@ -219,8 +215,6 @@ onMounted(async () => {
         <q-table
           :rows="listEnterpriseCurrent"
           :columns="columnsEnterprise"
-          :filter="filterEnterprise"
-          :filter-method="customFilterEnterprise"
           :loading="loadingEnterprise"
           flat
           bordered
@@ -228,7 +222,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma organização para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de organizações</span>
@@ -307,7 +301,7 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <Paginate v-model="currentPage" :max="maxPages" :length="listEnterprises.length" />
+            <Paginate v-model="currentPage" :max="maxPages" :length="filteredEnterprise.length" />
           </template>
         </q-table>
       </main>

@@ -17,7 +17,7 @@ defineOptions({
 const { listSubscription, loadingSubscription } = storeToRefs(useSubscriptionStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(14);
+const rowsPerPage = ref<number>(11);
 const filterAlert = ref<string>('');
 const showFormSubscription = ref<boolean>(false);
 const dataEdit = ref<{ id: string; price: string; name: string } | null>(null);
@@ -70,19 +70,6 @@ const handleEdit = (data: { id: string; price: string; name: string }): void => 
   dataEdit.value = data;
   openFormSubscription();
 };
-const customFilterSubscription = (
-  rows: readonly Subscription[],
-  terms: string,
-  cols: readonly Subscription[],
-  getCellValue: (row: Subscription, col: QuasarTable) => unknown,
-): readonly Subscription[] => {
-  const searchTerm = terms.toLowerCase();
-  resetPage();
-  return listSubscription.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
-  });
-};
 
 const listSubscriptionCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
@@ -90,10 +77,6 @@ const listSubscriptionCurrent = computed(() => {
   return listSubscription.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterSubscription([], filterAlert.value, [], () => null).length;
-  if (filterAlert.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
   return Math.ceil(listSubscription.value.length / rowsPerPage.value);
 });
 

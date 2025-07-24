@@ -22,7 +22,7 @@ const emit = defineEmits<{
 }>();
 
 const { listTemplates } = storeToRefs(useTemplateNotificationStore());
-const { listEnterprisesSelect, listEnterprises } = storeToRefs(useEnterpriseStore());
+const { listEnterprises } = storeToRefs(useEnterpriseStore());
 const { getSelectEnterprises, sendNotificationEnterprise } = useEnterpriseStore();
 
 const currentPage = ref<number>(1);
@@ -99,31 +99,28 @@ const send = async (): Promise<void> => {
 const resetPage = (): void => {
   currentPage.value = 1;
 };
-const customFilterEnterprise = (
-  rows: readonly Enterprise[],
-  terms: string,
-  cols: readonly Enterprise[],
-  getCellValue: (row: Enterprise, col: QuasarTable) => unknown,
-): readonly Enterprise[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterEnterprise.value);
   resetPage();
   return listEnterprises.value.filter((item) => {
     currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listEnterprisesCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listEnterprises.value.slice(start, end);
+  return filteredEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterEnterprise([], filterEnterprise.value, [], () => null).length;
-  if (filterEnterprise.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listEnterprises.value.length / rowsPerPage.value);
+  return Math.ceil(filteredEnterprise.value.length / rowsPerPage.value);
 });
 const optionsTemplate = computed(() => {
   return [
@@ -203,8 +200,6 @@ watch(open, async () => {
             bordered
             :rows="listEnterprisesCurrent"
             :columns="columnsEnterprise"
-            :filter="filterEnterprise"
-            :filter-method="customFilterEnterprise"
             row-key="id"
             :selected-rows-label="getSelectedString"
             selection="multiple"
@@ -222,7 +217,7 @@ watch(open, async () => {
               </q-input>
             </template>
             <template v-slot:bottom>
-              <Paginate v-model="currentPage" :max="maxPages" :length="listEnterprises.length" />
+              <Paginate v-model="currentPage" :max="maxPages" :length="filteredEnterprise.length" />
             </template>
           </q-table>
         </q-form>

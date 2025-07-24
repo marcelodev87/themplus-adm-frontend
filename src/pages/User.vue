@@ -18,7 +18,7 @@ const { listUserMember, loadingUsersMembers } = storeToRefs(useUsersMembersStore
 const { user } = storeToRefs(useAuthStore());
 
 const currentPage = ref<number>(1);
-const rowsPerPage = ref<number>(14);
+const rowsPerPage = ref<number>(11);
 const dataEdit = ref<UserADM | null>(null);
 const showFormUser = ref<boolean>(false);
 const filterUser = ref<string>('');
@@ -90,31 +90,27 @@ const handleEdit = (data: UserADM) => {
   dataEdit.value = data;
   openFormUser();
 };
-const customFilterMembersEnterprise = (
-  rows: readonly UserADM[],
-  terms: string,
-  cols: readonly UserADM[],
-  getCellValue: (row: UserADM, col: QuasarTable) => unknown,
-): readonly UserADM[] => {
-  const searchTerm = terms.toLowerCase();
+const filteredMembersEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
   resetPage();
+  const searchTerm = normalize(filterUser.value);
   return listUserMember.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && item.name.toLowerCase().includes(searchTerm);
+    return item.name && normalize(item.name).includes(searchTerm);
   });
-};
+});
 
 const listUserMemberCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listUserMember.value.slice(start, end);
+  return filteredMembersEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
-  const filterLength = customFilterMembersEnterprise([], filterUser.value, [], () => null).length;
-  if (filterUser.value.length > 0) {
-    return Math.ceil(filterLength / rowsPerPage.value);
-  }
-  return Math.ceil(listUserMember.value.length / rowsPerPage.value);
+  return Math.ceil(filteredMembersEnterprise.value.length / rowsPerPage.value);
 });
 
 onMounted(async () => {
@@ -151,8 +147,6 @@ onMounted(async () => {
         <q-table
           :rows="listUserMemberCurrent"
           :columns="columnsUser"
-          :filter="filterUser"
-          :filter-method="customFilterMembersEnterprise"
           :loading="loadingUsersMembers"
           flat
           bordered
@@ -225,7 +219,11 @@ onMounted(async () => {
             </q-tr>
           </template>
           <template v-slot:bottom>
-            <Paginate v-model="currentPage" :max="maxPages" :length="listUserMember.length" />
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="filteredMembersEnterprise.length"
+            />
           </template>
         </q-table>
       </main>
