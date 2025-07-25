@@ -1,5 +1,6 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { useSubscriptionStore } from 'src/stores/subscription-store';
@@ -7,6 +8,8 @@ import { storeToRefs } from 'pinia';
 import { formatToBr } from 'src/helpers/formatMoney';
 import FormSubscription from 'src/components/forms/FormSubscription.vue';
 import { useFeedbackStore } from 'src/stores/feedback-store';
+import Paginate from 'src/components/general/Paginate.vue';
+import type { Subscription } from 'src/ts/interfaces/models/subscriptions';
 
 defineOptions({
   name: 'Subscriptions',
@@ -14,6 +17,9 @@ defineOptions({
 
 const { listSubscription, loadingSubscription } = storeToRefs(useSubscriptionStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(11);
+const filterAlert = ref<string>('');
 const showFormSubscription = ref<boolean>(false);
 const dataEdit = ref<{ id: string; price: string; name: string } | null>(null);
 const filterSubscription = ref<string>('');
@@ -48,6 +54,9 @@ const clear = (): void => {
   filterSubscription.value = '';
   dataEdit.value = null;
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const fetchSubscriptions = async () => {
   await useSubscriptionStore().getSubscriptions();
 };
@@ -62,6 +71,15 @@ const handleEdit = (data: { id: string; price: string; name: string }): void => 
   dataEdit.value = data;
   openFormSubscription();
 };
+
+const listSubscriptionCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listSubscription.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listSubscription.value.length / rowsPerPage.value);
+});
 
 onMounted(async () => {
   clear();
@@ -86,7 +104,7 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="listSubscription"
+          :rows="listSubscriptionCurrent"
           :columns="columnsSubscriptions"
           :loading="loadingSubscription"
           flat
@@ -95,7 +113,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhuma assinatura para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de assinaturas</span>
@@ -127,6 +145,9 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate v-model="currentPage" :max="maxPages" :length="listSubscription.length" />
           </template>
         </q-table>
       </main>

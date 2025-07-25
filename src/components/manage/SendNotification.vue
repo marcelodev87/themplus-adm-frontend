@@ -1,12 +1,14 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { Notify } from 'quasar';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { useTemplateNotificationStore } from 'src/stores/template-notification-store';
-import type { EnterpriseSelect } from 'src/ts/interfaces/models/enterprise';
+import type { Enterprise, EnterpriseSelect } from 'src/ts/interfaces/models/enterprise';
 import type { QuasarSelect, QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { computed, reactive, ref, watch } from 'vue';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'SendNotifications',
@@ -20,9 +22,11 @@ const emit = defineEmits<{
 }>();
 
 const { listTemplates } = storeToRefs(useTemplateNotificationStore());
-const { listEnterprisesSelect } = storeToRefs(useEnterpriseStore());
+const { listEnterprises } = storeToRefs(useEnterpriseStore());
 const { getSelectEnterprises, sendNotificationEnterprise } = useEnterpriseStore();
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const filterEnterprise = ref<string>('');
 const columnsEnterprise = reactive<QuasarTable[]>([
   {
@@ -92,7 +96,32 @@ const send = async (): Promise<void> => {
     });
   }
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
+const filteredEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterEnterprise.value);
+  resetPage();
+  return listEnterprises.value.filter((item) => {
+    currentPage.value = 1;
+    return item.name && normalize(item.name).includes(searchTerm);
+  });
+});
 
+const listEnterprisesCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return filteredEnterprise.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(filteredEnterprise.value.length / rowsPerPage.value);
+});
 const optionsTemplate = computed(() => {
   return [
     { label: 'Sem template', value: '' },
@@ -169,13 +198,12 @@ watch(open, async () => {
           <q-table
             flat
             bordered
-            :rows="listEnterprisesSelect"
+            :rows="listEnterprisesCurrent"
             :columns="columnsEnterprise"
-            :filter="filterEnterprise"
             row-key="id"
             :selected-rows-label="getSelectedString"
             selection="multiple"
-            :rows-per-page-options="[0]"
+            :rows-per-page-options="[rowsPerPage]"
             v-model:selected="selectedEnterprise"
             style="height: 350px"
           >
@@ -187,6 +215,9 @@ watch(open, async () => {
                   <q-icon name="search" />
                 </template>
               </q-input>
+            </template>
+            <template v-slot:bottom>
+              <Paginate v-model="currentPage" :max="maxPages" :length="filteredEnterprise.length" />
             </template>
           </q-table>
         </q-form>

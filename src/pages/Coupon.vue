@@ -1,5 +1,6 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { useCouponStore } from 'src/stores/coupon-store';
@@ -9,6 +10,7 @@ import { formatDate } from 'src/helpers/formatDate';
 import ConfirmAction from 'src/components/confirm/ConfirmAction.vue';
 import type { CouponTable } from 'src/ts/interfaces/models/subscriptions';
 import { useFeedbackStore } from 'src/stores/feedback-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Coupon',
@@ -16,6 +18,8 @@ defineOptions({
 
 const { loadingCoupon, listCoupon } = storeToRefs(useCouponStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(11);
 const filterCoupon = ref<string>('');
 const showFormCoupon = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
@@ -70,6 +74,9 @@ const clear = (): void => {
   selectedDataEdit.value = null;
   selectedDataExclude.value = null;
   filterCoupon.value = '';
+};
+const resetPage = (): void => {
+  currentPage.value = 1;
 };
 const openFormCoupon = (): void => {
   showFormCoupon.value = true;
@@ -137,6 +144,28 @@ const getExpirationColor = (dateExpiration: string | null): string => {
     return 'text-grey';
   }
 };
+const filteredCoupon = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterCoupon.value);
+  resetPage();
+  return listCoupon.value.filter((item) => {
+    return item.name && normalize(item.name).includes(searchTerm);
+  });
+});
+
+const listCouponCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return filteredCoupon.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(filteredCoupon.value.length / rowsPerPage.value);
+});
 
 onMounted(async () => {
   clear();
@@ -171,9 +200,8 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="listCoupon"
+          :rows="listCouponCurrent"
           :columns="columnsCoupon"
-          :filter="filterCoupon"
           :loading="loadingCoupon"
           flat
           bordered
@@ -181,7 +209,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhum cupom para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de cupons</span>
@@ -298,6 +326,9 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate v-model="currentPage" :max="maxPages" :length="filteredCoupon.length" />
           </template>
         </q-table>
       </main>

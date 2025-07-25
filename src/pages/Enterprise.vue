@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import TitlePage from 'src/components/shared/TitlePage.vue';
@@ -12,6 +12,7 @@ import ChooseCoupon from 'src/components/shared/ChooseCoupon.vue';
 import MemberManage from 'src/components/manage/MemberManage.vue';
 import NotificationManagement from 'src/components/manage/NotificationManage.vue';
 import { useFeedbackStore } from 'src/stores/feedback-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'Enterprise',
@@ -20,6 +21,8 @@ defineOptions({
 const { getEnterprises, deleteEnterprise } = useEnterpriseStore();
 const { loadingEnterprise, listEnterprises } = storeToRefs(useEnterpriseStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(11);
 const filterEnterprise = ref<string>('');
 const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
@@ -77,6 +80,9 @@ const clear = (): void => {
     value: 'all',
   };
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
 };
@@ -130,22 +136,32 @@ const openMembersEnterprise = (id: string): void => {
 const closeMembersEnterprise = (): void => {
   showManageMembers.value = false;
 };
-const customFilterEnterprise = (
-  rows: readonly Enterprise[],
-  terms: string,
-  cols: readonly Enterprise[],
-  getCellValue: (row: Enterprise, col: QuasarTable) => unknown,
-): readonly Enterprise[] => {
-  const searchTerm = terms.toLowerCase();
-
-  return rows.filter((item) => {
+const filteredEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  const searchTerm = normalize(filterEnterprise.value);
+  resetPage();
+  return listEnterprises.value.filter((item) => {
     return (
-      (item.name && item.name.toLowerCase().includes(searchTerm)) ||
-      (item.cpf && item.cpf.toLowerCase().includes(searchTerm)) ||
-      (item.cnpj && item.cnpj.toLowerCase().includes(searchTerm))
+      (item.name && normalize(item.name).includes(searchTerm)) ||
+      (item.cpf && normalize(item.cpf).includes(searchTerm)) ||
+      (item.cnpj && normalize(item.cnpj).includes(searchTerm))
     );
   });
-};
+});
+
+const listEnterpriseCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return filteredEnterprise.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(filteredEnterprise.value.length / rowsPerPage.value);
+});
 
 watch(showManageMembers, async () => {
   if (!showManageMembers.value) {
@@ -199,18 +215,16 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="listEnterprises"
+          :rows="listEnterpriseCurrent"
           :columns="columnsEnterprise"
-          :filter="filterEnterprise"
           :loading="loadingEnterprise"
-          :filter-method="customFilterEnterprise"
           flat
           bordered
           dense
           row-key="index"
           no-data-label="Nenhuma organização para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de organizações</span>
@@ -287,6 +301,9 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate v-model="currentPage" :max="maxPages" :length="filteredEnterprise.length" />
           </template>
         </q-table>
       </main>

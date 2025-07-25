@@ -7,6 +7,7 @@ import type { TemplateNotification } from 'src/ts/interfaces/models/template-not
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { computed, reactive, ref, watch } from 'vue';
 import SendNotification from './SendNotification.vue';
+import Paginate from '../general/Paginate.vue';
 
 defineOptions({
   name: 'NotificationManagement',
@@ -15,6 +16,8 @@ defineOptions({
 const { getTemplates, deleteTemplate } = useTemplateNotificationStore();
 const { loadingTemplate, listTemplates } = storeToRefs(useTemplateNotificationStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(10);
 const selectedDataExclude = ref<string | null>(null);
 const selectedData = ref<TemplateNotification | null>(null);
 const showFormNotification = ref<boolean>(false);
@@ -82,6 +85,14 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
+const listTemplateCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return listTemplates.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(listTemplates.value.length / rowsPerPage.value);
+});
 
 watch(open, async () => {
   if (open.value) {
@@ -118,8 +129,8 @@ watch(open, async () => {
       </q-card-section>
       <q-card-section class="q-pa-none">
         <q-table
-          :rows="listTemplates"
-          :rows-per-page-options="[10]"
+          :rows="listTemplateCurrent"
+          :rows-per-page-options="[rowsPerPage]"
           :columns="columnsTemplates"
           flat
           bordered
@@ -159,6 +170,9 @@ watch(open, async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate v-model="currentPage" :max="maxPages" :length="listTemplates.length" />
           </template>
         </q-table>
       </q-card-section>

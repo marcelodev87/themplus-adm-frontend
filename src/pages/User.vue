@@ -1,5 +1,6 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import TitlePage from 'src/components/shared/TitlePage.vue';
 import type { QuasarTable } from 'src/ts/interfaces/quasar/quasar';
 import { useUsersMembersStore } from 'src/stores/users-store';
@@ -8,6 +9,7 @@ import FormUser from 'src/components/forms/FormUser.vue';
 import type { UserADM } from 'src/ts/interfaces/models/user';
 import { useAuthStore } from 'src/stores/auth-store';
 import { useFeedbackStore } from 'src/stores/feedback-store';
+import Paginate from 'src/components/general/Paginate.vue';
 
 defineOptions({
   name: 'User',
@@ -16,6 +18,8 @@ defineOptions({
 const { listUserMember, loadingUsersMembers } = storeToRefs(useUsersMembersStore());
 const { user } = storeToRefs(useAuthStore());
 
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(11);
 const dataEdit = ref<UserADM | null>(null);
 const showFormUser = ref<boolean>(false);
 const filterUser = ref<string>('');
@@ -64,6 +68,9 @@ const clear = (): void => {
   filterUser.value = '';
   dataEdit.value = null;
 };
+const resetPage = (): void => {
+  currentPage.value = 1;
+};
 const openFormUser = (): void => {
   showFormUser.value = true;
 };
@@ -84,6 +91,28 @@ const handleEdit = (data: UserADM) => {
   dataEdit.value = data;
   openFormUser();
 };
+const filteredMembersEnterprise = computed(() => {
+  const normalize = (text: string): string => {
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  };
+  resetPage();
+  const searchTerm = normalize(filterUser.value);
+  return listUserMember.value.filter((item) => {
+    return item.name && normalize(item.name).includes(searchTerm);
+  });
+});
+
+const listUserMemberCurrent = computed(() => {
+  const start = (currentPage.value - 1) * rowsPerPage.value;
+  const end = start + rowsPerPage.value;
+  return filteredMembersEnterprise.value.slice(start, end);
+});
+const maxPages = computed(() => {
+  return Math.ceil(filteredMembersEnterprise.value.length / rowsPerPage.value);
+});
 
 onMounted(async () => {
   clear();
@@ -118,9 +147,8 @@ onMounted(async () => {
     <q-scroll-area class="main-scroll">
       <main class="q-pa-sm q-mb-md" :style="!$q.screen.lt.sm ? '' : 'width: 98vw'">
         <q-table
-          :rows="listUserMember"
+          :rows="listUserMemberCurrent"
           :columns="columnsUser"
-          :filter="filterUser"
           :loading="loadingUsersMembers"
           flat
           bordered
@@ -128,7 +156,7 @@ onMounted(async () => {
           row-key="index"
           no-data-label="Nenhum usuário para mostrar"
           virtual-scroll
-          :rows-per-page-options="[20]"
+          :rows-per-page-options="[rowsPerPage]"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de usuários</span>
@@ -191,6 +219,13 @@ onMounted(async () => {
                 />
               </q-td>
             </q-tr>
+          </template>
+          <template v-slot:bottom>
+            <Paginate
+              v-model="currentPage"
+              :max="maxPages"
+              :length="filteredMembersEnterprise.length"
+            />
           </template>
         </q-table>
       </main>
