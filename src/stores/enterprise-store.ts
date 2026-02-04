@@ -205,6 +205,8 @@ export const useEnterpriseStore = defineStore('enterprise', {
       number_address: string | null;
       email: string | null;
       phone: string | null;
+      subscription: string
+      subscriptionDateExpired: string
     }) {
       this.setLoading(true);
       try {

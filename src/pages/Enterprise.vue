@@ -28,6 +28,12 @@ const selectCoupon = ref<QuasarSelect<string>>({
   label: 'Todos',
   value: 'all',
 });
+const planLabels: Record<string, string> = {
+  free: 'Grátis',
+  basic: 'Básico',
+  advanced: 'Avançado',
+  etika: 'Cliente Etika'
+};
 const chooseCouponData = ref<{ id: string } | null>(null);
 const showChooseCoupon = ref<boolean>(false);
 const showFormEnterprise = ref<boolean>(false);
@@ -57,9 +63,9 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     align: 'left',
   },
   {
-    name: 'coupon',
-    label: 'Cupons',
-    field: '',
+    name: 'subscription',
+    label: 'Assinatura',
+    field: 'subscription',
     align: 'left',
   },
 
@@ -83,6 +89,9 @@ const clear = (): void => {
 const resetPage = (): void => {
   currentPage.value = 1;
 };
+const getPlanLabel = (name?: string) => {
+  return name ? (planLabels[name] ?? name) : '';
+}
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
 };
@@ -149,7 +158,8 @@ const filteredEnterprise = computed(() => {
     return (
       (item.name && normalize(item.name).includes(searchTerm)) ||
       (item.cpf && normalize(item.cpf).includes(searchTerm)) ||
-      (item.cnpj && normalize(item.cnpj).includes(searchTerm))
+      (item.cnpj && normalize(item.cnpj).includes(searchTerm)) ||
+      (item.subscription.name && normalize(item.subscription.name).includes(searchTerm))
     );
   });
 });
@@ -250,13 +260,8 @@ onMounted(async () => {
                     : `CPF: ${props.row.cpf ?? 'Não definido'}`
                 }}
               </q-td>
-              <q-td key="coupon" :props="props" class="text-left">
-                {{}}
-                <q-badge
-                  rounded
-                  :color="props.row.coupons.length > 0 ? 'green' : 'red'"
-                  :label="props.row.coupons.length"
-                />
+              <q-td key="subscription" :props="props" class="text-left">
+                {{ getPlanLabel(props.row.subscription.name) }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn
@@ -270,7 +275,7 @@ onMounted(async () => {
                 >
                   <q-tooltip>Members</q-tooltip>
                 </q-btn>
-                <q-btn
+                <!-- <q-btn
                   @click="openChooseCoupon(props.row)"
                   :disable="loadingEnterprise"
                   size="sm"
@@ -280,7 +285,7 @@ onMounted(async () => {
                   icon="sell"
                 >
                   <q-tooltip>Cupons</q-tooltip>
-                </q-btn>
+                </q-btn> -->
                 <q-btn
                   @click="handleEdit(props.row)"
                   :disable="loadingEnterprise"

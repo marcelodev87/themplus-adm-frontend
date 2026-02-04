@@ -79,7 +79,7 @@ const closeDrawer = (): void => {
             </q-item-section>
             <q-item-section> Organizações </q-item-section>
           </q-item>
-          <q-item
+          <!-- <q-item
             clickable
             :to="{ name: 'admin-coupon' }"
             :active="isActive('admin-coupon')"
@@ -90,7 +90,7 @@ const closeDrawer = (): void => {
               <q-icon name="percent" />
             </q-item-section>
             <q-item-section> Cupons </q-item-section>
-          </q-item>
+          </q-item> -->
           <q-item
             clickable
             :to="{ name: 'admin-subscription' }"

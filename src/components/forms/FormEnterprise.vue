@@ -6,6 +6,7 @@ import { searchCep } from 'src/services/cep-service';
 import { useEnterpriseStore } from 'src/stores/enterprise-store';
 import { storeToRefs } from 'pinia';
 import type { Enterprise } from 'src/ts/interfaces/models/enterprise';
+import { useSubscriptionStore } from 'src/stores/subscription-store';
 
 defineOptions({
   name: 'FormEnterprise',
@@ -21,7 +22,14 @@ const emit = defineEmits<{
 
 const { createEnterpriseByAdm, updateEnterpriseByAdm } = useEnterpriseStore();
 const { loadingEnterprise } = storeToRefs(useEnterpriseStore());
+const { loadingSubscription, listSubscription } = storeToRefs(useSubscriptionStore());
 
+const planLabels: Record<string, string> = {
+  free: 'Grátis',
+  basic: 'Básico',
+  advanced: 'Avançado',
+  etika: 'Cliente Etika'
+};
 const allowRequest = ref<boolean>(false);
 const isPwd = ref<boolean>(true);
 const isPwd2 = ref<boolean>(true);
@@ -44,6 +52,7 @@ const dataEnterprise = reactive({
   phone: '' as string,
   codeFinancial: '' as string,
   position: 'Cliente' as string,
+  subscriptionDateExpired : '' as string
 });
 const dataUser = reactive({
   name: '' as string,
@@ -54,7 +63,14 @@ const dataUser = reactive({
   confirmPassword: '' as string,
 });
 const optionsIdentifier = reactive<string[]>(['CNPJ', 'CPF']);
+const selectedSubscription = ref({
+  value: null as string | null,
+  label: '' as string
+})
 
+const getPlanLabel = (name?: string) => {
+  return name ? (planLabels[name] ?? name) : '';
+}
 const checkData = (): { status: boolean; message?: string } => {
   if (dataEnterprise.name.trim() === '') {
     return {
@@ -62,6 +78,51 @@ const checkData = (): { status: boolean; message?: string } => {
       message: 'Deve ser informado o nome da organização',
     };
   }
+  const value = dataEnterprise.subscriptionDateExpired;
+
+  if (!value || value.trim() === '') {
+    return {
+      status: false,
+      message: 'Data de expiração obrigatória',
+    };
+  }
+
+  const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(\d{4})$/;
+
+  if (!regex.test(value)) {
+    return {
+      status: false,
+      message: 'Formato deve ser DD/MM/YYYY',
+    };
+  }
+
+  const [day, month, yearStr] = value.split('/');
+  const dayNum = Number(day);
+  const monthNum = Number(month);
+  const yearNum = Number(yearStr);
+
+  const currentYear = new Date().getFullYear();
+
+  if (yearNum < currentYear) {
+    return {
+      status: false,
+      message: 'Ano deve ser igual ou maior que o atual',
+    };
+  }
+
+  const date = new Date(yearNum, monthNum - 1, dayNum);
+
+  if (
+    date.getFullYear() !== yearNum ||
+    date.getMonth() !== monthNum - 1 ||
+    date.getDate() !== dayNum
+  ) {
+    return {
+      status: false,
+      message: 'Data inválida',
+    };
+  }
+
   if (dataEnterprise.name.trim().length < 2) {
     return {
       status: false,
@@ -188,6 +249,7 @@ const clear = (): void => {
     phone: '',
     codeFinancial: '',
     position: 'Cliente',
+    subscriptionDateExpired : ''
   });
   Object.assign(dataUser, {
     name: '',
@@ -199,6 +261,10 @@ const clear = (): void => {
   });
   tab.value = 'enterprise';
   allowRequest.value = false;
+  selectedSubscription.value = {
+      label: '',
+      value: null
+    }
 };
 const save = async () => {
   const check = checkData();
@@ -220,6 +286,8 @@ const save = async () => {
         codeFinancial:
           dataEnterprise.codeFinancial.trim() === '' ? null : Number(dataEnterprise.codeFinancial),
         position: dataEnterprise.position == 'Cliente' ? 'client' : 'counter',
+        subscription: selectedSubscription.value.value ?? '',
+        subscriptionDateExpired : dataEnterprise.subscriptionDateExpired
       },
       {
         name: dataUser.name,
@@ -269,6 +337,8 @@ const update = async () => {
         dataEnterprise.numberAddress.trim() === '' ? null : dataEnterprise.numberAddress,
       email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
       phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
+      subscription: selectedSubscription.value.value ?? '',
+      subscriptionDateExpired : dataEnterprise.subscriptionDateExpired
     });
 
     if (response?.status === 200) {
@@ -323,6 +393,27 @@ const formattedPhoneUser = computed({
     dataUser.phone = digits;
   },
 });
+function formatDateBR(value: string | null) {
+  if (!value) return ''
+
+  const date = new Date(value)
+
+  if (isNaN(date.getTime())) return ''
+
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+
+  return `${day}/${month}/${year}`
+}
+const optionsSubscriptions = computed(() => {
+  return listSubscription.value.map((item) => {
+    return {
+      value: item.id,
+      label:getPlanLabel(item.name)
+    }
+  })
+})
 const checkEdit = () => {
   if (props.data) {
     selectedIdentifier.value = props.data.cpf ? 'CPF' : 'CNPJ';
@@ -340,9 +431,16 @@ const checkEdit = () => {
       numberAddress: props.data.number_address ?? '',
       complement: props.data.complement ?? '',
       phone: props.data.phone ?? '',
+      subscriptionDateExpired: props.data.expired_date ? formatDateBR(props.data.expired_date) : '',
       codeFinancial: props.data.code_financial ?? '',
+      subscr: props.data.code_financial ?? '',
       position: props.data.postion == 'client' ? 'Cliente' : 'Contador',
     });
+
+    selectedSubscription.value = {
+      label: getPlanLabel(props.data.subscription.name),
+      value: props.data?.subscription?.id ?? ''
+    }
   }
 };
 
@@ -397,9 +495,10 @@ watch(
   },
   { immediate: true },
 );
-watch(open, () => {
+watch(open, async () => {
   if (open.value) {
     clear();
+    await useSubscriptionStore().getSubscriptions();
     checkEdit();
     allowRequest.value = true;
   }
@@ -422,6 +521,7 @@ watch(open, () => {
           <template v-slot:before>
             <q-tabs v-model="tab" vertical class="bg-grey-2">
               <q-tab name="enterprise" icon="work" label="Organização" no-caps />
+              <q-tab name="subscription" icon="sell" label="Assinatura" no-caps />
               <q-tab
                 name="user"
                 icon="person"
@@ -682,6 +782,40 @@ watch(open, () => {
                   </div>
                 </q-form>
               </q-tab-panel>
+              <q-tab-panel name="subscription" class="bg-grey-2">
+                <q-form class="q-gutter-y-sm">
+                  <q-select
+                    v-model="selectedSubscription"
+                    :options="optionsSubscriptions"
+                    label="Assinatura"
+                    filled
+                    dense
+                    options-dense
+                    map-options
+                    bg-color="white"
+                    label-color="black"
+                    class="full-width"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="verified" color="black" size="20px" />
+                    </template>
+                  </q-select>
+                  <q-input
+                    v-model="dataEnterprise.subscriptionDateExpired"
+                    bg-color="white"
+                    label-color="black"
+                    outlined
+                    label="Data de expiração"
+                    dense
+                    input-class="text-black"
+                    mask="##/##/####"
+                  >
+                    <template v-slot:prepend>
+                      <q-icon name="calendar_today" color="black" size="20px" />
+                    </template>
+                  </q-input>
+                </q-form>
+              </q-tab-panel>
 
               <q-tab-panel name="user" class="bg-grey-2">
                 <q-form class="q-gutter-y-sm">
@@ -797,7 +931,7 @@ watch(open, () => {
               color="primary"
               label="Salvar"
               size="md"
-              :loading="loadingEnterprise || loadingCep"
+              :loading="loadingEnterprise || loadingCep || loadingSubscription"
               unelevated
               no-caps
             />
@@ -807,7 +941,7 @@ watch(open, () => {
               color="primary"
               label="Atualizar"
               size="md"
-              :loading="loadingEnterprise || loadingCep"
+              :loading="loadingEnterprise || loadingCep || loadingSubscription"
               unelevated
               no-caps
             />

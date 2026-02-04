@@ -11,8 +11,14 @@ export interface Enterprise {
   complement: string | null;
   number_address: string | null;
   email: string | null;
+  expired_date: string | null;
   phone: string | null;
   subscription_id?: string;
+  subscription:{
+    id: string
+    name: string
+    price: number
+  }
   created_by: string | null;
   postion: string;
   code_financial: number | null;
@@ -38,6 +44,8 @@ export interface EnterpriseCreate {
   phone: string | null;
   codeFinancial: number | null;
   position: string;
+  subscription: string;
+  subscriptionDateExpired: string;
 }
 
 export interface EnterpriseSelect {
