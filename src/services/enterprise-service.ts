@@ -73,7 +73,7 @@ export const updateEnterpriseByAdmService = (payload: {
   number_address: string | null;
   email: string | null;
   phone: string | null;
-  subscription: string
+  subscription: string;
 }): Promise<{
   status: number;
   data: {

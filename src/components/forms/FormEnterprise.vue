@@ -28,7 +28,7 @@ const planLabels: Record<string, string> = {
   free: 'Grátis',
   basic: 'Básico',
   advanced: 'Avançado',
-  etika: 'Cliente Etika'
+  etika: 'Cliente Etika',
 };
 const allowRequest = ref<boolean>(false);
 const isPwd = ref<boolean>(true);
@@ -52,7 +52,7 @@ const dataEnterprise = reactive({
   phone: '' as string,
   codeFinancial: '' as string,
   position: 'Cliente' as string,
-  subscriptionDateExpired : '' as string
+  subscriptionDateExpired: '' as string,
 });
 const dataUser = reactive({
   name: '' as string,
@@ -65,12 +65,12 @@ const dataUser = reactive({
 const optionsIdentifier = reactive<string[]>(['CNPJ', 'CPF']);
 const selectedSubscription = ref({
   value: null as string | null,
-  label: '' as string
-})
+  label: '' as string,
+});
 
 const getPlanLabel = (name?: string) => {
   return name ? (planLabels[name] ?? name) : '';
-}
+};
 const checkData = (): { status: boolean; message?: string } => {
   if (dataEnterprise.name.trim() === '') {
     return {
@@ -249,7 +249,7 @@ const clear = (): void => {
     phone: '',
     codeFinancial: '',
     position: 'Cliente',
-    subscriptionDateExpired : ''
+    subscriptionDateExpired: '',
   });
   Object.assign(dataUser, {
     name: '',
@@ -262,9 +262,9 @@ const clear = (): void => {
   tab.value = 'enterprise';
   allowRequest.value = false;
   selectedSubscription.value = {
-      label: '',
-      value: null
-    }
+    label: '',
+    value: null,
+  };
 };
 const save = async () => {
   const check = checkData();
@@ -287,7 +287,7 @@ const save = async () => {
           dataEnterprise.codeFinancial.trim() === '' ? null : Number(dataEnterprise.codeFinancial),
         position: dataEnterprise.position == 'Cliente' ? 'client' : 'counter',
         subscription: selectedSubscription.value.value ?? '',
-        subscriptionDateExpired : dataEnterprise.subscriptionDateExpired
+        subscriptionDateExpired: dataEnterprise.subscriptionDateExpired,
       },
       {
         name: dataUser.name,
@@ -338,7 +338,7 @@ const update = async () => {
       email: dataEnterprise.email.trim() === '' ? null : dataEnterprise.email,
       phone: dataEnterprise.phone.trim() === '' ? null : dataEnterprise.phone,
       subscription: selectedSubscription.value.value ?? '',
-      subscriptionDateExpired : dataEnterprise.subscriptionDateExpired
+      subscriptionDateExpired: dataEnterprise.subscriptionDateExpired,
     });
 
     if (response?.status === 200) {
@@ -394,26 +394,26 @@ const formattedPhoneUser = computed({
   },
 });
 function formatDateBR(value: string | null) {
-  if (!value) return ''
+  if (!value) return '';
 
-  const date = new Date(value)
+  const date = new Date(value);
 
-  if (isNaN(date.getTime())) return ''
+  if (isNaN(date.getTime())) return '';
 
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = date.getFullYear()
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
 
-  return `${day}/${month}/${year}`
+  return `${day}/${month}/${year}`;
 }
 const optionsSubscriptions = computed(() => {
   return listSubscription.value.map((item) => {
     return {
       value: item.id,
-      label:getPlanLabel(item.name)
-    }
-  })
-})
+      label: getPlanLabel(item.name),
+    };
+  });
+});
 const checkEdit = () => {
   if (props.data) {
     selectedIdentifier.value = props.data.cpf ? 'CPF' : 'CNPJ';
@@ -439,8 +439,8 @@ const checkEdit = () => {
 
     selectedSubscription.value = {
       label: getPlanLabel(props.data.subscription.name),
-      value: props.data?.subscription?.id ?? ''
-    }
+      value: props.data?.subscription?.id ?? '',
+    };
   }
 };
 

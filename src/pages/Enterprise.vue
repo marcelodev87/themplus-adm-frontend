@@ -32,7 +32,7 @@ const planLabels: Record<string, string> = {
   free: 'Grátis',
   basic: 'Básico',
   advanced: 'Avançado',
-  etika: 'Cliente Etika'
+  etika: 'Cliente Etika',
 };
 const chooseCouponData = ref<{ id: string } | null>(null);
 const showChooseCoupon = ref<boolean>(false);
@@ -68,7 +68,12 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     field: 'subscription',
     align: 'left',
   },
-
+  {
+    name: 'expired_date',
+    label: 'Assinatura/Expiração',
+    field: 'expired_date',
+    align: 'left',
+  },
   {
     name: 'action',
     label: 'Ação',
@@ -91,7 +96,7 @@ const resetPage = (): void => {
 };
 const getPlanLabel = (name?: string) => {
   return name ? (planLabels[name] ?? name) : '';
-}
+};
 const openFormEnterprise = (): void => {
   showFormEnterprise.value = true;
 };
@@ -145,6 +150,20 @@ const openMembersEnterprise = (id: string): void => {
 const closeMembersEnterprise = (): void => {
   showManageMembers.value = false;
 };
+function formatDateBR(value: string | null) {
+  if (!value) return '';
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) return '';
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
 const filteredEnterprise = computed(() => {
   const normalize = (text: string): string => {
     return text
@@ -262,6 +281,9 @@ onMounted(async () => {
               </q-td>
               <q-td key="subscription" :props="props" class="text-left">
                 {{ getPlanLabel(props.row.subscription.name) }}
+              </q-td>
+              <q-td key="expired_date" :props="props" class="text-left">
+                {{ formatDateBR(props.row.expired_date ?? '') }}
               </q-td>
               <q-td key="action" :props="props">
                 <q-btn

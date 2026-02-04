@@ -14,11 +14,11 @@ export interface Enterprise {
   expired_date: string | null;
   phone: string | null;
   subscription_id?: string;
-  subscription:{
-    id: string
-    name: string
-    price: number
-  }
+  subscription: {
+    id: string;
+    name: string;
+    price: number;
+  };
   created_by: string | null;
   postion: string;
   code_financial: number | null;
