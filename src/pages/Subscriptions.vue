@@ -121,7 +121,7 @@ onMounted(async () => {
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="name" :props="props" class="text-left text-capitalize">
-                {{ props.row.name }}
+                {{ props.row.name === 'etika' ? 'Contabilidade para igrejas' : props.row.name }}
               </q-td>
               <q-td key="price" :props="props" class="text-left">
                 {{ formatToBr(props.row.price) }}

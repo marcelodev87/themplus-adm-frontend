@@ -208,7 +208,7 @@ const open = computed({
 const optionsSubscriptions = computed(() => {
   return listSubscription.value.map((item) => {
     return {
-      label: item.name,
+      label: item.name === 'etika' ? 'Contabilidade para igrejas' : item.name,
       value: item.id,
     };
   });
