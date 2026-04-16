@@ -20,7 +20,7 @@ export interface Enterprise {
     price: number;
   };
   created_by: string | null;
-  postion: string;
+  position: string;
   code_financial: number | null;
   coupons: {
     id: string;

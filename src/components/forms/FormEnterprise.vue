@@ -434,7 +434,7 @@ const checkEdit = () => {
       subscriptionDateExpired: props.data.expired_date ? formatDateBR(props.data.expired_date) : '',
       codeFinancial: props.data.code_financial ?? '',
       subscr: props.data.code_financial ?? '',
-      position: props.data.postion == 'client' ? 'Cliente' : 'Contador',
+      position: props.data.position == 'client' ? 'Cliente' : 'Contador',
     });
 
     selectedSubscription.value = {
