@@ -41,7 +41,7 @@ export const setNewPasswordService = (
   data: {
     message: string;
   };
-}> => api.post('/newPassword', { password, email });
+}> => api.post('/new-password', { password, email });
 
 export const doRegisterService = (
   name: string,
