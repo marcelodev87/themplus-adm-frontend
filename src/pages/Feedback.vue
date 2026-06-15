@@ -28,25 +28,36 @@ const selectedId = ref<string | null>(null);
 const showConfirmAction = ref<boolean>(false);
 const dataSaved = ref<boolean>(false);
 const showSettingsFeedback = ref<boolean>(false);
+const feedbackSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsFeedback = reactive<QuasarTable[]>([
   {
     name: 'user_name',
     label: 'Usuário',
     field: 'user_name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'organization_name',
     label: 'Organização',
     field: 'organization_name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
-
   {
     name: 'created',
     label: 'Data de criação',
     field: 'created',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => new Date(a ?? 0).getTime() - new Date(b ?? 0).getTime(),
   },
   {
     name: 'message',
@@ -54,6 +65,8 @@ const columnsFeedback = reactive<QuasarTable[]>([
     field: 'message',
     align: 'left',
     style: 'max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'action',
@@ -126,10 +139,22 @@ const filteredMembersEnterprise = computed(() => {
   });
 });
 
+const sortedFeedback = computed(() => {
+  const { sortBy, descending } = feedbackSortPagination.value;
+  if (!sortBy) return filteredMembersEnterprise.value;
+  const col = columnsFeedback.find((c) => c.name === sortBy);
+  if (!col) return filteredMembersEnterprise.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...filteredMembersEnterprise.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listFeedbacksCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return filteredMembersEnterprise.value.slice(start, end);
+  return sortedFeedback.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(filteredMembersEnterprise.value.length / rowsPerPage.value);
@@ -209,6 +234,7 @@ onMounted(async () => {
               no-data-label="Nenhuma organização para mostrar"
               virtual-scroll
               :rows-per-page-options="[rowsPerPage]"
+              v-model:pagination="feedbackSortPagination"
             >
               <template v-slot:body="props">
                 <q-tr :props="props" style="height: 28px">
@@ -271,6 +297,7 @@ onMounted(async () => {
               no-data-label="Nenhuma organização para mostrar"
               virtual-scroll
               :rows-per-page-options="[rowsPerPage]"
+              v-model:pagination="feedbackSortPagination"
             >
               <template v-slot:body="props">
                 <q-tr :props="props" style="height: 28px">

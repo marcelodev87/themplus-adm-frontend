@@ -25,42 +25,63 @@ const showFormCoupon = ref<boolean>(false);
 const showConfirmAction = ref<boolean>(false);
 const selectedDataEdit = ref<string | null>(null);
 const selectedDataExclude = ref<string | null>(null);
+const couponPageSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsCoupon = reactive<QuasarTable[]>([
   {
     name: 'type',
     label: 'Tipo',
     field: 'type',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'name',
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'code',
     label: 'Código',
     field: 'code',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'enterprises_using',
     label: 'Utilização',
     field: 'enterprises_using',
     align: 'center',
+    sortable: true,
+    sort: (_a, _b, rowA, rowB) => Number(rowA?.using ?? 0) - Number(rowB?.using ?? 0),
   },
   {
     name: 'created_at',
     label: 'Data de criação',
     field: 'created_at',
     align: 'center',
+    sortable: true,
+    sort: (a, b) => new Date(a ?? 0).getTime() - new Date(b ?? 0).getTime(),
   },
   {
     name: 'date_expiration',
     label: 'Data de expiração',
     field: 'date_expiration',
     align: 'center',
+    sortable: true,
+    sort: (a, b) => {
+      const toMs = (d: string) => { if (!d) return 0; const [dd, mm, yyyy] = String(d).split('/'); return dd && mm && yyyy ? new Date(+yyyy, +mm - 1, +dd).getTime() : new Date(d).getTime(); };
+      return toMs(a) - toMs(b);
+    },
   },
   {
     name: 'action',
@@ -158,10 +179,22 @@ const filteredCoupon = computed(() => {
   });
 });
 
+const sortedCouponPage = computed(() => {
+  const { sortBy, descending } = couponPageSortPagination.value;
+  if (!sortBy) return filteredCoupon.value;
+  const col = columnsCoupon.find((c) => c.name === sortBy);
+  if (!col) return filteredCoupon.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...filteredCoupon.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listCouponCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return filteredCoupon.value.slice(start, end);
+  return sortedCouponPage.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(filteredCoupon.value.length / rowsPerPage.value);
@@ -210,6 +243,7 @@ onMounted(async () => {
           no-data-label="Nenhum cupom para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          v-model:pagination="couponPageSortPagination"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de cupons</span>

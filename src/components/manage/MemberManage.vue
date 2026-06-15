@@ -34,30 +34,44 @@ const showFormManageMember = ref<boolean>(false);
 const dataMemberSelected = ref<User | null>(null);
 const dataMemberSelectedExclude = ref<string | null>(null);
 const filterMembers = ref<string>('');
+const membersSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsMembers = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'email',
     label: 'E-mail',
     field: 'email',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'position',
     label: 'Cargo',
     field: 'position',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'active',
     label: 'Ativo',
     field: 'active',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => Number(b ?? 0) - Number(a ?? 0),
   },
   {
     name: 'action',
@@ -119,10 +133,22 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
+const sortedMembers = computed(() => {
+  const { sortBy, descending } = membersSortPagination.value;
+  if (!sortBy) return filteredMembersEnterprise.value;
+  const col = columnsMembers.find((c) => c.name === sortBy);
+  if (!col) return filteredMembersEnterprise.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...filteredMembersEnterprise.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listEnterpriseMembersCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return filteredMembersEnterprise.value.slice(start, end);
+  return sortedMembers.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(filteredMembersEnterprise.value.length / rowsPerPage.value);
@@ -153,6 +179,7 @@ watch(open, async () => {
           no-data-label="Nenhum membro da organização para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          v-model:pagination="membersSortPagination"
         >
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">

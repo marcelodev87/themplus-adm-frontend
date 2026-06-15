@@ -37,24 +37,39 @@ const showConfirmAction = ref<boolean>(false);
 const selectedDataExclude = ref<string | null>(null);
 const listCouponsEnterprise = reactive<CouponEnterprise[]>([]);
 const filterCoupon = ref<string>('');
+const couponSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsCoupon = reactive<QuasarTable[]>([
   {
     name: 'type',
     label: 'Tipo',
     field: 'type',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'name',
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'date_expiration',
     label: 'Data de expiração',
     field: 'date_expiration',
     align: 'center',
+    sortable: true,
+    sort: (a, b) => {
+      const toMs = (d: string) => { if (!d) return 0; const [dd, mm, yyyy] = String(d).split('/'); return dd && mm && yyyy ? new Date(+yyyy, +mm - 1, +dd).getTime() : new Date(d).getTime(); };
+      return toMs(a) - toMs(b);
+    },
   },
   {
     name: 'action',
@@ -179,10 +194,22 @@ const allowApply = computed(() => {
   }
   return false;
 });
+const sortedCoupon = computed(() => {
+  const { sortBy, descending } = couponSortPagination.value;
+  if (!sortBy) return filteredCoupon.value;
+  const col = columnsCoupon.find((c) => c.name === sortBy);
+  if (!col) return filteredCoupon.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...filteredCoupon.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listCouponEnterpriseCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return filteredCoupon.value.slice(start, end);
+  return sortedCoupon.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(filteredCoupon.value.length / rowsPerPage.value);
@@ -233,6 +260,7 @@ watch(open, async () => {
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
           style="min-height: 300px"
+          v-model:pagination="couponSortPagination"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de cupons da organização</span>

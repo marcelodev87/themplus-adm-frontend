@@ -28,12 +28,20 @@ const { getSelectEnterprises, sendNotificationEnterprise } = useEnterpriseStore(
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(10);
 const filterEnterprise = ref<string>('');
+const sendNotifSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsEnterprise = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Nome da organização',
     field: 'name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
 ]);
 const dataTemplate = reactive({
@@ -114,10 +122,22 @@ const filteredEnterprise = computed(() => {
   });
 });
 
+const sortedEnterprisesSend = computed(() => {
+  const { sortBy, descending } = sendNotifSortPagination.value;
+  if (!sortBy) return filteredEnterprise.value;
+  const col = columnsEnterprise.find((c) => c.name === sortBy);
+  if (!col) return filteredEnterprise.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...filteredEnterprise.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listEnterprisesCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return filteredEnterprise.value.slice(start, end);
+  return sortedEnterprisesSend.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(filteredEnterprise.value.length / rowsPerPage.value);
@@ -205,6 +225,7 @@ watch(open, async () => {
             selection="multiple"
             :rows-per-page-options="[rowsPerPage]"
             v-model:selected="selectedEnterprise"
+            v-model:pagination="sendNotifSortPagination"
             style="height: 350px"
           >
             <template v-slot:top>

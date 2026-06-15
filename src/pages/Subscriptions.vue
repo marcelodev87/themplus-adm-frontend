@@ -23,24 +23,36 @@ const filterAlert = ref<string>('');
 const showFormSubscription = ref<boolean>(false);
 const dataEdit = ref<{ id: string; price: string; name: string } | null>(null);
 const filterSubscription = ref<string>('');
+const subscriptionSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsSubscriptions = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Nome',
     field: 'name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'price',
     label: 'Preço',
     field: 'price',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => Number(a ?? 0) - Number(b ?? 0),
   },
   {
     name: 'enterprises_using',
     label: 'Utilizando',
     field: 'enterprises_using',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => Number(a ?? 0) - Number(b ?? 0),
   },
   {
     name: 'action',
@@ -72,10 +84,23 @@ const handleEdit = (data: { id: string; price: string; name: string }): void => 
   openFormSubscription();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sortedSubscription = computed(() => {
+  const { sortBy, descending } = subscriptionSortPagination.value;
+  if (!sortBy) return listSubscription.value;
+  const col = columnsSubscriptions.find((c) => c.name === sortBy);
+  if (!col) return listSubscription.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...listSubscription.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listSubscriptionCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listSubscription.value.slice(start, end);
+  return sortedSubscription.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(listSubscription.value.length / rowsPerPage.value);
@@ -114,6 +139,7 @@ onMounted(async () => {
           no-data-label="Nenhuma assinatura para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          v-model:pagination="subscriptionSortPagination"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de assinaturas</span>

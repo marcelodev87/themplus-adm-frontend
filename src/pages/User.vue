@@ -23,6 +23,12 @@ const rowsPerPage = ref<number>(11);
 const dataEdit = ref<UserADM | null>(null);
 const showFormUser = ref<boolean>(false);
 const filterUser = ref<string>('');
+const userSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsUser = reactive<QuasarTable[]>([
   {
     name: 'name',
@@ -30,6 +36,7 @@ const columnsUser = reactive<QuasarTable[]>([
     field: 'name',
     align: 'left',
     sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'email',
@@ -37,24 +44,31 @@ const columnsUser = reactive<QuasarTable[]>([
     field: 'email',
     align: 'left',
     sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'position',
     label: 'Cargo',
     field: 'position',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'department',
     label: 'Departamento',
     field: 'department.name',
     align: 'left',
+    sortable: true,
+    sort: (_a, _b, rowA, rowB) => String(rowA?.department?.name ?? '').localeCompare(String(rowB?.department?.name ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'active',
     label: 'Ativo',
     field: 'active',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => Number(b ?? 0) - Number(a ?? 0),
   },
   {
     name: 'action',
@@ -105,10 +119,22 @@ const filteredMembersEnterprise = computed(() => {
   });
 });
 
+const sortedUsers = computed(() => {
+  const { sortBy, descending } = userSortPagination.value;
+  if (!sortBy) return filteredMembersEnterprise.value;
+  const col = columnsUser.find((c) => c.name === sortBy);
+  if (!col) return filteredMembersEnterprise.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...filteredMembersEnterprise.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listUserMemberCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return filteredMembersEnterprise.value.slice(start, end);
+  return sortedUsers.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(filteredMembersEnterprise.value.length / rowsPerPage.value);
@@ -157,6 +183,7 @@ onMounted(async () => {
           no-data-label="Nenhum usuário para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          v-model:pagination="userSortPagination"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de usuários</span>

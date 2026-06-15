@@ -31,12 +31,20 @@ const emit = defineEmits<{
   'update:open': [void];
 }>();
 
+const templatesSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsTemplates = reactive<QuasarTable[]>([
   {
     name: 'title',
     label: 'Título',
     field: 'title',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'text',
@@ -44,6 +52,8 @@ const columnsTemplates = reactive<QuasarTable[]>([
     field: 'text',
     align: 'left',
     style: 'max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'action',
@@ -85,10 +95,22 @@ const open = computed({
   get: () => props.open,
   set: () => emit('update:open'),
 });
+const sortedTemplates = computed(() => {
+  const { sortBy, descending } = templatesSortPagination.value;
+  if (!sortBy) return listTemplates.value;
+  const col = columnsTemplates.find((c) => c.name === sortBy);
+  if (!col) return listTemplates.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...listTemplates.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listTemplateCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return listTemplates.value.slice(start, end);
+  return sortedTemplates.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(listTemplates.value.length / rowsPerPage.value);
@@ -137,6 +159,7 @@ watch(open, async () => {
           dense
           row-key="index"
           no-data-label="Nenhum template para mostrar"
+          v-model:pagination="templatesSortPagination"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de templates</span>

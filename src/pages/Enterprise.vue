@@ -43,18 +43,28 @@ const selectedEnterprise = ref<string | null>(null);
 const showNotificationManagement = ref<boolean>(false);
 const selectedDataEdit = ref<Enterprise | null>(null);
 const selectedDataExclude = ref<string | null>(null);
+const enterpriseSortPagination = ref<{
+  sortBy: string | null;
+  descending: boolean;
+  page: number;
+  rowsPerPage: number;
+}>({ sortBy: null, descending: false, page: 1, rowsPerPage: 0 });
 const columnsEnterprise = reactive<QuasarTable[]>([
   {
     name: 'name',
     label: 'Organização',
     field: 'name',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'position',
     label: 'Tipo',
     field: 'position',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'document',
@@ -67,12 +77,19 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     label: 'Assinatura',
     field: 'subscription',
     align: 'left',
+    sortable: true,
+    sort: (_a, _b, rowA, rowB) => String(rowA?.subscription?.name ?? '').localeCompare(String(rowB?.subscription?.name ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'expired_date',
     label: 'Assinatura/Expiração',
     field: 'expired_date',
     align: 'left',
+    sortable: true,
+    sort: (a, b) => {
+      const toMs = (d: string) => { if (!d) return 0; const [dd, mm, yyyy] = String(d).split('/'); return dd && mm && yyyy ? new Date(+yyyy, +mm - 1, +dd).getTime() : new Date(d).getTime(); };
+      return toMs(a) - toMs(b);
+    },
   },
   {
     name: 'action',
@@ -183,10 +200,22 @@ const filteredEnterprise = computed(() => {
   });
 });
 
+const sortedEnterprise = computed(() => {
+  const { sortBy, descending } = enterpriseSortPagination.value;
+  if (!sortBy) return filteredEnterprise.value;
+  const col = columnsEnterprise.find((c) => c.name === sortBy);
+  if (!col) return filteredEnterprise.value;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  return [...filteredEnterprise.value].sort((a, b) => {
+    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    return descending ? -res : res;
+  });
+});
 const listEnterpriseCurrent = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value;
   const end = start + rowsPerPage.value;
-  return filteredEnterprise.value.slice(start, end);
+  return sortedEnterprise.value.slice(start, end);
 });
 const maxPages = computed(() => {
   return Math.ceil(filteredEnterprise.value.length / rowsPerPage.value);
@@ -254,6 +283,7 @@ onMounted(async () => {
           no-data-label="Nenhuma organização para mostrar"
           virtual-scroll
           :rows-per-page-options="[rowsPerPage]"
+          v-model:pagination="enterpriseSortPagination"
         >
           <template v-slot:top>
             <span class="text-subtitle2">Lista de organizações</span>
