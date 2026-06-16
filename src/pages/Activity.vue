@@ -65,7 +65,8 @@ const columnsRegister = reactive<QuasarTable[]>([
     field: 'type',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'text',
@@ -73,7 +74,8 @@ const columnsRegister = reactive<QuasarTable[]>([
     field: 'text',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'action',
@@ -143,12 +145,13 @@ const filterMethodRegister = (rows: readonly any[], terms: string): readonly any
     text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const searchTerm = normalize(terms ?? '');
   if (!searchTerm) return rows;
-  return rows.filter((row) =>
-    normalize(String(row.user_name ?? '')).includes(searchTerm) ||
-    normalize(String(row.user_email ?? '')).includes(searchTerm) ||
-    normalize(String(row.date ?? '')).includes(searchTerm) ||
-    normalize(buildAction(String(row.action ?? ''))).includes(searchTerm) ||
-    normalize(String(row.text ?? '')).includes(searchTerm)
+  return rows.filter(
+    (row) =>
+      normalize(String(row.user_name ?? '')).includes(searchTerm) ||
+      normalize(String(row.user_email ?? '')).includes(searchTerm) ||
+      normalize(String(row.date ?? '')).includes(searchTerm) ||
+      normalize(buildAction(String(row.action ?? ''))).includes(searchTerm) ||
+      normalize(String(row.text ?? '')).includes(searchTerm),
   );
 };
 

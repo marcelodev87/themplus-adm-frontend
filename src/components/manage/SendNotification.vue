@@ -41,7 +41,8 @@ const columnsEnterprise = reactive<QuasarTable[]>([
     field: 'name',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
 ]);
 const dataTemplate = reactive({
@@ -128,9 +129,20 @@ const sortedEnterprisesSend = computed(() => {
   const col = columnsEnterprise.find((c) => c.name === sortBy);
   if (!col) return filteredEnterprise.value;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  const getVal = (row: any) =>
+    typeof col.field === 'function'
+      ? col.field(row)
+      : col.field
+        ? String(col.field)
+            .split('.')
+            .reduce((o: any, k: string) => o?.[k], row)
+        : '';
   return [...filteredEnterprise.value].sort((a, b) => {
-    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    const res = col.sort
+      ? col.sort(getVal(a), getVal(b), a, b)
+      : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', {
+          sensitivity: 'base',
+        });
     return descending ? -res : res;
   });
 });

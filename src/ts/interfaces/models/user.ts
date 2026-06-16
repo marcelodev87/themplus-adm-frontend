@@ -28,5 +28,6 @@ export interface UserADM {
   active: number;
   created_by: string | null;
   department_id: string | null;
+  department?: { name: string } | null;
   created_at: string;
 }

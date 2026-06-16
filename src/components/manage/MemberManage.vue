@@ -47,7 +47,8 @@ const columnsMembers = reactive<QuasarTable[]>([
     field: 'name',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'email',
@@ -55,7 +56,8 @@ const columnsMembers = reactive<QuasarTable[]>([
     field: 'email',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'position',
@@ -63,7 +65,8 @@ const columnsMembers = reactive<QuasarTable[]>([
     field: 'position',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'active',
@@ -144,9 +147,20 @@ const sortedMembers = computed(() => {
   const col = columnsMembers.find((c) => c.name === sortBy);
   if (!col) return filteredMembersEnterprise.value;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  const getVal = (row: any) =>
+    typeof col.field === 'function'
+      ? col.field(row)
+      : col.field
+        ? String(col.field)
+            .split('.')
+            .reduce((o: any, k: string) => o?.[k], row)
+        : '';
   return [...filteredMembersEnterprise.value].sort((a, b) => {
-    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    const res = col.sort
+      ? col.sort(getVal(a), getVal(b), a, b)
+      : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', {
+          sensitivity: 'base',
+        });
     return descending ? -res : res;
   });
 });

@@ -50,7 +50,8 @@ const columnsCoupon = reactive<QuasarTable[]>([
     field: 'type',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'name',
@@ -58,7 +59,8 @@ const columnsCoupon = reactive<QuasarTable[]>([
     field: 'name',
     align: 'left',
     sortable: true,
-    sort: (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
+    sort: (a, b) =>
+      String(a ?? '').localeCompare(String(b ?? ''), 'pt-BR', { sensitivity: 'base' }),
   },
   {
     name: 'date_expiration',
@@ -67,7 +69,11 @@ const columnsCoupon = reactive<QuasarTable[]>([
     align: 'center',
     sortable: true,
     sort: (a, b) => {
-      const toMs = (d: string) => { if (!d) return 0; const [dd, mm, yyyy] = String(d).split('/'); return dd && mm && yyyy ? new Date(+yyyy, +mm - 1, +dd).getTime() : new Date(d).getTime(); };
+      const toMs = (d: string) => {
+        if (!d) return 0;
+        const [dd, mm, yyyy] = String(d).split('/');
+        return dd && mm && yyyy ? new Date(+yyyy, +mm - 1, +dd).getTime() : new Date(d).getTime();
+      };
       return toMs(a) - toMs(b);
     },
   },
@@ -205,9 +211,20 @@ const sortedCoupon = computed(() => {
   const col = columnsCoupon.find((c) => c.name === sortBy);
   if (!col) return filteredCoupon.value;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getVal = (row: any) => (typeof col.field === 'function' ? col.field(row) : col.field ? String(col.field).split('.').reduce((o: any, k: string) => o?.[k], row) : '');
+  const getVal = (row: any) =>
+    typeof col.field === 'function'
+      ? col.field(row)
+      : col.field
+        ? String(col.field)
+            .split('.')
+            .reduce((o: any, k: string) => o?.[k], row)
+        : '';
   return [...filteredCoupon.value].sort((a, b) => {
-    const res = col.sort ? col.sort(getVal(a), getVal(b), a, b) : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', { sensitivity: 'base' });
+    const res = col.sort
+      ? col.sort(getVal(a), getVal(b), a, b)
+      : String(getVal(a) ?? '').localeCompare(String(getVal(b) ?? ''), 'pt-BR', {
+          sensitivity: 'base',
+        });
     return descending ? -res : res;
   });
 });
