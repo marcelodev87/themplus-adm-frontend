@@ -137,6 +137,20 @@ const buildAction = (action: string): string => {
 
   return '';
 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const filterMethodRegister = (rows: readonly any[], terms: string): readonly any[] => {
+  const normalize = (text: string): string =>
+    text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const searchTerm = normalize(terms ?? '');
+  if (!searchTerm) return rows;
+  return rows.filter((row) =>
+    normalize(String(row.user_name ?? '')).includes(searchTerm) ||
+    normalize(String(row.user_email ?? '')).includes(searchTerm) ||
+    normalize(String(row.date ?? '')).includes(searchTerm) ||
+    normalize(buildAction(String(row.action ?? ''))).includes(searchTerm) ||
+    normalize(String(row.text ?? '')).includes(searchTerm)
+  );
+};
 
 // watch(selectedPeriod, async () => {
 //   await fetchRegisters();
@@ -179,6 +193,7 @@ const buildAction = (action: string): string => {
           :rows="[]"
           :columns="columnsRegister"
           :filter="filterRegister"
+          :filter-method="filterMethodRegister"
           :loading="false"
           flat
           bordered

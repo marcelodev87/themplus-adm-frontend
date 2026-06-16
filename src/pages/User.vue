@@ -115,7 +115,15 @@ const filteredMembersEnterprise = computed(() => {
   resetPage();
   const searchTerm = normalize(filterUser.value);
   return listUserMember.value.filter((item) => {
-    return item.name && normalize(item.name).includes(searchTerm);
+    const positionText = item.position === 'admin' ? 'Administrador' : 'Usuário comum';
+    const departmentText = item.department_id ? (item.department?.name ?? '') : 'Não definido';
+    return (
+      normalize(item.name ?? '').includes(searchTerm) ||
+      normalize(item.email ?? '').includes(searchTerm) ||
+      normalize(positionText).includes(searchTerm) ||
+      normalize(departmentText).includes(searchTerm) ||
+      normalize(item.active ? 'ativo' : 'inativo').includes(searchTerm)
+    );
   });
 });
 

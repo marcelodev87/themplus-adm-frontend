@@ -124,8 +124,13 @@ const filteredMembersEnterprise = computed(() => {
   const searchTerm = normalize(filterMembers.value);
   resetPage();
   return listEnterpriseMembers.value.filter((item) => {
-    currentPage.value = 1;
-    return item.name && normalize(item.name).includes(searchTerm);
+    const positionText = item.position === 'admin' ? 'Administrador' : 'Usuário comum';
+    return (
+      normalize(item.name ?? '').includes(searchTerm) ||
+      normalize(item.email ?? '').includes(searchTerm) ||
+      normalize(positionText).includes(searchTerm) ||
+      normalize(item.active ? 'ativo' : 'inativo').includes(searchTerm)
+    );
   });
 });
 
@@ -181,6 +186,15 @@ watch(open, async () => {
           :rows-per-page-options="[rowsPerPage]"
           v-model:pagination="membersSortPagination"
         >
+          <template v-slot:top>
+            <span class="text-subtitle2">Lista de membros</span>
+            <q-space />
+            <q-input filled v-model="filterMembers" dense label="Pesquisar">
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
           <template v-slot:body="props">
             <q-tr :props="props" style="height: 28px">
               <q-td key="name" :props="props" class="text-left">

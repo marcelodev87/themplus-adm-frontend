@@ -191,11 +191,14 @@ const filteredEnterprise = computed(() => {
   const searchTerm = normalize(filterEnterprise.value);
   resetPage();
   return listEnterprises.value.filter((item) => {
+    const positionText = item.position === 'client' ? 'Cliente' : 'Contador';
     return (
-      (item.name && normalize(item.name).includes(searchTerm)) ||
-      (item.cpf && normalize(item.cpf).includes(searchTerm)) ||
-      (item.cnpj && normalize(item.cnpj).includes(searchTerm)) ||
-      (item.subscription.name && normalize(item.subscription.name).includes(searchTerm))
+      normalize(item.name ?? '').includes(searchTerm) ||
+      normalize(item.cpf ?? '').includes(searchTerm) ||
+      normalize(item.cnpj ?? '').includes(searchTerm) ||
+      normalize(getPlanLabel(item.subscription?.name)).includes(searchTerm) ||
+      normalize(positionText).includes(searchTerm) ||
+      normalize(formatDateBR(item.expired_date ?? '')).includes(searchTerm)
     );
   });
 });

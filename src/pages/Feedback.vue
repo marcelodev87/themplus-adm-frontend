@@ -133,8 +133,10 @@ const filteredMembersEnterprise = computed(() => {
   const searchTerm = normalize(filterFeedback.value);
   return listFeedbacks.value.filter((item) => {
     return (
-      (item.user_name && normalize(item.user_name).includes(searchTerm)) ||
-      (item.organization_name && normalize(item.organization_name).includes(searchTerm))
+      normalize(item.user_name ?? '').includes(searchTerm) ||
+      normalize(item.organization_name ?? '').includes(searchTerm) ||
+      normalize(item.created ?? '').includes(searchTerm) ||
+      normalize(item.message ?? '').includes(searchTerm)
     );
   });
 });
@@ -236,6 +238,15 @@ onMounted(async () => {
               :rows-per-page-options="[rowsPerPage]"
               v-model:pagination="feedbackSortPagination"
             >
+              <template v-slot:top>
+                <span class="text-subtitle2">Lista de feedbacks</span>
+                <q-space />
+                <q-input filled v-model="filterFeedback" dense label="Pesquisar">
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </template>
               <template v-slot:body="props">
                 <q-tr :props="props" style="height: 28px">
                   <q-td key="user_name" :props="props" class="text-left">
@@ -299,6 +310,15 @@ onMounted(async () => {
               :rows-per-page-options="[rowsPerPage]"
               v-model:pagination="feedbackSortPagination"
             >
+              <template v-slot:top>
+                <span class="text-subtitle2">Lista de feedbacks salvos</span>
+                <q-space />
+                <q-input filled v-model="filterFeedback" dense label="Pesquisar">
+                  <template v-slot:prepend>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </template>
               <template v-slot:body="props">
                 <q-tr :props="props" style="height: 28px">
                   <q-td key="user_name" :props="props" class="text-left">

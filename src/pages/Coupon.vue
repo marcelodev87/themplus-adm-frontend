@@ -175,7 +175,15 @@ const filteredCoupon = computed(() => {
   const searchTerm = normalize(filterCoupon.value);
   resetPage();
   return listCoupon.value.filter((item) => {
-    return item.name && normalize(item.name).includes(searchTerm);
+    const typeText = item.type === 'subscription' ? 'Plano' : 'Recurso';
+    return (
+      normalize(item.name ?? '').includes(searchTerm) ||
+      normalize(typeText).includes(searchTerm) ||
+      normalize(item.code ?? '').includes(searchTerm) ||
+      normalize(String(item.using ?? '')).includes(searchTerm) ||
+      normalize(formatDate(item.created_at ?? '')).includes(searchTerm) ||
+      normalize(item.date_expiration ?? '').includes(searchTerm)
+    );
   });
 });
 
